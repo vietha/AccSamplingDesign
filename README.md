@@ -1,2 +1,196 @@
-# AccSamplingDesign
+# AccSamplingDesign: Acceptance Sampling Plan Design
 An R package for designing and analyzing acceptance sampling plans.
+
+
+
+# 1. Introduction
+
+The AccSamplingDesign package provides tools for designing acceptance sampling plans for both attribute and variable data. Key features include:
+
+- **Attribute sampling plans** (pass/fail inspection based on nonconforming proportion)
+- **Variable sampling plans** for normal and beta distributions, focusing on the proportion of nonconforming units
+- **Measurement error adjustments** to account for variability in the data
+- **OC curve visualization** to evaluate sampling plan performance
+- **Risk-based optimization** to minimize producer's and consumer's risks while meeting specified quality levels of Producer’s Risk Quality (PRQ) and Consumer’s Risk Quality (CRQ)
+
+# 2. Installation
+
+```{r eval=FALSE}
+# Install from GitHub
+devtools::install_github("vietha/AccSamplingDesign")
+
+# Load package
+library(AccSamplingDesign)
+```
+
+# 3. Attribute Sampling Plans
+
+## 3.1 Create Attribute Plan
+```{r}
+plan_attr <- optAttrPlan(
+  PRQ = 0.01,  # Acceptable Quality Level (1% defects)
+  CRQ = 0.05,  # Rejectable Quality Level (5% defects)
+  alpha = 0.05, # Producer's risk
+  beta = 0.10   # Consumer's risk
+)
+```
+
+## 3.2 Plan Summary
+```{r}
+summary(plan_attr)
+```
+
+## 3.3 Acceptance Probability
+```{r}
+# Probability of accepting 3% defective lots
+accProb(plan_attr, 0.03)
+```
+
+## 3.4 OC Curve
+```{r}
+plotOC(plan_attr)
+```
+
+# 4. Variable Sampling Plans
+
+## 4.1 Normal Distribution 
+```{r}
+norm_plan <- optVarPlan(
+  PRQ = 0.025,        # Acceptable quality level (% nonconforming)
+  CRQ = 0.1,         # Rejectable quality level (% nonconforming)
+  alpha = 0.05,      # Producer's risk
+  beta = 0.1,        # Consumer's risk
+  distribution = "normal"
+)
+
+summary(norm_plan)
+```
+
+## 4.2 Beta Distribution
+```{r}
+beta_plan <- optVarPlan(
+  PRQ = 0.025,       # Target quality level (% nonconforming)
+  CRQ = 0.1,       # Minimum quality level (% nonconforming)
+  alpha = 0.05,      # Producer's risk
+  beta = 0.1,        # Consumer's risk
+  distribution = "beta",
+  theta = 44000000,
+  spec_limit = 0.00001, # Lower reliability limit
+  limit_type = "lower"
+)
+summary(beta_plan)
+```
+
+## 4.3 Variable Plan Acceptance Probability
+```{r}
+# Probability of accepting 10% defective
+accProb(norm_plan, 0.1)
+
+# Probability of accepting 5% defective
+accProb(beta_plan, 0.05)
+```
+
+## 4.4 Variable OC Curves
+```{r}
+# Generate OC curve data
+oc_data_normal <- OCdata(norm_plan)
+# show data of Proportion Nonconforming (x_p) vs Probability Acceptance (y)
+head(oc_data_normal, 15) 
+plotOC(norm_plan)
+oc_data_beta <- OCdata(beta_plan)
+head(oc_data_beta, 15)
+plotOC(beta_plan)
+```
+
+# 5. Measurement Error Adjustment
+```{r}
+error_plan <- optAttrPlan(
+  PRQ = 0.01,
+  CRQ = 0.05,
+  measurement_error = 0.2 # 20% measurement error
+)
+summary(error_plan)
+```
+
+# 6. Technical Specifications
+
+## 6.1 Attribute Plan:  
+$$P(accept|p) = \sum_{i=0}^c \binom{n}{i}p^i(1-p)^{n-i}$$  
+
+## 6.2 Normal Variable Plan (Case of Known \( \sigma \)):
+The Probability of Acceptance (\( Pa \)) is given by:
+
+\[
+Pa = 1 - \Phi\left( \sqrt{n} \cdot (z_p + k) \right)
+\]
+
+where:<br>
+- \( \Phi(\cdot) \) is the CDF of the standard normal distribution.<br>
+- \( z_p = \Phi^{-1}(p) \) is the standard normal quantile corresponding to the quality level \( p \).<br>
+- \( n \) is the sample size.<br>
+- \( k \) is the acceptance constant.
+
+The required sample size (\( n \)) and acceptance constant (\( k \)) are:
+\[
+n = \left( \frac{z_{1 - \alpha} + z_{1 - \beta}}{z_{1 - PRQ} - z_{1 - CRQ}} \right)^2
+\]
+
+\[
+k = \frac{z_{1 - PRQ} \cdot z_{1 - \beta} + z_{1 - CRQ} \cdot z_{1 - \alpha}}{z_{1 - \alpha} + z_{1 - \beta}}
+\]
+
+where:  
+- \( \alpha \) and \( \beta \) are the producer's and consumer's risks, respectively. <br>
+- \( PRQ \) and \( CRQ \) are the Producer's Risk Quality and Consumer's Risk Quality, respectively.
+
+(See Wilrich, PT. (2004) for more detail of calculation)
+
+## 6.3 Normal Variable Plan (Case of Unknown \( \sigma \)):
+
+## 6.4 Beta Variable Plan:
+
+Traditional acceptance sampling using normal distributions can be inadequate for compositional data bounded within [0,1]. Govindaraju and Kissling (2015) proposed Beta-based plans, where component proportions (e.g., protein content) follow \( X \sim \text{Beta}(a, b) \), with density:
+
+\[
+f(x; a, b) = \frac{x^{a-1} (1 - x)^{b-1}}{B(a, b)},
+\]
+
+where \( B(a, b) \) is the Beta function. The distribution is reparameterized via mean \( \mu \) and precision \( \theta \):
+
+\[
+\mu = \frac{a}{a + b}, \quad \theta = a + b, \quad \sigma^2 \approx \frac{\mu(1 - \mu)}{\theta} \quad (\text{for large } \theta).
+\]
+
+Higher \( \theta \) reduces variance, concentrating values around \( \mu \). The probability of acceptance (\( Pa \)) parallels normal-based plans:
+
+\[
+Pa = P(\mu - k \sigma \geq L \mid \mu, \theta, m, k),
+\]
+
+where \( L \) is the lower specification limit, \( m \) is the sample size, and \( k \) is the acceptability constant. Parameters \( m \) and \( k \) ensure:
+
+\[
+Pa(\mu_{PRQ}) = 1 - \alpha, \quad Pa(\mu_{CRQ}) = \beta,
+\]
+
+with \( \alpha \) (producer’s risk) and \( \beta \) (consumer’s risk) at specified quality levels (PRQ/CRQ).
+
+### Implementation Note:
+For a nonconforming proportion \( p \) (e.g.,PRQ or CRQ), the mean \( \mu \) at a quality level (PRQ/CRQ) is derived by solving:
+
+\[
+P(X \leq L \mid \mu, \theta) = p,
+\]
+
+where \( X \sim \text{Beta}(\theta \mu, \theta (1 - \mu)) \). This links \( \mu \) to \( p \) via the Beta cumulative distribution function (CDF) at \( L \).
+
+
+# 7. References
+1. Schilling, E.G., & Neubauer, D.V. (2017). Acceptance Sampling in Quality Control (3rd ed.). Chapman and Hall/CRC. https://doi.org/10.4324/9781315120744
+2. Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Frontiers in Statistical Quality Control, vol 7. Physica, Heidelberg. https://doi.org/10.1007/978-3-7908-2674-6_4
+3. K. Govindaraju and R. Kissling (2015). Sampling plans for Beta-distributed compositional fractions.
+Quality Engineering, vol. 27, no. 1, pp. 1-13. https://doi.org/10.1016/j.chemolab.2015.12.009
+4. ISO 2859-1:1999 - Sampling procedures for inspection by attributes  
+5. ISO 3951-1:2013 - Sampling procedures for inspection by variables  
+
+
