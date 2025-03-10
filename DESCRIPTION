@@ -1,0 +1,21 @@
+Package: AccSamplingDesign
+Title: Acceptance Sampling Plans Design
+Version: 0.1.0
+Authors@R: 
+    person("Ha", "Truong", 
+           email = "truongvietha87@gmail.com",
+           role = c("aut", "cre"))
+Description: An R package for designing and analyzing acceptance sampling plans.
+    Supports both attribute-based (binomial) and variable-based (normal and beta)
+    sampling. Includes tools for measurement error adjustments and OC curve
+    visualization, enabling quality control for fractional and compositional data.
+License: GPL-3
+Encoding: UTF-8
+Imports:
+    stats
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+URL: https://github.com/vietha/AccSamplingDesign
+BugReports: https://github.com/vietha/AccSamplingDesign/issues

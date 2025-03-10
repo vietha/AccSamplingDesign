@@ -1,0 +1,43 @@
+\name{muEst}
+\alias{muEst}
+\title{Estimate Mean (μ) Based on Limit and Probability}
+\description{
+  Computes the estimated mean (μ) for a given level of quality and limit under either a normal or beta distribution.
+}
+
+\usage{
+muEst(p, limit, sigma = NULL, theta = NULL, 
+      dist = c("normal", "beta"), 
+      limtype = c("lower", "upper"))
+}
+
+\arguments{
+  \item{p}{Level of quality (numeric, between 0 and 1).}
+  \item{limit}{The specification limit (numeric).}
+  \item{sigma}{Standard deviation (numeric) for the normal distribution. Must be provided if \code{dist = "normal"}.}
+  \item{theta}{Theta parameter (numeric) for the beta distribution. Must be provided if \code{dist = "beta"}.}
+  \item{dist}{Distribution type. Either \code{"normal"} or \code{"beta"}.}
+  \item{limtype}{Type of limit. Either \code{"lower"} (lower specification limit) or \code{"upper"} (upper specification limit).}
+}
+
+\details{
+  For the normal distribution, the mean \(μ\) is estimated using the inverse of the normal CDF.
+  
+  For the beta distribution, the mean \(μ\) is found numerically by solving for \(x\) such that the cumulative probability matches the given \code{p}.
+}
+
+\value{
+  Returns the estimated mean \(μ\) as a numeric value.
+}
+
+\examples{
+# Example for normal distribution
+muEst(p = 0.95, limit = 10, sigma = 2, dist = "normal", limtype = "lower")
+
+# Example for beta distribution
+muEst(p = 0.95, limit = 0.7, theta = 500, dist = "beta", limtype = "upper")
+}
+
+\seealso{
+  \code{qnorm}, \code{pbeta}, \code{uniroot}
+}
