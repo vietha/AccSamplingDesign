@@ -137,31 +137,50 @@ $$P(accept|p) = \sum_{i=0}^c \binom{n}{i}p^i(1-p)^{n-i}$$
 The Probability of Acceptance (\( Pa \)) is given by:
 
 \[
-Pa = 1 - \Phi\left( \sqrt{n} \cdot (z_p + k) \right)
+Pa = 1 - \Phi\left( \sqrt{n_{\sigma}} \cdot (z_p + k_{\sigma}) \right)
 \]
 
-where:<br>
-- \( \Phi(\cdot) \) is the CDF of the standard normal distribution.<br>
-- \( z_p = \Phi^{-1}(p) \) is the standard normal quantile corresponding to the quality level \( p \).<br>
-- \( n \) is the sample size.<br>
-- \( k \) is the acceptance constant.
+where:
 
-The required sample size (\( n \)) and acceptance constant (\( k \)) are:
+- \( \Phi(\cdot) \) is the CDF of the standard normal distribution.
+- \( z_p = \Phi^{-1}(p) \) is the standard normal quantile corresponding to the quality level \( p \).
+- \( n_{\sigma} \) is the sample size.
+- \( k_{\sigma} \) is the acceptance constant.
+
+The required sample size (\( n_{\sigma} \)) and acceptance constant (\( k_{\sigma} \)) are:
 \[
-n = \left( \frac{z_{1 - \alpha} + z_{1 - \beta}}{z_{1 - PRQ} - z_{1 - CRQ}} \right)^2
+n_{\sigma} = \left( \frac{z_{1 - \alpha} + z_{1 - \beta}}{z_{1 - PRQ} - z_{1 - CRQ}} \right)^2
 \]
 
 \[
-k = \frac{z_{1 - PRQ} \cdot z_{1 - \beta} + z_{1 - CRQ} \cdot z_{1 - \alpha}}{z_{1 - \alpha} + z_{1 - \beta}}
+k_{\sigma} = \frac{z_{1 - PRQ} \cdot z_{1 - \beta} + z_{1 - CRQ} \cdot z_{1 - \alpha}}{z_{1 - \alpha} + z_{1 - \beta}}
 \]
 
 where:  
+
 - \( \alpha \) and \( \beta \) are the producer's and consumer's risks, respectively. <br>
 - \( PRQ \) and \( CRQ \) are the Producer's Risk Quality and Consumer's Risk Quality, respectively.
 
 (See Wilrich, PT. (2004) for more detail of calculation)
 
 ## 6.3 Normal Variable Plan (Case of Unknown \( \sigma \)):
+
+The formula for the probability of acceptance (\( Pa \)) is:
+
+\[
+Pa = \Phi \left( \sqrt{\frac{n_s}{1 + \frac{k_s^2}{2}}} \left( \Phi^{-1}(1 - p) - k_s \right) \right)
+\]
+
+where:
+
+- **\( k_s = k_{\sigma} \)** is the acceptance constant.
+
+- **\( n_s \)**: This is the adjusted sample size when the sample standard deviation \( s \) (instead of population \( \sigma \)) is used for estimation. It accounts for the additional variability due to estimation:
+
+\[
+n_s = n_{\sigma} \times \left( 1 + \frac{k_s^2}{2} \right)
+\]
+
 
 ## 6.4 Beta Variable Plan:
 
