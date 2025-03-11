@@ -120,28 +120,29 @@ $$P(accept|p) = \sum_{i=0}^c \binom{n}{i}p^i(1-p)^{n-i}$$
 ## 6.2 Normal Variable Plan (Case of Known \( \sigma \)):
 The Probability of Acceptance (\( Pa \)) is given by:
 
-\[
+$$
 Pa = 1 - \Phi\left( \sqrt{n} \cdot (z_p + k) \right)
-\]
+$$
 
 where:<br>
-- \( \Phi(\cdot) \) is the CDF of the standard normal distribution.<br>
-- \( z_p = \Phi^{-1}(p) \) is the standard normal quantile corresponding to the quality level \( p \).<br>
-- \( n \) is the sample size.<br>
-- \( k \) is the acceptance constant.
+- $$\Phi(\cdot)$$ is the CDF of the standard normal distribution.<br>
+- $$z_p = \Phi^{-1}(p)$$ is the standard normal quantile corresponding to the quality level \( p \).<br>
+- $$n$$ is the sample size.<br>
+- $$k$$ is the acceptance constant.
 
 The required sample size (\( n \)) and acceptance constant (\( k \)) are:
-\[
-n = \left( \frac{z_{1 - \alpha} + z_{1 - \beta}}{z_{1 - PRQ} - z_{1 - CRQ}} \right)^2
-\]
 
-\[
+$$
+n = \left( \frac{z_{1 - \alpha} + z_{1 - \beta}}{z_{1 - PRQ} - z_{1 - CRQ}} \right)^2
+$$
+
+$$
 k = \frac{z_{1 - PRQ} \cdot z_{1 - \beta} + z_{1 - CRQ} \cdot z_{1 - \alpha}}{z_{1 - \alpha} + z_{1 - \beta}}
-\]
+$$
 
 where:  
-- \( \alpha \) and \( \beta \) are the producer's and consumer's risks, respectively. <br>
-- \( PRQ \) and \( CRQ \) are the Producer's Risk Quality and Consumer's Risk Quality, respectively.
+- $$\alpha$$ and $$\beta$$ are the producer's and consumer's risks, respectively. <br>
+- $$PRQ$$ and $$CRQ$$ are the Producer's Risk Quality and Consumer's Risk Quality, respectively.
 
 (See Wilrich, PT. (2004) for more detail of calculation)
 
@@ -149,40 +150,40 @@ where:
 
 ## 6.4 Beta Variable Plan:
 
-Traditional acceptance sampling using normal distributions can be inadequate for compositional data bounded within [0,1]. Govindaraju and Kissling (2015) proposed Beta-based plans, where component proportions (e.g., protein content) follow \( X \sim \text{Beta}(a, b) \), with density:
+Traditional acceptance sampling using normal distributions can be inadequate for compositional data bounded within [0,1]. Govindaraju and Kissling (2015) proposed Beta-based plans, where component proportions (e.g., protein content) follow $$X \sim \text{Beta}(a, b)$$, with density:
 
-\[
+$$
 f(x; a, b) = \frac{x^{a-1} (1 - x)^{b-1}}{B(a, b)},
-\]
+$$
 
-where \( B(a, b) \) is the Beta function. The distribution is reparameterized via mean \( \mu \) and precision \( \theta \):
+where $$B(a, b)$$ is the Beta function. The distribution is reparameterized via mean $$\mu$$ and precision $$\theta$$:
 
-\[
+$$
 \mu = \frac{a}{a + b}, \quad \theta = a + b, \quad \sigma^2 \approx \frac{\mu(1 - \mu)}{\theta} \quad (\text{for large } \theta).
-\]
+$$
 
-Higher \( \theta \) reduces variance, concentrating values around \( \mu \). The probability of acceptance (\( Pa \)) parallels normal-based plans:
+Higher $$\theta$$ reduces variance, concentrating values around $$\mu$$. The probability of acceptance ($$Pa$$) parallels normal-based plans:
 
-\[
+$$
 Pa = P(\mu - k \sigma \geq L \mid \mu, \theta, m, k),
-\]
+$$
 
-where \( L \) is the lower specification limit, \( m \) is the sample size, and \( k \) is the acceptability constant. Parameters \( m \) and \( k \) ensure:
+where $$L$$ is the lower specification limit, $$m$$ is the sample size, and $$k$$ is the acceptability constant. Parameters $$m$$ and $$k$$ ensure:
 
-\[
+$$
 Pa(\mu_{PRQ}) = 1 - \alpha, \quad Pa(\mu_{CRQ}) = \beta,
-\]
+$$
 
-with \( \alpha \) (producer’s risk) and \( \beta \) (consumer’s risk) at specified quality levels (PRQ/CRQ).
+with $$\alpha$$ (producer’s risk) and $$\beta$$ (consumer’s risk) at specified quality levels (PRQ/CRQ).
 
 ### Implementation Note:
-For a nonconforming proportion \( p \) (e.g.,PRQ or CRQ), the mean \( \mu \) at a quality level (PRQ/CRQ) is derived by solving:
+For a nonconforming proportion $$p$$ (e.g.,PRQ or CRQ), the mean $$\mu$$ at a quality level (PRQ/CRQ) is derived by solving:
 
-\[
+$$
 P(X \leq L \mid \mu, \theta) = p,
-\]
+$$
 
-where \( X \sim \text{Beta}(\theta \mu, \theta (1 - \mu)) \). This links \( \mu \) to \( p \) via the Beta cumulative distribution function (CDF) at \( L \).
+where $$X \sim \text{Beta}(\theta \mu, \theta (1 - \mu))$$. This links $$\mu$$ to $$p$$ via the Beta cumulative distribution function (CDF) at $$L$$.
 
 
 # 7. References
