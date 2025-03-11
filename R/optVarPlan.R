@@ -21,6 +21,10 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
                        alpha = 0.05, beta = 0.10,
                        measurement_error = 0) {
   
+  # Set default if not provided
+  if (is.null(sigma_type)) sigma_type <- "known"
+  if (is.null(theta_type)) theta_type <- "known"
+  
   # Match arguments to ensure valid input
   distribution <- match.arg(distribution)
   limit_type <- match.arg(limit_type)
@@ -89,7 +93,7 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     }
     sample_size <- n
     
-    objPlan <- structure(list(n = n, k = k, 
+    objPlan <- structure(list(n = n, k = k, sigma_type = sigma_type,
                               distribution = distribution), 
                               class = "VarPlan")
     
@@ -157,6 +161,7 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
       k <- params[2]
       
       planObj <- structure(list(m = m, k = k, spec_limit = spec_limit, theta = theta,
+                                theta_type = theta_type,
                                 distribution = distribution, limtype = limit_type), 
                            class = "VarPlan")
       
@@ -208,6 +213,8 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     list(
       distribution = distribution,
       sigma = sigma,
+      sigma_type = sigma_type,
+      theta_type = theta_type,
       theta = theta,
       PRQ = PRQ,
       CRQ = CRQ,
