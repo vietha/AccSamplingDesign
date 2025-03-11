@@ -80,10 +80,14 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     
     # Compute sample size n
     n <- ((u_alpha + u_beta) / (u_p1 - u_p2))^2
-    sample_size <- n
     # Compute acceptance constant k
     k <- (u_p1 * u_beta + u_p2 * u_alpha) / (u_alpha + u_beta)
 
+    if(sigma_type == "unknown") {
+      # adjust k base on sample standard deviation
+      n <- n * (1 + k^2/2)
+    }
+    sample_size <- n
     
     objPlan <- structure(list(n = n, k = k, 
                               distribution = distribution), 
@@ -188,6 +192,7 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     )
     # Extract optimal values
     m <- result$par[1]
+    sample_size <- m
     k <- result$par[2]
     objPlan <- structure(list(m = m, k = k, spec_limit = spec_limit, theta = theta,
                               distribution = distribution, limtype = limit_type), 
@@ -196,7 +201,6 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     r_alpha <- 1 - accProb(objPlan, PRQ)
     r_beta <- accProb(objPlan, CRQ)
     
-    sample_size <- m
     n <- NA  # Not applicable for beta
   }
   
