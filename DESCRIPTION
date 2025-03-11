@@ -9,7 +9,7 @@ Description: An R package for designing and analyzing acceptance sampling plans.
     Supports both attribute-based (binomial) and variable-based (normal and beta)
     sampling. Includes tools for measurement error adjustments and OC curve
     visualization, enabling quality control for fractional and compositional data.
-License: MIT + file LICENSE
+License: GPLv3 + file LICENSE
 Encoding: UTF-8
 Imports:
     stats
