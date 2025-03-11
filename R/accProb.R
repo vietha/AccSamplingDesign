@@ -23,13 +23,17 @@ accProb.AttrPlan <- function(plan, p) {
 #' @export
 accProb.VarPlan <- function(plan, p) {
   if(plan$distribution == "normal") {
-    # Compute the inverse normal CDF for p (quantile function)
     n = plan$n
     k = plan$k
-    z_p <- qnorm(p)
-    # Compute Pa
-    Pa <- 1 - pnorm(sqrt(n) * (z_p + k))
-    return(round(Pa, 4))  # Return rounded Pa
+    
+    if(plan$sigma_type == "unknown") {
+      Pa <- pnorm( sqrt(n/(1 + k^2/2)) * (qnorm(1-p) - k) ) 
+    }
+    else{
+      Pa <- 1 - pnorm(sqrt(n) * (qnorm(p) + k))    
+    }
+    
+    return(round(Pa, 4))
   } else { # for Beta distribution
     m = plan$m
     k = plan$k
