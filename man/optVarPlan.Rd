@@ -32,6 +32,22 @@ optVarPlan(PRQ, CRQ, spec_limit = NULL, distribution = c("normal", "beta"),
   \item{n}{Sample size for normal distribution.}
   \item{m}{Sample size for beta distribution.}
 }
+
+\references{
+ISO 3951-1:2013 - Sampling procedures for inspection by variables  
+
+Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Frontiers in Statistical Quality Control, vol 7. Physica, Heidelberg. https://doi.org/10.1007/978-3-7908-2674-6_4
+
+K. Govindaraju and R. Kissling (2015). Sampling plans for Beta-distributed compositional fractions.
+}
+\author{
+Ha Truong
+}
+
+\seealso{
+%% ~~objects to See Also as \code{\link{help}}, ~~~
+}
+
 \examples{
 # Example for normal distribution plan
 norm_plan <- optVarPlan(
@@ -53,7 +69,4 @@ beta_plan <- optVarPlan(
   spec_limit = 0.00001, # Lower reliability limit
   limit_type = "lower"
 )
-}
-\seealso{
-  \code{optAttrPlan}, \code{OCdata}, \code{plotOC}, \code{summary}
 }

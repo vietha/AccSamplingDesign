@@ -25,6 +25,18 @@ muEst(p, limit, sigma = NULL, theta = NULL,
 \value{
   Returns the estimated mean \eqn{\mu}{mu} as a numeric value.
 }
+
+\references{
+%% ~put references to the literature/web site here ~
+}
+\author{
+Ha Truong
+}
+
+\seealso{
+%% ~~objects to See Also as \code{\link{help}}, ~~~
+}
+
 \examples{
   # Example for normal distribution
   muEst(p = 0.95, limit = 10, sigma = 2, dist = "normal", limtype = "lower")

@@ -13,6 +13,17 @@
 \details{
   This function calculates the probability of acceptance for different levels of proportion nonconforming.
 }
+\references{
+%% ~put references to the literature/web site here ~
+}
+\author{
+Ha Truong
+}
+
+\seealso{
+%% ~~objects to See Also as \code{\link{help}}, ~~~
+}
+
 \value{
   A data frame with the following columns:
   \tabular{ll}{

@@ -14,6 +14,17 @@ accProb(plan, p)
 \value{
   Numeric probability between 0 and 1.
 }
+\references{
+%% ~put references to the literature/web site here ~
+}
+\author{
+Ha Truong
+}
+
+\seealso{
+%% ~~objects to See Also as \code{\link{help}}, ~~~
+}
+
 \examples{
 # Example for attribute plan
 attr_plan <- optAttrPlan(PRQ = 0.01, CRQ = 0.1)
