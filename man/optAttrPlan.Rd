@@ -22,5 +22,5 @@ AttrPlan object containing:
 \item{CRQ}{Input CRQ value}
 }
 \examples{
-plan <- optAttrPlan(PRQ = 0.01, CRQ = 0.1)
+plan <- optAttrPlan(PRQ = 0.01, CRQ = 0.1, alpha = 0.05, beta = 0.1)
 }

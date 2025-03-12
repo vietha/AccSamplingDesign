@@ -8,28 +8,33 @@
   OCdata(plan)
 }
 \arguments{
-  \item{plan}{Acceptance plan object (AttrPlan/VarPlan)}
+  \item{plan}{Acceptance plan object (AttrPlan/VarPlan).}
 }
 \details{
-    This function calculates the probability of acceptance for different levels of proportion nonconforming.
+  This function calculates the probability of acceptance for different levels of proportion nonconforming.
 }
 \value{
   A data frame with the following columns:
-  \itemize{
-    \item{x_p}{ - Proportion of nonconforming.}
-    \item{y}{ - Probability of acceptance.}
+  \tabular{ll}{
+    x_p  \tab Proportion of nonconforming \cr
+    y  \tab Probability of acceptance
   }
 }
 \examples{
   # Example sampling plan
-  plan <- optVarPlan(PRQ = 0.01, CRQ = 0.1, distribution = "normal")
+  plan <- optVarPlan(
+    PRQ = 0.025,       # Acceptable quality level (% nonconforming)
+    CRQ = 0.1,         # Rejectable quality level (% nonconforming)
+    alpha = 0.05,      # Producer's risk
+    beta = 0.1,        # Consumer's risk
+    distribution = "normal")
 
   # Generate OC curve data
   oc_data <- OCdata(plan)
 
   # Plot OC curve for non-conforming proportion
   plot(oc_data$x_p, oc_data$y, type = "l", col = "blue", lwd = 2,
-       main = "OC Curve", xlab = "Proportion Nonconforming", 
+       main = "OC Curve", xlab = "Proportion Nonconforming",
        ylab = "P(accept)")
   grid()
 }

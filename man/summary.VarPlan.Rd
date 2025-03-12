@@ -12,7 +12,12 @@ Detailed summaries for variable acceptance plans.
   \item{...}{Additional parameters (ignored)}
 }
 \examples{
-var_plan <- optVarPlan(PRQ = 0.01, CRQ = 0.1, spec_limit = 10, 
-                      distribution = "normal", sigma = 0.5)
+var_plan <- optVarPlan(
+  PRQ = 0.025,       # Acceptable quality level (% nonconforming)
+  CRQ = 0.1,         # Rejectable quality level (% nonconforming)
+  alpha = 0.05,      # Producer's risk
+  beta = 0.1,        # Consumer's risk
+  distribution = "normal"
+)
 summary(var_plan)
 }
