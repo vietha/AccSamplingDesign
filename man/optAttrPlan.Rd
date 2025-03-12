@@ -23,19 +23,4 @@ AttrPlan object containing:
 }
 
 \references{
-ISO 2859-1:1999 - Sampling procedures for inspection by attributes 
-
-Schilling, E.G., & Neubauer, D.V. (2017). Acceptance Sampling in Quality Control (3rd ed.). Chapman and Hall/CRC. https://doi.org/10.4324/9781315120744
-}
-\author{
-Ha Truong
-}
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-
-
-\examples{
-plan <- optAttrPlan(PRQ = 0.01, CRQ = 0.1, alpha = 0.05, beta = 0.1)
-}
+ISO 2859-1:1999 - Sampling procedures for

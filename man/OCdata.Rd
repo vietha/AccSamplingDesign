@@ -13,16 +13,12 @@
 \details{
   This function calculates the probability of acceptance for different levels of proportion nonconforming.
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
+
 \author{
 Ha Truong
 }
 
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
+
 
 \value{
   A data frame with the following columns:
@@ -41,11 +37,4 @@ Ha Truong
     distribution = "normal")
 
   # Generate OC curve data
-  oc_data <- OCdata(plan)
-
-  # Plot OC curve for non-conforming proportion
-  plot(oc_data$x_p, oc_data$y, type = "l", col = "blue", lwd = 2,
-       main = "OC Curve", xlab = "Proportion Nonconforming",
-       ylab = "P(accept)")
-  grid()
-}
+  oc_data <- OCdata(p

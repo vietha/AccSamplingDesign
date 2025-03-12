@@ -11,24 +11,13 @@ Detailed summaries for variable acceptance plans.
   \item{object}{Plan object to summarize}
   \item{...}{Additional parameters (ignored)}
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
+
 \author{
 Ha Truong
 }
 
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 
 \examples{
 var_plan <- optVarPlan(
   PRQ = 0.025,       # Acceptable quality level (% nonconforming)
-  CRQ = 0.1,         # Rejectable quality level (% nonconforming)
-  alpha = 0.05,      # Producer's risk
-  beta = 0.1,        # Consumer's risk
-  distribution = "normal"
-)
-summary(var_plan)
-}
+  CRQ = 0.1,         # Rejecta

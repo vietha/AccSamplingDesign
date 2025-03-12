@@ -26,15 +26,8 @@ muEst(p, limit, sigma = NULL, theta = NULL,
   Returns the estimated mean \eqn{\mu}{mu} as a numeric value.
 }
 
-\references{
-%% ~put references to the literature/web site here ~
-}
 \author{
 Ha Truong
-}
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 
 \examples{
@@ -42,5 +35,4 @@ Ha Truong
   muEst(p = 0.95, limit = 10, sigma = 2, dist = "normal", limtype = "lower")
 
   # Example for beta distribution
-  muEst(p = 0.95, limit = 0.7, theta = 500, dist = "beta", limtype = "upper")
-}
+  muEst(p = 0.95, limit = 0.7, theta = 500, dist = "beta", limtype = "upper

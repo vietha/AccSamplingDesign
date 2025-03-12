@@ -228,4 +228,3 @@ Quality Engineering, vol. 27, no. 1, pp. 1-13. https://doi.org/10.1016/j.chemola
 4. ISO 2859-1:1999 - Sampling procedures for inspection by attributes  
 5. ISO 3951-1:2013 - Sampling procedures for inspection by variables  
 
-
