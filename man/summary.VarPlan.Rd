@@ -20,4 +20,10 @@ Ha Truong
 \examples{
 var_plan <- optVarPlan(
   PRQ = 0.025,       # Acceptable quality level (% nonconforming)
-  CRQ = 0.1,         # Rejecta
+  CRQ = 0.1,         # Rejectable quality level (% nonconforming)
+  alpha = 0.05,      # Producer's risk
+  beta = 0.1,        # Consumer's risk
+  distribution = "normal"
+)
+summary(var_plan)
+}

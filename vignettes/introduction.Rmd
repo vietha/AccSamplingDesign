@@ -76,25 +76,40 @@ norm_plan <- optVarPlan(
   CRQ = 0.1,         # Rejectable quality level (% nonconforming)
   alpha = 0.05,      # Producer's risk
   beta = 0.1,        # Consumer's risk
-  distribution = "normal"
+  distribution = "normal",
+  sigma_type = "unknown"
 )
 
 summary(norm_plan)
+
+# Generate OC curve data
+oc_data_normal <- OCdata(norm_plan)
+# show data of Proportion Nonconforming (x_p) vs Probability Acceptance (y)
+head(oc_data_normal, 15) 
+plotOC(norm_plan)
 ```
 
 ## 4.2 Beta Distribution
 ```{r}
 beta_plan <- optVarPlan(
-  PRQ = 0.025,       # Target quality level (% nonconforming)
-  CRQ = 0.1,       # Minimum quality level (% nonconforming)
+  PRQ = 0.05,       # Target quality level (% nonconforming)
+  CRQ = 0.2,       # Minimum quality level (% nonconforming)
   alpha = 0.05,      # Producer's risk
   beta = 0.1,        # Consumer's risk
   distribution = "beta",
   theta = 44000000,
+  theta_type = "known",
   spec_limit = 0.00001, # Lower reliability limit
   limit_type = "lower"
 )
 summary(beta_plan)
+
+# Generate OC data
+oc_data_beta <- OCdata(beta_plan)
+head(oc_data_beta, 15)
+
+# Plot OC 
+plotOC(beta_plan)
 ```
 
 ## 4.3 Variable Plan Acceptance Probability
@@ -104,18 +119,6 @@ accProb(norm_plan, 0.1)
 
 # Probability of accepting 5% defective
 accProb(beta_plan, 0.05)
-```
-
-## 4.4 Variable OC Curves
-```{r}
-# Generate OC curve data
-oc_data_normal <- OCdata(norm_plan)
-# show data of Proportion Nonconforming (x_p) vs Probability Acceptance (y)
-head(oc_data_normal, 15) 
-plotOC(norm_plan)
-oc_data_beta <- OCdata(beta_plan)
-head(oc_data_beta, 15)
-plotOC(beta_plan)
 ```
 
 # 5. Measurement Error Adjustment
@@ -131,19 +134,32 @@ summary(error_plan)
 # 6. Technical Specifications
 
 ## 6.1 Attribute Plan:  
-$$P(accept|p) = \sum_{i=0}^c \binom{n}{i}p^i(1-p)^{n-i}$$  
+The Probability of Acceptance (\( Pa \)) is given by:
+$$Pa(p) = \sum_{i=0}^c \binom{n}{i}p^i(1-p)^{n-i}$$  
+where:
+
+- n is sample size
+- c is acceptance number
+- \( p \) is the quality level (non-conforming proportion)
 
 ## 6.2 Normal Variable Plan (Case of Known \( \sigma \)):
 The Probability of Acceptance (\( Pa \)) is given by:
 
 \[
-Pa = 1 - \Phi\left( \sqrt{n_{\sigma}} \cdot (z_p + k_{\sigma}) \right)
+Pa(p) = \Phi\left( -\sqrt{n_{\sigma}} \cdot (\Phi^{-1}(p) + k_{\sigma}) \right)
 \]
+
+Or we could write:
+
+\[
+Pa(p) = 1 - \Phi\left( \sqrt{n_{\sigma}} \cdot (\Phi^{-1}(p) + k_{\sigma}) \right)
+\]
+
 
 where:
 
 - \( \Phi(\cdot) \) is the CDF of the standard normal distribution.
-- \( z_p = \Phi^{-1}(p) \) is the standard normal quantile corresponding to the quality level \( p \).
+- \( \Phi^{-1}(p) \) is the standard normal quantile corresponding to the quality level \( p \).
 - \( n_{\sigma} \) is the sample size.
 - \( k_{\sigma} \) is the acceptance constant.
 
@@ -161,14 +177,13 @@ where:
 - \( \alpha \) and \( \beta \) are the producer's and consumer's risks, respectively. <br>
 - \( PRQ \) and \( CRQ \) are the Producer's Risk Quality and Consumer's Risk Quality, respectively.
 
-(See Wilrich, PT. (2004) for more detail of calculation)
 
 ## 6.3 Normal Variable Plan (Case of Unknown \( \sigma \)):
 
 The formula for the probability of acceptance (\( Pa \)) is:
 
 \[
-Pa = \Phi \left( \sqrt{\frac{n_s}{1 + \frac{k_s^2}{2}}} \left( \Phi^{-1}(1 - p) - k_s \right) \right)
+Pa(p) = \Phi \left( \sqrt{\frac{n_s}{1 + \frac{k_s^2}{2}}} \left( \Phi^{-1}(1 - p) - k_s \right) \right)
 \]
 
 where:
@@ -181,8 +196,9 @@ where:
 n_s = n_{\sigma} \times \left( 1 + \frac{k_s^2}{2} \right)
 \]
 
+(See Wilrich, PT. (2004) for more detail about calculation used in sessions 6.2 and 6.3)
 
-## 6.4 Beta Variable Plan:
+## 6.4 Beta Variable Plan (Case of Known \( \theta \)):
 
 Traditional acceptance sampling using normal distributions can be inadequate for compositional data bounded within [0,1]. Govindaraju and Kissling (2015) proposed Beta-based plans, where component proportions (e.g., protein content) follow \( X \sim \text{Beta}(a, b) \), with density:
 
@@ -220,6 +236,8 @@ P(X \leq L \mid \mu, \theta) = p,
 where \( X \sim \text{Beta}(\theta \mu, \theta (1 - \mu)) \). This links \( \mu \) to \( p \) via the Beta cumulative distribution function (CDF) at \( L \).
 
 
+## 6.5 Beta Variable Plan (Case of Unknown \( \theta \)):
+
 # 7. References
 1. Schilling, E.G., & Neubauer, D.V. (2017). Acceptance Sampling in Quality Control (3rd ed.). Chapman and Hall/CRC. https://doi.org/10.4324/9781315120744
 2. Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Frontiers in Statistical Quality Control, vol 7. Physica, Heidelberg. https://doi.org/10.1007/978-3-7908-2674-6_4
@@ -227,4 +245,5 @@ where \( X \sim \text{Beta}(\theta \mu, \theta (1 - \mu)) \). This links \( \mu 
 Quality Engineering, vol. 27, no. 1, pp. 1-13. https://doi.org/10.1016/j.chemolab.2015.12.009
 4. ISO 2859-1:1999 - Sampling procedures for inspection by attributes  
 5. ISO 3951-1:2013 - Sampling procedures for inspection by variables  
+
 

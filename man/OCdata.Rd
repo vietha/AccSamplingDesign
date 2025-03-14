@@ -37,4 +37,11 @@ Ha Truong
     distribution = "normal")
 
   # Generate OC curve data
-  oc_data <- OCdata(p
+  oc_data <- OCdata(plan)
+
+  # Plot OC curve for non-conforming proportion
+  plot(oc_data$x_p, oc_data$y, type = "l", col = "blue", lwd = 2,
+       main = "OC Curve", xlab = "Proportion Nonconforming",
+       ylab = "P(accept)")
+  grid()
+}

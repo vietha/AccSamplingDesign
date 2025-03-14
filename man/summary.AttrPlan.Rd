@@ -17,4 +17,6 @@ Ha Truong
 }
 
 \examples{
-attr_plan <- optAttrPlan(PRQ = 0.01, CRQ = 0.1
+attr_plan <- optAttrPlan(PRQ = 0.01, CRQ = 0.1)
+summary(attr_plan)
+}
