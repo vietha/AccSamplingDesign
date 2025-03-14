@@ -27,10 +27,10 @@ optVarPlan(PRQ, CRQ, spec_limit = NULL, distribution = c("normal", "beta"),
 \value{
   A \code{VarPlan} object containing:
   \item{distribution}{Used distribution.}
-  \item{spec_limit}{Input limit value.}
-  \item{k}{Acceptance limit.}
-  \item{n}{Sample size for normal distribution.}
-  \item{m}{Sample size for beta distribution.}
+  \item{sample_size}{For both Normal/Beta, already round up}
+  \item{k}{Acceptance constant.}
+  \item{n}{Sample size for normal distribution. Keep origin number before round up}
+  \item{m}{Sample size for beta distribution. Keep origin number before round up}
 }
 
 \references{
@@ -54,6 +54,7 @@ norm_plan <- optVarPlan(
   beta = 0.1,         # Consumer's risk
   distribution = "normal"
 )
+summary(norm_plan)
 
 # Example for beta distribution plan
 beta_plan <- optVarPlan(
@@ -63,7 +64,8 @@ beta_plan <- optVarPlan(
   beta = 0.1,         # Consumer's risk
   distribution = "beta",
   theta = 44000000,   # Beta distribution parameter
-  spec_limit = 0.00001, # Lower reliability limit
+  spec_limit = 0.00001, 
   limit_type = "lower"
 )
+summary(beta_plan)
 }
