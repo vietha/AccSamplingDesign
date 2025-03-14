@@ -70,6 +70,7 @@ plotOC(plan_attr)
 # 4. Variable Sampling Plans
 
 ## 4.1 Normal Distribution 
+### 4.1.1 Find an optimal plan and plot OC chart
 ```{r}
 norm_plan <- optVarPlan(
   PRQ = 0.025,       # Acceptable quality level (% nonconforming)
@@ -77,7 +78,7 @@ norm_plan <- optVarPlan(
   alpha = 0.05,      # Producer's risk
   beta = 0.1,        # Consumer's risk
   distribution = "normal",
-  sigma_type = "unknown"
+  sigma_type = "known"
 )
 
 summary(norm_plan)
@@ -88,18 +89,73 @@ oc_data_normal <- OCdata(norm_plan)
 head(oc_data_normal, 15) 
 plotOC(norm_plan)
 ```
+### 4.1.2 Compare known vs unknown sigma plans
+```{r}
+p1 = 0.005
+p2 = 0.03
+alpha = 0.05
+beta = 0.1
+
+# known sigma plan
+plan1 <- optVarPlan(
+  PRQ = p1,        # Acceptable quality level (% nonconforming)
+  CRQ = p2,         # Rejectable quality level (% nonconforming)
+  alpha = alpha,      # Producer's risk
+  beta = beta,        # Consumer's risk
+  distribution = "normal",
+  sigma_type = "know")
+summary(plan1)
+#plotOC(plan1)
+
+# unknown sigma plan
+plan2 <- optVarPlan(
+  PRQ = p1,        # Acceptable quality level (% nonconforming)
+  CRQ = p2,         # Rejectable quality level (% nonconforming)
+  alpha = alpha,      # Producer's risk
+  beta = beta,        # Consumer's risk
+  distribution = "normal",
+  sigma_type = "unknow")
+summary(plan2)
+#plotOC(plan2)
+
+# Generate OC curve data
+oc_data1 <- OCdata(plan1)
+oc_data2 <- OCdata(plan2)
+
+# Plot the first OC curve (solid red line)
+plot(oc_data1$x_p, oc_data1$y, type = "l", col = "red", lwd = 2,
+     main = "Operating Characteristic (OC) Curve", 
+     xlab = "Proportion Nonconforming", 
+     ylab = "P(accept)")
+
+# Add the second OC curve (dashed blue line)
+lines(oc_data2$x_p, oc_data2$y, col = "blue", lwd = 2, lty = 2)
+
+abline(v = c(p1, p2), lty = 1, col = "gray")
+abline(h = c(1 - alpha, beta), lty = 1, col = "gray")
+
+legend1 = paste0("Known Sigma (n=", plan1$sample_size, ", k=", plan1$k, ")")
+legend2 = paste0("Unknown Sigma (n=", plan2$sample_size, ", k=", plan2$k, ")")
+# Add a legend to distinguish the two curves
+legend("topright", legend = c(legend1, legend2), 
+       col = c("red", "blue"), lwd = 2, lty = c(1, 2))
+
+# Add a grid
+grid()
+```
 
 ## 4.2 Beta Distribution
+### 4.2.1 Find an optimal plan and plot OC chart
 ```{r}
 beta_plan <- optVarPlan(
-  PRQ = 0.05,       # Target quality level (% nonconforming)
-  CRQ = 0.2,       # Minimum quality level (% nonconforming)
+  PRQ = 0.05,        # Target quality level (% nonconforming)
+  CRQ = 0.2,         # Minimum quality level (% nonconforming)
   alpha = 0.05,      # Producer's risk
   beta = 0.1,        # Consumer's risk
   distribution = "beta",
   theta = 44000000,
   theta_type = "known",
-  spec_limit = 0.00001, # Lower reliability limit
+  spec_limit = 0.00001, 
   limit_type = "lower"
 )
 summary(beta_plan)
@@ -110,6 +166,69 @@ head(oc_data_beta, 15)
 
 # Plot OC 
 plotOC(beta_plan)
+```
+
+### 4.2.2 Compare known vs unknown theta plans
+```{r}
+p1 = 0.005
+p2 = 0.03
+alpha = 0.05
+beta = 0.1
+spec_limit = 0.05 # use for Beta distribution
+theta = 500
+sdtype = "known"
+
+# My package for beta plan
+beta_plan1 <- optVarPlan(
+  PRQ = p1,       # Target quality level (% nonconforming)
+  CRQ = p2,       # Minimum quality level (% nonconforming)
+  alpha = alpha,      # Producer's risk
+  beta = beta,        # Consumer's risk
+  distribution = "beta",
+  theta = theta,
+  theta_type = "known",
+  spec_limit = spec_limit,
+  limit_type = "upper"
+)
+summary(beta_plan1)
+
+beta_plan2 <- optVarPlan(
+  PRQ = p1,       # Target quality level (% nonconforming)
+  CRQ = p2,       # Minimum quality level (% nonconforming)
+  alpha = alpha,      # Producer's risk
+  beta = beta,        # Consumer's risk
+  distribution = "beta",
+  theta = theta,
+  theta_type = "unknown",
+  spec_limit = spec_limit,
+  limit_type = "upper"
+)
+summary(beta_plan2)
+
+# Generate OC curve data
+oc_beta_data1 <- OCdata(beta_plan1)
+oc_beta_data2 <- OCdata(beta_plan2)
+
+# Plot the first OC curve (solid red line)
+plot(oc_beta_data1$x_p, oc_beta_data1$y, type = "l", col = "red", lwd = 2,
+     main = "Operating Characteristic (OC) Curve", 
+     xlab = "Proportion Nonconforming", 
+     ylab = "P(accept)")
+
+# Add the second OC curve (dashed blue line)
+lines(oc_beta_data2$x_p, oc_beta_data2$y, col = "blue", lwd = 2, lty = 2)
+
+abline(v = c(p1, p2), lty = 1, col = "gray")
+abline(h = c(1 - alpha, beta), lty = 1, col = "gray")
+
+legend1 = paste0("Known Theta (m=", beta_plan1$sample_size, ", k=", beta_plan1$k, ")")
+legend2 = paste0("Unknown Theta (m=", beta_plan2$sample_size, ", k=", beta_plan2$k, ")")
+# Add a legend to distinguish the two curves
+legend("topright", legend = c(legend1, legend2), 
+       col = c("red", "blue"), lwd = 2, lty = c(1, 2))
+
+# Add a grid
+grid()
 ```
 
 ## 4.3 Variable Plan Acceptance Probability
