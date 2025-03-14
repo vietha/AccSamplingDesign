@@ -89,6 +89,7 @@ oc_data_normal <- OCdata(norm_plan)
 head(oc_data_normal, 15) 
 plotOC(norm_plan)
 ```
+
 ### 4.1.2 Compare known vs unknown sigma plans
 ```{r}
 p1 = 0.005
@@ -145,6 +146,7 @@ grid()
 ```
 
 ## 4.2 Beta Distribution
+
 ### 4.2.1 Find an optimal plan and plot OC chart
 ```{r}
 beta_plan <- optVarPlan(
@@ -284,13 +286,12 @@ where:
 
 The required sample size (\( n_{\sigma} \)) and acceptance constant (\( k_{\sigma} \)) are:
 \[
-n_{\sigma} = \left( \frac{z_{1 - \alpha} + z_{1 - \beta}}{z_{1 - PRQ} - z_{1 - CRQ}} \right)^2
+n_{\sigma} = \left( \frac{\Phi^{-1}(1 - \alpha) + \Phi^{-1}(1 - \beta)}{\Phi^{-1}(1 - PRQ) - \Phi^{-1}(1 - CRQ)} \right)^2
 \]
 
 \[
-k_{\sigma} = \frac{z_{1 - PRQ} \cdot z_{1 - \beta} + z_{1 - CRQ} \cdot z_{1 - \alpha}}{z_{1 - \alpha} + z_{1 - \beta}}
+k_{\sigma} = \frac{\Phi^{-1}(1 - PRQ) \cdot \Phi^{-1}(1 - \beta) + \Phi^{-1}(1 - CRQ) \cdot \Phi^{-1}(1 - \alpha)}{\Phi^{-1}(1 - \alpha) + \Phi^{-1}(1 - \beta)}
 \]
-
 where:  
 
 - \( \alpha \) and \( \beta \) are the producer's and consumer's risks, respectively. <br>
@@ -345,6 +346,8 @@ Pa(\mu_{PRQ}) = 1 - \alpha, \quad Pa(\mu_{CRQ}) = \beta,
 
 with \( \alpha \) (producer’s risk) and \( \beta \) (consumer’s risk) at specified quality levels (PRQ/CRQ).
 
+Note that: this problem is solved to find \( m \) and \( k \) used Non-linear programming and Monte Carlo simulation.
+
 ### Implementation Note:
 For a nonconforming proportion \( p \) (e.g.,PRQ or CRQ), the mean \( \mu \) at a quality level (PRQ/CRQ) is derived by solving:
 
@@ -356,6 +359,15 @@ where \( X \sim \text{Beta}(\theta \mu, \theta (1 - \mu)) \). This links \( \mu 
 
 
 ## 6.5 Beta Variable Plan (Case of Unknown \( \theta \)):
+For a beta distribution, the required sample size \(m_s\) (unknown \(\theta\)) is derived from the known-\(\theta\) sample size \(m_\theta\) using the formula:  
+\[
+m_s = \left(1 + 0.85k^2\right)m_\theta
+\]  
+where \(k\) is unchanged. This adjustment accounts for the variance ratio \(R = \frac{\text{Var}(S)}{\text{Var}(\hat{\mu})}\), which quantifies the relative variability of the sample standard deviation \(S\) compared to the estimator \(\hat{\mu}\). Unlike the normal distribution, where \(\text{Var}(S) \approx \frac{\sigma^2}{2n}\), for beta distribution’s, the ratio \(R\) depends on \(\mu\), \(\theta\), and sample size \(m\). The conservative factor \(0.85k^2\) approximates this ratio for practical use.
+
+(See Govindaraju and Kissling - 2015 paper)
+
+\newpage
 
 # 7. References
 1. Schilling, E.G., & Neubauer, D.V. (2017). Acceptance Sampling in Quality Control (3rd ed.). Chapman and Hall/CRC. https://doi.org/10.4324/9781315120744
