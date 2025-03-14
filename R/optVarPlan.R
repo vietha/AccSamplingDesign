@@ -21,15 +21,15 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
                        alpha = 0.05, beta = 0.10,
                        measurement_error = 0) {
   
-  # Set default if not provided
-  if (is.null(sigma_type)) sigma_type <- "known"
-  if (is.null(theta_type)) theta_type <- "known"
-  
   # Match arguments to ensure valid input
   distribution <- match.arg(distribution)
   limit_type <- match.arg(limit_type)
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
+
+  # # Set default if not provided
+  # if (is.null(sigma_type)) sigma_type <- "known"
+  # if (is.null(theta_type)) theta_type <- "known"
   
   # Ensure PRQ, CRQ, alpha, and beta are within valid ranges based on distribution
   check_quality <- function(q, distribution) {
@@ -197,15 +197,19 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     )
     # Extract optimal values
     m <- result$par[1]
-    sample_size <- m
     k <- result$par[2]
+    
+    if(theta_type == "unknown") {
+      m <- (1 + 0.85 * k^2)*m
+    }
+    
     objPlan <- structure(list(m = m, k = k, spec_limit = spec_limit, theta = theta,
                               distribution = distribution, limtype = limit_type), 
                          class = "VarPlan")
     
     r_alpha <- 1 - accProb(objPlan, PRQ)
     r_beta <- accProb(objPlan, CRQ)
-    
+    sample_size <- m
     n <- NA  # Not applicable for beta
   }
   

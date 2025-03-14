@@ -36,11 +36,11 @@ summary.VarPlan <- function(object, ...) {
   if(object$distribution == "normal") {
     cat("Sample Size (n):", object$sample_size, "\n")
     cat("Acceptance Limit (k):", round(object$k, 3), "\n")
-    cat("Population Standard Deviation:", 
-        if(!is.null(object$sigma)) "Unknown" else "Known", "\n")
+    cat("Population Standard Deviation:", object$sigma_type, "\n")
   } else {
     cat("Sample Size (m):", object$sample_size, "\n")
     cat("Acceptance Constant (k):", round(object$k, 3), "\n")
+    cat("Population Precision Parameter (theta):", object$theta_type, "\n")
   }
   cat("Producer's Risk (alpha =", object$r_alpha, ") at PRQ =", object$PRQ, "\n")
   cat("Consumer's Risk (beta =", object$r_beta, ") at CRQ =", object$CRQ, "\n")

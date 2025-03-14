@@ -26,13 +26,13 @@ accProb.VarPlan <- function(plan, p) {
     n = plan$n
     k = plan$k
     
-    if(plan$sigma_type == "unknown") {
-      Pa <- pnorm( sqrt(n/(1 + k^2/2)) * (qnorm(1-p) - k) ) 
-    }
-    else{
-      Pa <- 1 - pnorm(sqrt(n) * (qnorm(p) + k))    
-    }
-    
+    # if(plan$sigma_type == "unknown") {
+    #   Pa <- pnorm( sqrt(n/(1 + k^2/2)) * (qnorm(1-p) - k) ) 
+    # }
+    # else{
+    #   Pa <- 1 - pnorm(sqrt(n) * (qnorm(p) + k))    
+    # }
+    Pa <- 1 - pnorm(sqrt(n) * (qnorm(p) + k))    
     return(round(Pa, 4))
   } else { # for Beta distribution
     m = plan$m
