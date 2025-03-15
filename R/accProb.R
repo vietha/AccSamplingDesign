@@ -26,13 +26,14 @@ accProb.VarPlan <- function(plan, p) {
     n = plan$n
     k = plan$k
     
-    # if(plan$sigma_type == "unknown") {
-    #   Pa <- pnorm( sqrt(n/(1 + k^2/2)) * (qnorm(1-p) - k) ) 
-    # }
-    # else{
-    #   Pa <- 1 - pnorm(sqrt(n) * (qnorm(p) + k))    
-    # }
-    Pa <- 1 - pnorm(sqrt(n) * (qnorm(p) + k))    
+    if(plan$sigma_type == "unknown") {
+      #Pa <- pnorm( sqrt(n/(1 + k^2/2)) * (qnorm(1-p) - k) )
+      # This use t-distribution
+      Pa <- 1- pt(k*sqrt(n), df=n-1, ncp=-qnorm(p)*sqrt(n))
+    }
+    else{
+      Pa <- 1 - pnorm(sqrt(n) * (qnorm(p) + k))
+    }
     return(round(Pa, 4))
   } else { # for Beta distribution
     m = plan$m
@@ -52,7 +53,8 @@ accProb.VarPlan <- function(plan, p) {
       b <- m * (1 - mu) * theta
       ym <- rbeta(NSIM, a, b)
       
-      var <- ym * (1 - ym) / theta # calculate variance VAR(Y)
+      # calculate variance VAR(Y)
+      var <- ym * (1 - ym) / theta 
       
       # Calculate acceptance criterion
       if (limtype == "lower") {

@@ -89,8 +89,9 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
 
     if(sigma_type == "unknown") {
       # adjust k base on sample standard deviation
-      n <- n * (1 + k^2/2)
+      n <- ceiling(n) * (1 + k^2/2)
     }
+    
     sample_size <- n
     
     objPlan <- structure(list(n = n, k = k, sigma_type = sigma_type,
@@ -200,7 +201,7 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     k <- result$par[2]
     
     if(theta_type == "unknown") {
-      m <- (1 + 0.85 * k^2)*m
+      m <- (1 + 0.85 * k^2)*ceiling(m)
     }
     
     objPlan <- structure(list(m = m, k = k, spec_limit = spec_limit, theta = theta,
