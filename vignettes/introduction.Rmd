@@ -178,7 +178,6 @@ alpha = 0.05
 beta = 0.1
 spec_limit = 0.05 # use for Beta distribution
 theta = 500
-sdtype = "known"
 
 # My package for beta plan
 beta_plan1 <- optVarPlan(

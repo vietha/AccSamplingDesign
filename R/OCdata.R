@@ -11,12 +11,17 @@
 ## -----------------------------------------------------------------------------
 
 #' @export
-OCdata <- function(plan) {
-  x_p <- seq(0, min(plan$CRQ * 2, 1), length.out = 100)
+OCdata <- function(plan, pd = NULL) {
   # x_mu <- sapply(x_p, function(p) muEst(p, plan$limit, sigma = plan$sigma, 
   #                                       theta = plan$theta, 
   #                                       dist = plan$distribution, 
   #                                       limtype = plan$limtype))
+  if (is.null(pd)) {
+    x_p <- seq(0, min(plan$CRQ * 2, 1), length.out = 100)
+  }
+  else {
+    x_p <- pd
+  }
   y <- sapply(x_p, function(p) accProb(plan, p))
   
   #return(data.frame(x_p = x_p, x_mu = x_mu, y = y))

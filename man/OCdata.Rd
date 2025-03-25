@@ -5,21 +5,18 @@
   Computes and returns the operating characteristic (OC) curve data, including the proportion nonconforming and probability of acceptance.
 }
 \usage{
-  OCdata(plan)
+OCdata(plan, pd = NULL)
 }
 \arguments{
-  \item{plan}{Acceptance plan object (AttrPlan/VarPlan).}
+  \item{plan}{Acceptance plan object (AttrPlan/VarPlan)}
+  \item{pd}{Manual input Sequence of proportion nonconforming values}
 }
 \details{
   This function calculates the probability of acceptance for different levels of proportion nonconforming.
 }
-
 \author{
 Ha Truong
 }
-
-
-
 \value{
   A data frame with the following columns:
   \tabular{ll}{

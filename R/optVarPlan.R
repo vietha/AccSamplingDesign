@@ -27,9 +27,9 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
 
-  # # Set default if not provided
-  # if (is.null(sigma_type)) sigma_type <- "known"
-  # if (is.null(theta_type)) theta_type <- "known"
+  # Set default if not provided
+  if (is.null(sigma_type)) sigma_type <- "known"
+  if (is.null(theta_type)) theta_type <- "known"
   
   # Ensure PRQ, CRQ, alpha, and beta are within valid ranges based on distribution
   check_quality <- function(q, distribution) {
@@ -102,7 +102,6 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     r_beta <- accProb(objPlan, CRQ)
     m <- NA  # Not applicable for normal
   } else {
-    
     # nsim = 5000 
     # grid_step = c(0.5, 0.02)
     # p1 <- PRQ
@@ -161,9 +160,11 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
       m <- params[1]
       k <- params[2]
       
-      planObj <- structure(list(m = m, k = k, spec_limit = spec_limit, theta = theta,
-                                theta_type = theta_type,
-                                distribution = distribution, limtype = limit_type), 
+      planObj <- structure(list(m = m, k = k, spec_limit = spec_limit, 
+                                theta = theta,
+                                theta_type = "known",
+                                distribution = distribution, 
+                                limtype = limit_type), 
                            class = "VarPlan")
       
       PR <- 1 - accProb(planObj, PRQ)
@@ -188,7 +189,6 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     initial_guess <- c(normal_plan$n, normal_plan$k)
     
     # Run optimization using optim (L-BFGS-B supports bounds)
-    set.seed(123)
     result <- optim(
       par = initial_guess,
       fn = constraint_function,
@@ -201,11 +201,23 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     k <- result$par[2]
     
     if(theta_type == "unknown") {
-      m <- (1 + 0.85 * k^2)*ceiling(m)
+      
+      ## This R ratio from paper of Govindaraju and Kissling (2015)
+      #R_ratio = (1 + 0.85*k^2)
+      ## This R ration from my simulation
+      #R_ratio = (1 + 0.5*k^2)
+      # By theoretically motivated adjustment 
+      R_ratio <- (1 + k^2)/2
+      
+      m <- ceiling(m)*R_ratio
     }
     
-    objPlan <- structure(list(m = m, k = k, spec_limit = spec_limit, theta = theta,
-                              distribution = distribution, limtype = limit_type), 
+    objPlan <- structure(list(m = m, k = k, 
+                              spec_limit = spec_limit, 
+                              theta = theta,
+                              theta_type = theta_type,
+                              distribution = distribution, 
+                              limtype = limit_type), 
                          class = "VarPlan")
     
     r_alpha <- 1 - accProb(objPlan, PRQ)

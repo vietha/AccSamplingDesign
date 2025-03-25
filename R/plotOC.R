@@ -11,16 +11,18 @@
 ## -----------------------------------------------------------------------------
 
 #' @export
-plotOC <- function(plan) {
+plotOC <- function(plan, pd = NULL) {
   UseMethod("plotOC")
 }
 
 #' @export
-plotOC.AttrPlan <- function(plan) {
-  p <- seq(0, min(plan$CRQ*2, 1), length.out = 100)
-  pa <- sapply(p, function(x) accProb(plan, x))
+plotOC.AttrPlan <- function(plan, pd = NULL) {
+  if (is.null(pd)) {
+    pd <- seq(0, min(plan$CRQ*2, 1), length.out = 100)
+  }
+  pa <- sapply(pd, function(p) accProb(plan, p))
   
-  plot(p, pa, type = "l", col = "blue", lwd = 2,
+  plot(pd, pa, type = "l", col = "blue", lwd = 2,
        main = "Attribute OC Curve",
        xlab = "Proportion Nonconforming", ylab = "P(accept)")
   abline(v = c(plan$PRQ, plan$CRQ), lty = 2, col = "gray")
@@ -29,14 +31,16 @@ plotOC.AttrPlan <- function(plan) {
 }
 
 #' @export
-plotOC.VarPlan <- function(plan) {
-  x <- seq(0, min(plan$CRQ*2, 1), length.out = 100)
-  pa <- sapply(x, function(v) accProb(plan, v))
+plotOC.VarPlan <- function(plan, pd = NULL) {
+  if (is.null(pd)) {
+    pd <- seq(0, min(plan$CRQ*2, 1), length.out = 100)
+  }
+  pa <- sapply(pd, function(p) accProb(plan, p))
   xlab <- "Proportion Nonconforming"
   r_alpha <- 1 - accProb(plan, plan$PRQ)
   r_beta <- accProb(plan, plan$CRQ)
   
-  plot(x, pa, type = "l", col = "red", lwd = 2,
+  plot(pd, pa, type = "l", col = "red", lwd = 2,
        main = paste0("Variable OC Curve - ", plan$distribution, " distribution | n=", 
                     plan$sample_size, ", k=", plan$k),
        xlab = xlab, ylab = "P(accept)")

@@ -38,23 +38,23 @@ accProb.VarPlan <- function(plan, p) {
   } else { # for Beta distribution
     m = plan$m
     k = plan$k
+    
+    
     limit <- plan$spec_limit
     limtype <- plan$limtype
     theta <- plan$theta
     mu <- muEst(p, limit, theta = theta,
                 dist = plan$distribution,
                 limtype = limtype)
-    
+    # Generate beta-distributed measurements
+    a <- m * mu * theta
+    b <- m * (1 - mu) * theta
+
     NSIM = 0
     if(NSIM > 0) # -------- This use simulation
     {
-      # Generate beta-distributed measurements
-      a <- m * mu * theta
-      b <- m * (1 - mu) * theta
       ym <- rbeta(NSIM, a, b)
-      
-      # calculate variance VAR(Y)
-      var <- ym * (1 - ym) / theta 
+      var <- ym * (1 - ym) / theta # calculate variance VAR(Y)
       
       # Calculate acceptance criterion
       if (limtype == "lower") {
@@ -64,12 +64,9 @@ accProb.VarPlan <- function(plan, p) {
         acc_cri <- ym + k * sqrt(var)
         pa <- mean(acc_cri < limit)
       }
-      return(pa) 
+      return(pa)
     }
     else { #use closed-form
-      a <- m * mu * theta
-      b <- m * (1 - mu) * theta
-      
       # Compute quadratic coefficients
       A <- theta + k^2
       B <- -(2 * theta * limit + k^2)

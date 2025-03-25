@@ -8,13 +8,12 @@ Plot The Operating Characteristic Curve
 Generate OC curve for acceptance sampling plan.
 }
 \usage{
-plotOC(plan)
+plotOC(plan, pd = NULL)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{plan}{Acceptance plan object (AttrPlan/VarPlan)}
+  \item{pd}{Manual input for sequence of proportion nonconforming values}
 }
-
 \author{
 Ha Truong
 }
