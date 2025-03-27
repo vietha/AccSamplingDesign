@@ -170,9 +170,12 @@ p_seq <- seq(0.005, 0.5, by = 0.005)
 oc_data <- OCdata(beta_plan, pd = p_seq)
 head(oc_data)
 
+# plot use S3 method
+plot(oc_data)
+
 # Plot the OC curve with Mean Level (x_m) and Probability of Acceptance (y)
 plot(oc_data$x_m, oc_data$y, type = "l", col = "blue", lwd = 2,
-     main = "OC Curve by the mean levels", xlab = "Mean Levels",
+     main = "OC Curve by the mean levels (plot by data)", xlab = "Mean Levels",
      ylab = "P(accept)")
 grid()
 ```

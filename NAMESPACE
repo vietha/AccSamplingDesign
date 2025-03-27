@@ -10,6 +10,7 @@ S3method(plotOC,AttrPlan)
 S3method(plotOC,VarPlan)
 S3method(summary,AttrPlan)
 S3method(summary,VarPlan)
+S3method(plot, OCdata)
 # Importing necessary functions from other packages
 importFrom("stats", "optim", "pbeta", "pbinom", "pnorm", "qnorm", "rbeta", "uniroot")
 importFrom("stats", "pt")
