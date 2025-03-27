@@ -16,8 +16,8 @@ summary.AttrPlan <- function(object, ...) {
   cat("----------------------------------\n")
   cat("Sample Size (n):", object$n, "\n")
   cat("Acceptance Number (c):", object$c, "\n")
-  cat("Producer's Risk (alpha =", object$alpha, ") at PRQ =", object$PRQ, "\n")
-  cat("Consumer's Risk (beta =", object$beta, ") at CRQ =", object$CRQ, "\n")
+  cat("Producer's Risk (alpha =", object$PR, ") at PRQ =", object$PRQ, "\n")
+  cat("Consumer's Risk (beta =", object$CR, ") at CRQ =", object$CRQ, "\n")
   if(object$measurement_error > 0) {
     cat("Measurement Error:", object$measurement_error, "\n")
   }
@@ -42,8 +42,8 @@ summary.VarPlan <- function(object, ...) {
     cat("Acceptance Constant (k):", round(object$k, 3), "\n")
     cat("Population Precision Parameter (theta):", object$theta_type, "\n")
   }
-  cat("Producer's Risk (alpha =", object$r_alpha, ") at PRQ =", object$PRQ, "\n")
-  cat("Consumer's Risk (beta =", object$r_beta, ") at CRQ =", object$CRQ, "\n")
+  cat("Producer's Risk (alpha =", object$PR, ") at PRQ =", object$PRQ, "\n")
+  cat("Consumer's Risk (beta =", object$CR, ") at CRQ =", object$CRQ, "\n")
   if(!is.null(object$measurement_error)) {
     cat("Measurement Error:", object$measurement_error, "\n")
   }

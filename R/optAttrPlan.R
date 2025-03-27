@@ -32,8 +32,8 @@ optAttrPlan <- function(PRQ, CRQ,
           list(
             n = n,
             c = c,
-            alpha = 1 - pa_p, 
-            beta = pa_c,
+            PR = 1 - pa_p, 
+            CR = pa_c,
             PRQ = PRQ,
             CRQ = CRQ,
             measurement_error = measurement_error
