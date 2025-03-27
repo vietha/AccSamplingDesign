@@ -12,8 +12,7 @@
 
 #' Attribute Acceptance Sampling Plan
 #' @export
-optAttrPlan <- function(PRQ, CRQ, 
-                        alpha = 0.05, beta = 0.10,
+optAttrPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10, 
                         measurement_error = 0) {
   
   # Input validation
@@ -21,27 +20,50 @@ optAttrPlan <- function(PRQ, CRQ,
   if(alpha <= 0 || alpha >= 1) stop("alpha must be in (0,1)")
   if(beta <= 0 || beta >= 1) stop("beta must be in (0,1)")
   
-  # Plan calculation logic
-  n <- 1
-  while(TRUE) {
-    for(c in 0:n) {
-      pa_p <- pbinom(c, n, PRQ)
-      pa_c <- pbinom(c, n, CRQ)
-      if(pa_p >= (1 - alpha) && pa_c <= beta) {
-        return(structure(
-          list(
-            n = n,
-            c = c,
-            PR = 1 - pa_p, 
-            CR = pa_c,
-            PRQ = PRQ,
-            CRQ = CRQ,
-            measurement_error = measurement_error
-          ), 
-          class = "AttrPlan"
-        ))
-      }
+  ## Find ATTR plan use bruce force
+  ## Plan calculation logic
+  # n <- 1
+  # while(TRUE) {
+  #   for(c in 0:n) {
+  #     pa_p <- pbinom(c, n, PRQ)
+  #     pa_c <- pbinom(c, n, CRQ)
+  #     if(pa_p >= (1 - alpha) && pa_c <= beta) {
+  #       return(structure(
+  #         list(
+  #           n = n,
+  #           c = c,
+  #           PR = 1 - pa_p,
+  #           CR = pa_c,
+  #           PRQ = PRQ,
+  #           CRQ = CRQ,
+  #           measurement_error = measurement_error
+  #         ),
+  #         class = "AttrPlan"
+  #       ))
+  #     }
+  #   }
+  #   n <- n + 1
+  # }
+  # 
+  max_n = 1e5
+  for (n in 1:max_n) {
+    c <- qbinom(1 - alpha, n, PRQ, lower.tail = TRUE)  # Smallest c meeting PA_P >= 1 - alpha
+    pa_c <- pbinom(c, n, CRQ)
+    pa_p <- pbinom(c, n, PRQ)
+    if (pa_c <= beta) {
+      return(structure(
+        list(
+          n = n,
+          c = c,
+          PR = 1 - pa_p,
+          CR = pa_c,
+          PRQ = PRQ,
+          CRQ = CRQ,
+          measurement_error = measurement_error
+        ),
+        class = "AttrPlan"
+      ))
     }
-    n <- n + 1
   }
+  stop("No solution found within max_n = ", max_n)
 }
