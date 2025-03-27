@@ -18,7 +18,7 @@ plotOC <- function(plan, pd = NULL) {
 #' @export
 plotOC.AttrPlan <- function(plan, pd = NULL) {
   if (is.null(pd)) {
-    pd <- seq(0, min(plan$CRQ*2, 1), length.out = 100)
+    pd <- seq(1e-10, min(plan$CRQ*2, 1), length.out = 100) # avoid Pa = 0
   }
   pa <- sapply(pd, function(p) accProb(plan, p))
   
@@ -33,7 +33,7 @@ plotOC.AttrPlan <- function(plan, pd = NULL) {
 #' @export
 plotOC.VarPlan <- function(plan, pd = NULL) {
   if (is.null(pd)) {
-    pd <- seq(0, min(plan$CRQ*2, 1), length.out = 100)
+    pd <- seq(1e-10, min(plan$CRQ*2, 1), length.out = 100) # avoid Pa = 0
   }
   pa <- sapply(pd, function(p) accProb(plan, p))
   xlab <- "Proportion Nonconforming"

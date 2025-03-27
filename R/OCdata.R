@@ -12,18 +12,30 @@
 
 #' @export
 OCdata <- function(plan, pd = NULL) {
-  # x_mu <- sapply(x_p, function(p) muEst(p, plan$limit, sigma = plan$sigma, 
-  #                                       theta = plan$theta, 
-  #                                       dist = plan$distribution, 
-  #                                       limtype = plan$limtype))
   if (is.null(pd)) {
-    x_p <- seq(0, min(plan$CRQ * 2, 1), length.out = 100)
+    proportion_nonconforming <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
+  } else {
+    proportion_nonconforming <- pd
   }
-  else {
-    x_p <- pd
-  }
-  y <- sapply(x_p, function(p) accProb(plan, p))
+  probability_acceptance <- sapply(proportion_nonconforming, function(p) accProb(plan, p))
   
-  #return(data.frame(x_p = x_p, x_mu = x_mu, y = y))
-  return(data.frame(x_p = x_p, y = y))
+  if (is.null(plan$spec_limit) || is.null(plan$limtype)) {
+    return(data.frame(
+      x_p = proportion_nonconforming, 
+      y = probability_acceptance
+    ))
+  } else {
+    mean_level <- sapply(proportion_nonconforming, function(p) muEst(
+      p, plan$spec_limit, 
+      sigma = plan$sigma,
+      theta = plan$theta,
+      dist = plan$distribution,
+      limtype = plan$limtype
+    ))
+    return(data.frame(
+      x_p = proportion_nonconforming, 
+      x_m = mean_level, 
+      y = probability_acceptance
+    ))
+  }
 }

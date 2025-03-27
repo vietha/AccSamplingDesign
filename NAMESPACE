@@ -12,4 +12,5 @@ S3method(summary,AttrPlan)
 S3method(summary,VarPlan)
 # Importing necessary functions from other packages
 importFrom("stats", "optim", "pbeta", "pbinom", "pnorm", "qnorm", "rbeta", "uniroot")
+importFrom("stats", "pt")
 importFrom("graphics", "abline", "grid")
