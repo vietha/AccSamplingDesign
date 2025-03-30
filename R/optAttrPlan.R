@@ -47,7 +47,8 @@ optAttrPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
   # 
   max_n = 1e5
   for (n in 1:max_n) {
-    c <- qbinom(1 - alpha, n, PRQ, lower.tail = TRUE)  # Smallest c meeting PA_P >= 1 - alpha
+    # Smallest c meeting PA_P >= 1 - alpha
+    c <- qbinom(1 - alpha, n, PRQ, lower.tail = TRUE)  
     pa_c <- pbinom(c, n, CRQ)
     pa_p <- pbinom(c, n, PRQ)
     if (pa_c <= beta) {

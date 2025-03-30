@@ -205,9 +205,9 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
       ## This R ratio from paper of Govindaraju and Kissling (2015)
       #R_ratio = (1 + 0.85*k^2)
       ## This R ration from my simulation
-      #R_ratio = (1 + 0.5*k^2)
+      R_ratio = (1 + 0.5*k^2)
       # By theoretically motivated adjustment 
-      R_ratio <- (1 + k^2)/2
+      #R_ratio <- (1 + k^2)/2
       
       m <- ceiling(m)*R_ratio
     }

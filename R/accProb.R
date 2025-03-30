@@ -38,8 +38,9 @@ accProb.VarPlan <- function(plan, p) {
   } else { # for Beta distribution
     m = plan$m
     k = plan$k
-    
-    
+    if(plan$theta_type == "unknown") {
+      m = m/(1 + 0.5*k^2)
+    }
     limit <- plan$spec_limit
     limtype <- plan$limtype
     theta <- plan$theta
