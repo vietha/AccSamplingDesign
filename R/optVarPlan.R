@@ -8,28 +8,39 @@
 ## Purposes: Design variable acceptance sampling plans (normal/beta)
 ##
 ## Changelogs:
+## 19 Apr, 2025: added S3 plot method
+## 20 Apr, 2025: remove spec_limit and limit_type. Replace by USL/LSL
 ## -----------------------------------------------------------------------------
 
 #' Variable Acceptance Sampling Plan
 #' @export
-optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
+optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
                        distribution = c("normal", "beta"),
-                       limit_type = c("upper", "lower"),
+                       USL = NULL, LSL = NULL,
                        sigma_type = c("known", "unknown"),
                        theta_type = c("known", "unknown"),
                        sigma = NULL, theta = NULL,
-                       alpha = 0.05, beta = 0.10,
                        measurement_error = 0) {
   
   # Match arguments to ensure valid input
   distribution <- match.arg(distribution)
-  limit_type <- match.arg(limit_type)
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
 
   # Set default if not provided
   if (is.null(sigma_type)) sigma_type <- "known"
   if (is.null(theta_type)) theta_type <- "known"
+  
+  # This upper limit case
+  if (!is.null(USL)) {
+    limit_type <- "upper"
+    spec_limit <- USL
+  } else if (!is.null(LSL)) { # This lower limit case
+    limit_type <- "lower"
+    spec_limit <- LSL
+  } else {
+    limit_type <- "upper" # set this as default
+  }
   
   # Ensure PRQ, CRQ, alpha, and beta are within valid ranges based on distribution
   check_quality <- function(q, distribution) {
@@ -57,8 +68,8 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
   
   # Additional checks for beta distribution
   if (distribution == "beta") {
-    if (is.null(spec_limit)) {
-      stop("For the beta distribution, spec_limit must be provided.")
+    if(is.null(USL) && is.null(LSL)){
+      stop("For the beta distribution, a specification limit must be provided.")
     }
     if (is.null(theta)) {
       stop("For the beta distribution, theta must be provided.")
@@ -160,11 +171,9 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
       m <- params[1]
       k <- params[2]
       
-      planObj <- structure(list(m = m, k = k, spec_limit = spec_limit, 
-                                theta = theta,
-                                theta_type = "known",
-                                distribution = distribution, 
-                                limtype = limit_type), 
+      planObj <- structure(list(m = m, k = k, USL = USL, LSL = LSL,
+                                theta = theta, theta_type = "known",
+                                distribution = distribution), 
                            class = "VarPlan")
       
       PR <- 1 - accProb(planObj, PRQ)
@@ -176,10 +185,7 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     }
     
     # Get initial estimates using normal distribution
-    normal_plan <- optVarPlan(PRQ = PRQ, CRQ = CRQ, 
-                              spec_limit = spec_limit, 
-                              distribution = "normal",
-                              limit_type = limit_type)
+    normal_plan <- optVarPlan(PRQ = PRQ, CRQ = CRQ, distribution = "normal")
     
     # Define search ranges
     m_range <- c(floor(0.5 * normal_plan$n), ceiling(2 * normal_plan$n))
@@ -212,12 +218,9 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
       m <- ceiling(m)*R_ratio
     }
     
-    objPlan <- structure(list(m = m, k = k, 
-                              spec_limit = spec_limit, 
-                              theta = theta,
-                              theta_type = theta_type,
-                              distribution = distribution, 
-                              limtype = limit_type), 
+    objPlan <- structure(list(m = m, k = k, USL = USL, LSL = LSL,
+                              theta = theta, theta_type = theta_type,
+                              distribution = distribution), 
                          class = "VarPlan")
     
     r_alpha <- 1 - accProb(objPlan, PRQ)
@@ -229,18 +232,11 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
   return(structure(
     list(
       distribution = distribution,
-      sigma = sigma,
-      sigma_type = sigma_type,
-      theta_type = theta_type,
-      theta = theta,
-      PRQ = PRQ,
-      CRQ = CRQ,
-      #r_alpha = r_alpha,
-      #r_beta = r_beta,
-      PR = r_alpha,
-      CR = r_beta,
-      spec_limit = spec_limit,
-      limtype = limit_type,
+      sigma = sigma, theta = theta,
+      sigma_type = sigma_type, theta_type = theta_type,
+      PRQ = PRQ, CRQ = CRQ, PR = r_alpha, CR = r_beta,
+      USL = USL, LSL = LSL,
+      #spec_limit = spec_limit, limtype = limit_type,
       sample_size = ceiling(sample_size), # round up the sample size for practical;
       n = n, # we keep the number before round up
       m = m, # we keep the number before round up
@@ -271,17 +267,15 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
     
   } else if (by == "mean") {
     # Check that spec limits and limit_type exist
-    if (is.null(x$spec_limit) || is.null(x$limtype)) {
-      stop("Mean-level plot requires 'spec_limit' and 'limtype' in the plan.")
+    if (is.null(x$USL) && is.null(x$LSL)) {
+      stop("Mean-level plot requires 'USL' or 'LSL' in the plan.")
     }
     
     # Estimate mean levels based on pd
     mu_vals <- sapply(pd, function(p) muEst(
-      p, x$spec_limit,
-      sigma = x$sigma,
-      theta = x$theta,
-      dist = x$distribution,
-      limtype = x$limtype
+      p, USL = x$USL, LSL = x$LSL,
+      sigma = x$sigma, theta = x$theta, 
+      dist = x$distribution
     ))
     
     if (any(is.na(mu_vals))) {
@@ -296,18 +290,3 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
     grid()
   }
 }
-
-# plot.VarPlan <- function(x, pd = NULL, ...) {
-#   if (is.null(pd)) {
-#     pd <- seq(1e-10, min(x$CRQ * 2, 1), length.out = 100)
-#   }
-#   pa <- sapply(pd, function(p) accProb(x, p))
-#   
-#   plot(pd, pa, type = "l", col = "red", lwd = 2,
-#        main = paste0("Variable OC Curve - ", x$distribution,
-#                      " distribution | n=", x$sample_size, ", k=", x$k),
-#        xlab = "Proportion Nonconforming", ylab = "P(accept)", ...)
-#   abline(v = c(x$PRQ, x$CRQ), lty = 2, col = "gray")
-#   abline(h = c(1 - x$PR, x$CR), lty = 2, col = "gray")
-#   grid()
-# }

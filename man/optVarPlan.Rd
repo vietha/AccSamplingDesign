@@ -64,8 +64,7 @@ beta_plan <- optVarPlan(
   beta = 0.1,         # Consumer's risk
   distribution = "beta",
   theta = 44000000,   # Beta distribution parameter
-  spec_limit = 0.00001, 
-  limit_type = "lower"
+  LSL = 0.00001
 )
 summary(beta_plan)
 }

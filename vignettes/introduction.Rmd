@@ -157,8 +157,7 @@ beta_plan <- optVarPlan(
   distribution = "beta",
   theta = 44000000,
   theta_type = "known",
-  spec_limit = 0.00001, 
-  limit_type = "lower"
+  LSL = 0.00001
 )
 summary(beta_plan)
 
@@ -198,8 +197,7 @@ beta_plan1 <- optVarPlan(
   distribution = "beta",
   theta = theta,
   theta_type = "known",
-  spec_limit = spec_limit,
-  limit_type = "upper"
+  USL = spec_limit
 )
 summary(beta_plan1)
 
@@ -211,8 +209,7 @@ beta_plan2 <- optVarPlan(
   distribution = "beta",
   theta = theta,
   theta_type = "unknown",
-  spec_limit = spec_limit,
-  limit_type = "upper"
+  USL = spec_limit
 )
 summary(beta_plan2)
 

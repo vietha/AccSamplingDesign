@@ -41,12 +41,21 @@ accProb.VarPlan <- function(plan, p) {
     if(plan$theta_type == "unknown") {
       m = m/(1 + 0.5*k^2)
     }
-    limit <- plan$spec_limit
-    limtype <- plan$limtype
+    
+    # This upper limit case
+    if (!is.null(plan$USL)) {
+      limtype <- "upper"
+      limit <- plan$USL
+    } else if (!is.null(plan$LSL)) { # This lower limit case
+      limtype <- "lower"
+      limit <- plan$LSL
+    } else {
+      limtype <- "upper" # set this as default
+    }
+    
     theta <- plan$theta
-    mu <- muEst(p, limit, theta = theta,
-                dist = plan$distribution,
-                limtype = limtype)
+    mu <- muEst(p, USL = plan$USL, LSL = plan$LSL,
+                theta = theta, dist = plan$distribution)
     # Generate beta-distributed measurements
     a <- m * mu * theta
     b <- m * (1 - mu) * theta

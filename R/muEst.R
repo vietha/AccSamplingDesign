@@ -12,11 +12,24 @@
 
 #' Estimate mu base on quality level pre-defined (like PRQ/CRQ)
 #' @export
-muEst <- function(p, limit, sigma = NULL, theta = NULL, 
-                  dist = c("normal", "beta"), 
-                  limtype = c("lower", "upper")) {
+muEst <- function(p, USL = NULL, LSL = NULL, 
+                  sigma = NULL, theta = NULL, 
+                  dist = c("normal", "beta")) {
   dist <- match.arg(dist)
-  limtype <- match.arg(limtype)
+  ##limtype <- match.arg(limtype)
+  if (is.null(USL) && is.null(LSL)){
+    stop("A specification limit (USL or LSL) is required for mu estimation!")
+  }
+  # This upper limit case
+  if (!is.null(USL)) {
+    limtype <- "upper"
+    limit <- USL
+  } else if (!is.null(LSL)) { # This lower limit case
+    limtype <- "lower"
+    limit <- LSL
+  } else {
+    limtype <- "upper" # set this as default
+  }
   
   if (dist == "normal") {
     if (is.null(sigma)) stop("MuEST failed: sigma must be provided for normal distribution")
