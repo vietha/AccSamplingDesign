@@ -249,3 +249,19 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
     class = "VarPlan"
   ))
 }
+
+#' @export
+plot.VarPlan <- function(x, pd = NULL, ...) {
+  if (is.null(pd)) {
+    pd <- seq(1e-10, min(x$CRQ * 2, 1), length.out = 100)
+  }
+  pa <- sapply(pd, function(p) accProb(x, p))
+  
+  plot(pd, pa, type = "l", col = "red", lwd = 2,
+       main = paste0("Variable OC Curve - ", x$distribution,
+                     " distribution | n=", x$sample_size, ", k=", x$k),
+       xlab = "Proportion Nonconforming", ylab = "P(accept)", ...)
+  abline(v = c(x$PRQ, x$CRQ), lty = 2, col = "gray")
+  abline(h = c(1 - x$PR, x$CR), lty = 2, col = "gray")
+  grid()
+}

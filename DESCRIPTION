@@ -15,7 +15,8 @@ Description: An R package for designing and analyzing acceptance sampling plans.
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 Imports:
-    stats
+    stats,
+    methods
 Suggests:
     knitr,
     rmarkdown

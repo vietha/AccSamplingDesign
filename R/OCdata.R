@@ -9,6 +9,7 @@
 ##
 ## Changelogs:
 ## -----------------------------------------------------------------------------
+#' @importFrom methods new
 
 #' @export
 setClass("OCdata",
