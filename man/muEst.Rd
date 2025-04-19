@@ -1,39 +1,47 @@
 \name{muEst}
 \alias{muEst}
-\title{Estimate Mean \eqn{\mu}{mu} Based on Limit and Probability}
+\title{Estimate Mean \eqn{\mu}{mu} Based on Specification Limits and Probability}
 \description{
-  Computes the estimated mean \eqn{\mu}{mu} for a given level of quality and limit under either a normal or beta distribution.
+  Computes the estimated mean \eqn{\mu}{mu} for a given level of quality and specification limit under either a normal or beta distribution.
 }
 \usage{
-muEst(p, limit, sigma = NULL, theta = NULL, 
-      dist = c("normal", "beta"), 
-      limtype = c("lower", "upper"))
+muEst(p, USL = NULL, LSL = NULL, 
+       sigma = NULL, theta = NULL, 
+       dist = c("normal", "beta"))
 }
 \arguments{
   \item{p}{Level of quality (numeric, between 0 and 1).}
-  \item{limit}{The specification limit (numeric).}
+
+  \item{USL}{Upper specification limit (numeric). Only one of \code{USL} or \code{LSL} should be provided.}
+
+  \item{LSL}{Lower specification limit (numeric). Only one of \code{USL} or \code{LSL} should be provided.}
+
   \item{sigma}{Standard deviation (numeric) for the normal distribution. Must be provided if \code{dist = "normal"}.}
+
   \item{theta}{Theta parameter (numeric) for the beta distribution. Must be provided if \code{dist = "beta"}.}
+
   \item{dist}{Distribution type. Either \code{"normal"} or \code{"beta"}.}
-  \item{limtype}{Type of limit. Either \code{"lower"} (lower specification limit) or \code{"upper"} (upper specification limit).}
 }
 \details{
-  For the normal distribution, the mean \eqn{\mu}{mu} is estimated using the inverse of the normal CDF.
+  The function estimates the mean \eqn{\mu}{mu} corresponding to a given tail probability \code{p}, assuming that the process output follows either a normal or beta distribution, and that the probability of being beyond the provided specification limit equals \code{1 - p}.
 
-  For the beta distribution, the mean \eqn{\mu}{mu} is found numerically by solving for \(x\) such that the cumulative probability matches the given \code{p}.
+  \itemize{
+    \item For the normal distribution, the mean is calculated using the inverse cumulative distribution function (quantile function) of the normal distribution.
+    \item For the beta distribution, the mean is solved numerically such that the CDF at the specified limit equals \code{p}, given the shape determined by \code{theta}.
+  }
+
+  Exactly one of \code{USL} or \code{LSL} must be provided to define whether the probability refers to the upper or lower tail.
 }
 \value{
   Returns the estimated mean \eqn{\mu}{mu} as a numeric value.
 }
-
 \author{
 Ha Truong
 }
-
 \examples{
-  # Example for normal distribution
-  muEst(p = 0.95, limit = 10, sigma = 2, dist = "normal", limtype = "lower")
+  # Example for normal distribution with lower specification limit
+  muEst(p = 0.95, LSL = 10, sigma = 2, dist = "normal")
 
-  # Example for beta distribution
-  muEst(p = 0.95, limit = 0.7, theta = 500, dist = "beta", limtype = "upper")
+  # Example for beta distribution with upper specification limit
+  muEst(p = 0.95, USL = 0.7, theta = 500, dist = "beta")
 }

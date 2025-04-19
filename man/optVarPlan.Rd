@@ -2,49 +2,67 @@
 \alias{optVarPlan}
 \title{Variable Acceptance Sampling Plan}
 \description{
-  Creates variable sampling plans for normal/beta distributed measurements.
+  Creates variable sampling plans for normal or beta distributed measurements.
 }
 \usage{
-optVarPlan(PRQ, CRQ, spec_limit = NULL, distribution = c("normal", "beta"),
-          limit_type = c("upper", "lower"), sigma_type = c("known", "unknown"),
-          theta_type = c("known", "unknown"), sigma = NULL, theta = NULL,
-          alpha = 0.05, beta = 0.10, measurement_error = 0)
+optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10,
+           USL = NULL, LSL = NULL,
+           distribution = c("normal", "beta"),
+           sigma_type = c("known", "unknown"),
+           theta_type = c("known", "unknown"),
+           sigma = NULL, theta = NULL,
+           measurement_error = 0)
 }
 \arguments{
   \item{PRQ}{Producer Risk Quality (must be within valid range for the chosen distribution).}
+  
   \item{CRQ}{Consumer Risk Quality (must be greater than PRQ and within valid range).}
-  \item{spec_limit}{Numerical specification limit (required for beta distribution).}
+  
+  \item{alpha}{Producer's risk (numeric between 0 and 1).}
+  
+  \item{beta}{Consumer's risk (numeric between 0 and 1).}
+  
+  \item{USL}{Upper Specification Limit (numeric). Only one of \code{USL} or \code{LSL} should be provided.}
+  
+  \item{LSL}{Lower Specification Limit (numeric). Only one of \code{USL} or \code{LSL} should be provided.}
+  
   \item{distribution}{Measurement distribution: \code{"normal"} or \code{"beta"}.}
-  \item{limit_type}{Specification limit direction: \code{"upper"} or \code{"lower"}.}
+  
   \item{sigma_type}{Indicates whether sigma (population standard deviation) is \code{"known"} or \code{"unknown"}.}
+  
   \item{theta_type}{Indicates whether theta (population precision parameter for beta) is \code{"known"} or \code{"unknown"}.}
-  \item{sigma}{Known standard deviation (normal distribution).}
-  \item{theta}{Dispersion parameter (beta distribution, required when using beta).}
-  \item{alpha}{Producer's risk (must be between 0 and 1).}
-  \item{beta}{Consumer's risk (must be between 0 and 1).}
-  \item{measurement_error}{Measurement error ratio (default is 0).}
+  
+  \item{sigma}{Known standard deviation (used for normal distribution). Required if \code{sigma_type = "known"}.}
+  
+  \item{theta}{Dispersion parameter (used for beta distribution). Required if \code{theta_type = "known"}.}
+  
+  \item{measurement_error}{Measurement error ratio (numeric, default is 0).}
+}
+\details{
+  The function generates variable acceptance sampling plans based on specified producer and consumer risks and either a normal or beta distribution model.
+
+  The specification limit must be defined via either \code{USL} (upper specification limit) or \code{LSL} (lower specification limit), depending on whether the one-sided quality criterion concerns the upper or lower tail. Only one limit should be provided.
+
+  The plan design accounts for known or unknown standard deviation in the normal case, and known or unknown dispersion parameter (\code{theta}) in the beta case. Measurement error, if any, can be incorporated via the \code{measurement_error} argument.
 }
 \value{
   A \code{VarPlan} object containing:
-  \item{distribution}{Used distribution.}
-  \item{sample_size}{For both Normal/Beta, already round up}
+  \item{distribution}{Distribution used ("normal" or "beta").}
+  \item{sample_size}{Final sample size after rounding (integer).}
   \item{k}{Acceptance constant.}
-  \item{n}{Sample size for normal distribution. Keep origin number before round up}
-  \item{m}{Sample size for beta distribution. Keep origin number before round up}
+  \item{n}{Unrounded sample size for the normal distribution.}
+  \item{m}{Unrounded sample size for the beta distribution.}
 }
-
 \references{
-ISO 3951-1:2013 - Sampling procedures for inspection by variables  
-
-Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Frontiers in Statistical Quality Control, vol 7. Physica, Heidelberg. https://doi.org/10.1007/978-3-7908-2674-6_4
-
-K. Govindaraju and R. Kissling (2015). Sampling plans for Beta-distributed compositional fractions.
+  ISO 3951-1:2013 - Sampling procedures for inspection by variables.
+  
+  Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Physica, Heidelberg. \url{https://doi.org/10.1007/978-3-7908-2674-6_4}
+  
+  K. Govindaraju and R. Kissling (2015). Sampling plans for Beta-distributed compositional fractions.
 }
 \author{
 Ha Truong
 }
-
-
 \examples{
 # Example for normal distribution plan
 norm_plan <- optVarPlan(
@@ -52,7 +70,8 @@ norm_plan <- optVarPlan(
   CRQ = 0.1,          # Rejectable quality level (% nonconforming)
   alpha = 0.05,       # Producer's risk
   beta = 0.1,         # Consumer's risk
-  distribution = "normal"
+  distribution = "normal",
+  USL = 10
 )
 summary(norm_plan)
 
