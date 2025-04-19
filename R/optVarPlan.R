@@ -251,17 +251,63 @@ optVarPlan <- function(PRQ, CRQ, spec_limit = NULL,
 }
 
 #' @export
-plot.VarPlan <- function(x, pd = NULL, ...) {
+plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
+  by <- match.arg(by)
+  
+  # Default pd if not supplied
   if (is.null(pd)) {
     pd <- seq(1e-10, min(x$CRQ * 2, 1), length.out = 100)
   }
-  pa <- sapply(pd, function(p) accProb(x, p))
   
-  plot(pd, pa, type = "l", col = "red", lwd = 2,
-       main = paste0("Variable OC Curve - ", x$distribution,
-                     " distribution | n=", x$sample_size, ", k=", x$k),
-       xlab = "Proportion Nonconforming", ylab = "P(accept)", ...)
-  abline(v = c(x$PRQ, x$CRQ), lty = 2, col = "gray")
-  abline(h = c(1 - x$PR, x$CR), lty = 2, col = "gray")
-  grid()
+  if (by == "pd") {
+    pa <- sapply(pd, function(p) accProb(x, p))
+    plot(pd, pa, type = "l", col = "red", lwd = 2,
+         main = paste0("Variable OC Curve - ", x$distribution,
+                       " distribution | n=", x$sample_size, ", k=", x$k),
+         xlab = "Proportion Nonconforming", ylab = "P(accept)", ...)
+    abline(v = c(x$PRQ, x$CRQ), lty = 2, col = "gray")
+    abline(h = c(1 - x$PR, x$CR), lty = 2, col = "gray")
+    grid()
+    
+  } else if (by == "mean") {
+    # Check that spec limits and limit_type exist
+    if (is.null(x$spec_limit) || is.null(x$limtype)) {
+      stop("Mean-level plot requires 'spec_limit' and 'limtype' in the plan.")
+    }
+    
+    # Estimate mean levels based on pd
+    mu_vals <- sapply(pd, function(p) muEst(
+      p, x$spec_limit,
+      sigma = x$sigma,
+      theta = x$theta,
+      dist = x$distribution,
+      limtype = x$limtype
+    ))
+    
+    if (any(is.na(mu_vals))) {
+      stop("Some mean estimates could not be computed. Check the pd or spec limits.")
+    }
+    
+    pa <- sapply(pd, function(p) accProb(x, p))
+    plot(mu_vals, pa, type = "l", col = "blue", lwd = 2,
+         main = paste0("Variable OC Curve by Mean - ", x$distribution,
+                       " | n=", x$sample_size, ", k=", x$k),
+         xlab = "Process Mean", ylab = "P(accept)", ...)
+    grid()
+  }
 }
+
+# plot.VarPlan <- function(x, pd = NULL, ...) {
+#   if (is.null(pd)) {
+#     pd <- seq(1e-10, min(x$CRQ * 2, 1), length.out = 100)
+#   }
+#   pa <- sapply(pd, function(p) accProb(x, p))
+#   
+#   plot(pd, pa, type = "l", col = "red", lwd = 2,
+#        main = paste0("Variable OC Curve - ", x$distribution,
+#                      " distribution | n=", x$sample_size, ", k=", x$k),
+#        xlab = "Proportion Nonconforming", ylab = "P(accept)", ...)
+#   abline(v = c(x$PRQ, x$CRQ), lty = 2, col = "gray")
+#   abline(h = c(1 - x$PR, x$CR), lty = 2, col = "gray")
+#   grid()
+# }
