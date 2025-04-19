@@ -24,80 +24,155 @@ setClass("OCdata",
          ))
 
 #' @export
-OCdata <- function(plan, pd = NULL) {
-  if (is.null(pd)) {
-    proportion_nonconforming <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
-  } else {
-    proportion_nonconforming <- pd
+OCdata <- function(plan = NULL, pd = NULL,
+                   distribution = c("binomial", "normal", "beta"),
+                   PRQ = NULL, CRQ = NULL,
+                   n = NULL, c = NULL, k = NULL,
+                   spec_limit = NULL,
+                   limit_type = c("upper", "lower"),
+                   sigma_type = c("known", "unknown"),
+                   theta_type = c("known", "unknown"),
+                   sigma = NULL, theta = NULL,
+                   alpha = NULL, beta = NULL) {
+  
+  if (!is.null(plan)) {
+    # Use plan directly
+    if (is.null(pd)) {
+      pd <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
+    }
+    paccept <- sapply(pd, function(p) accProb(plan, p))
+    
+    mean_level <- NULL
+    if (!is.null(plan$spec_limit) && !is.null(plan$limtype)) {
+      mean_level <- sapply(pd, function(p) muEst(
+        p, plan$spec_limit,
+        sigma = plan$sigma,
+        theta = plan$theta,
+        dist = plan$distribution,
+        limtype = plan$limtype
+      ))
+    }
+    
+    return(new("OCdata",
+               pd = pd,
+               paccept = paccept,
+               process_means = if (is.null(mean_level)) numeric(0) else mean_level,
+               dist = if (!is.null(plan$distribution)) plan$distribution else NA_character_,
+               n = plan$sample_size,
+               c = if (!is.null(plan$c)) plan$c else numeric(0),
+               k = if (!is.null(plan$k)) plan$k else numeric(0)))
   }
-  probability_acceptance <- sapply(proportion_nonconforming, function(p) accProb(plan, p))
   
-  mean_level <- NULL
-  if (is.null(plan$spec_limit) || is.null(plan$limtype)) {
-    obj <- data.frame(
-      x_p = proportion_nonconforming, 
-      y = probability_acceptance
-    )
-  } else {
-    mean_level <- sapply(proportion_nonconforming, function(p) muEst(
-      p, plan$spec_limit, 
-      sigma = plan$sigma,
-      theta = plan$theta,
-      dist = plan$distribution,
-      limtype = plan$limtype
-    ))
-    # obj <- data.frame(
-    #   x_p = proportion_nonconforming, 
-    #   x_m = mean_level, 
-    #   y = probability_acceptance
-    # )
+  # Argument matching
+  distribution <- match.arg(distribution)
+  limit_type <- match.arg(limit_type)
+  sigma_type <- match.arg(sigma_type)
+  theta_type <- match.arg(theta_type)
+  
+  # Input validation
+  if (is.null(PRQ) || is.null(CRQ)) {
+    stop("PRQ and CRQ must be provided when plan is not specified.")
+  }
+  #if (is.null(alpha) || is.null(beta) || alpha <= 0 || alpha >= 1 || beta <= 0 || beta >= 1) {
+  #  stop("alpha and beta must be between 0 and 1 (exclusive).")
+  #}
+  if (CRQ <= PRQ) {
+    stop("CRQ must be greater than PRQ.")
   }
   
-  # S3 object
-  #class(obj) <- "OCdata"  # Assign custom class
-  #return(obj)
+  if (distribution == "binomial") {
+    if (is.null(n) || is.null(c)) stop("n and c must be provided for binomial distribution.")
+    plan <- structure(list(n = n, c = c, PRQ = PRQ, CRQ = CRQ, 
+                           sample_size = n,
+                           distribution = distribution,
+                           PR = alpha, CR = beta),
+                      class = "AttrPlan")
+    
+  } else if (distribution %in% c("normal", "beta")) {
+    if (is.null(n) || is.null(k)) stop("n and k must be provided for variable plans.")
+    if (distribution == "beta" && (is.null(spec_limit) || is.null(theta))) {
+      stop("For beta distribution, spec_limit and theta must be provided.")
+    }
+    plan <- structure(list(n = n, k = k, PRQ = PRQ, CRQ = CRQ,
+                           sample_size = n,
+                           PR = alpha, CR = beta,
+                           distribution = distribution,
+                           spec_limit = spec_limit,
+                           limit_type = limit_type,
+                           sigma_type = sigma_type,
+                           theta_type = theta_type,
+                           sigma = sigma,
+                           theta = theta),
+                      class = "VarPlan")
+  } else {
+    stop("Unsupported distribution.")
+  }
   
-  # Create S4 object
-  new("OCdata",
-      pd = proportion_nonconforming,
-      paccept = probability_acceptance,
-      process_means = if (is.null(mean_level)) numeric(0) else mean_level,
-      dist = ifelse(!is.null(plan$distribution), plan$distribution, NA),
-      n = ifelse(!is.null(plan$sample_size), plan$sample_size, NA),
-      c = if (!is.null(plan$c)) plan$c else numeric(0),
-      k = if (!is.null(plan$k)) plan$k else numeric(0)
-  )
+  # Recursively generate OCdata from created plan
+  OCdata(plan, pd = pd)
 }
 
+# OCdata <- function(plan, pd = NULL) {
+#   if (is.null(pd)) {
+#     proportion_nonconforming <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
+#   } else {
+#     proportion_nonconforming <- pd
+#   }
+#   probability_acceptance <- sapply(proportion_nonconforming, function(p) accProb(plan, p))
+#   
+#   mean_level <- NULL
+#   if (is.null(plan$spec_limit) || is.null(plan$limtype)) {
+#     obj <- data.frame(
+#       x_p = proportion_nonconforming, 
+#       y = probability_acceptance
+#     )
+#   } else {
+#     mean_level <- sapply(proportion_nonconforming, function(p) muEst(
+#       p, plan$spec_limit, 
+#       sigma = plan$sigma,
+#       theta = plan$theta,
+#       dist = plan$distribution,
+#       limtype = plan$limtype
+#     ))
+#   }
+#   
+#   # Create S4 object
+#   new("OCdata",
+#       pd = proportion_nonconforming,
+#       paccept = probability_acceptance,
+#       process_means = if (is.null(mean_level)) numeric(0) else mean_level,
+#       dist = ifelse(!is.null(plan$distribution), plan$distribution, NA),
+#       n = ifelse(!is.null(plan$sample_size), plan$sample_size, NA),
+#       c = if (!is.null(plan$c)) plan$c else numeric(0),
+#       k = if (!is.null(plan$k)) plan$k else numeric(0)
+#   )
+# }
+
 #' @export
-plot.OCdata <- function(x, ...) {
+plot.OCdata <- function(x, by = c("pd", "mean"), ...) {
   if (!inherits(x, "OCdata")) {
     stop("Object is not of class 'OCdata'")
   }
   
-  plot(x@pd, x@paccept, type = "l", col = "red", lwd = 2,
-       main = "OC Curve by Proportion Nonconforming", 
-       xlab = "Proportion Nonconforming", ylab = "P(accept)")
-  grid()
+  by <- match.arg(by)
   
-  if (length(x@process_means) > 0) {
-    plot(x@process_means, x@paccept, type = "l", col = "blue", lwd = 2,
-         main = "OC Curve by Mean Levels", xlab = "Mean Level", ylab = "P(accept)")
+  if (by == "pd") {
+    plot(x@pd, x@paccept, type = "l", col = "red", lwd = 2,
+         main = "OC Curve by Proportion Nonconforming", 
+         xlab = "Proportion Nonconforming", ylab = "P(accept)", ...)
     grid()
+    
+  } else if (by == "mean") {
+    if (length(x@process_means) > 0) {
+      plot(x@process_means, x@paccept, type = "l", col = "blue", lwd = 2,
+           main = "OC Curve by Mean Levels", xlab = "Mean Level", ylab = "P(accept)", ...)
+      grid()
+    } else {
+      message("Mean-level plot not available for your plan!")
+    }
   }
-  
-  # # Plot default chart OC follow proportion nonconforming
-  # plot(x$x_p, x$y, type = "l", col = "red", lwd = 2,
-  #      main = "OC Curve by Proportion Nonconforming", xlab = "Proportion Nonconforming", ylab = "P(accept)")
-  # grid()
-  # 
-  # # Check if 'x_m' exists; otherwise, use 'x_p'
-  # if ("x_m" %in% names(x)) {
-  #   plot(x$x_m, x$y, type = "l", col = "blue", lwd = 2,
-  #        main = "OC Curve by Mean Levels", xlab = "Mean Levels", ylab = "P(accept)")
-  # }
-  # grid()
 }
+
 
 
 #' @export
@@ -116,8 +191,5 @@ setMethod("show", signature(object = "OCdata"), function(object) {
   if (length(object@process_means) > 0) {
     cat(sprintf("  Process means available (length: %d)\n", length(object@process_means)))
   } 
-  # else {
-  #   cat("  No process mean values available.\n")
-  # }
   cat("--------------------------------------------------\n")
 })
