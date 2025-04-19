@@ -60,6 +60,8 @@ optAttrPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
           CR = pa_c,
           PRQ = PRQ,
           CRQ = CRQ,
+          sample_size = ceiling(n),
+          distribution = "binomial",
           measurement_error = measurement_error
         ),
         class = "AttrPlan"

@@ -2,71 +2,67 @@
 \alias{OCdata}
 \title{Generate OC Curve Data}
 \description{
-  Computes and returns the operating characteristic (OC) curve data, which includes the proportion of nonconforming items (\code{x_p}) and the corresponding probability of acceptance (\code{y}).
+  Computes and returns an object of class \code{"OCdata"}, which contains the operating characteristic (OC) curve data. This includes the proportion of nonconforming items and the corresponding probability of acceptance, along with plan-related metadata.
 }
 \usage{
 OCdata(plan, pd = NULL)
 }
 \arguments{
-  \item{plan}{An acceptance plan object of class \code{AttrPlan} or \code{VarPlan}. This object contains parameters related to the sampling plan, such as acceptable quality level (AQL), rejectable quality level (RQL), producer’s risk (\code{alpha}), and consumer’s risk (\code{beta}).}
+  \item{plan}{An acceptance plan object of class \code{AttrPlan} or \code{VarPlan}. This object contains parameters related to the sampling plan, such as Producer's Risk Quality (PRQ), Consumer's Risk Quality (CRQ), producer’s risk (\code{alpha}), and consumer’s risk (\code{beta}).}
   
-  \item{pd}{An optional manual input vector of proportions of nonconforming items. If provided, this sequence will be used as the \code{x_p} values for the OC curve. If \code{NULL} (default), the function generates a sequence of \code{x_p} values automatically, based on the plan's rejectable quality level (\code{CRQ}) and AQL (\code{PRQ}).}
+  \item{pd}{An optional manual input vector of proportions of nonconforming items. If provided, this sequence will be used directly. If \code{NULL} (default), the function generates a sequence automatically based on the plan’s rejectable quality level (\code{CRQ}).}
 }
 \details{
-  The function generates data for an OC curve by computing the probability of acceptance (\code{y}) for different levels of nonconforming proportions (\code{x_p}). If the manual sequence \code{pd} is provided, it will directly be used as the \code{x_p} values. Otherwise, a default sequence is generated based on the sampling plan's rejectable quality level (\code{CRQ}) and AQL (\code{PRQ}).
+  The function evaluates the operating characteristic (OC) curve by calculating the probability of acceptance across a range of proportions of nonconforming items (\code{pd}). If specification limits are defined in the plan, it also estimates the corresponding process mean levels using the \code{muEst} function.
+  
+  The returned object is of class \code{"OCdata"}, which stores both the computed results and key information about the sampling plan used.
 
-  The function also supports calculating the mean level (\code{x_m}) for different proportions of nonconforming items when specification limits are provided in the plan. This is done using the function \code{muEst}.
+  Either the attribute sampling threshold (\code{c}) or the variable plan constant (\code{k}) will be included depending on the plan type. The other will be empty.
+}
+\value{
+  An S4 object of class \code{"OCdata"} with the following slots:
+
+  \tabular{ll}{
+    \code{pd} \tab Proportion of nonconforming items. \cr
+    \code{paccept} \tab Probability of acceptance at each nonconforming level. \cr
+    \code{type} \tab Type of the distribution (e.g., \code{"normal"}, \code{"beta"}). \cr
+    \code{n} \tab Sample size used in the plan. \cr
+    \code{k} \tab Acceptance constant (for variable sampling plans), if available. \cr
+    \code{c} \tab Acceptance number (for attribute plans), if available. \cr
+    \code{process_means} \tab Estimated process means corresponding to each nonconforming proportion (only if specification limits are used). \cr
+  }
 }
 \author{
   Ha Truong
 }
-\value{
-  A data frame with the following columns:
-  \tabular{ll}{
-    \code{x_p} \tab Proportion of nonconforming items  \cr
-    \code{x_m} \tab Estimated mean level , if applicable \cr
-    \code{y} \tab Probability of acceptance  \cr
-  }
-}
 \examples{
-  # Example acceptance plan
-  plan <- optVarPlan(
-    PRQ = 0.025,       # Acceptable quality level (% nonconforming)
-    CRQ = 0.1,         # Rejectable quality level (% nonconforming)
-    alpha = 0.05,      # Producer's risk
-    beta = 0.1,        # Consumer's risk
-    distribution = "normal")
+# Example acceptance plan (variable plan, normal distribution)
+plan <- optVarPlan(
+  PRQ = 0.025,
+  CRQ = 0.1,
+  alpha = 0.05,
+  beta = 0.1,
+  distribution = "normal"
+)
 
-  # Generate OC curve data with automatic proportion sequence
-  oc_data <- OCdata(plan)
+# Generate OC data automatically
+oc_data <- OCdata(plan)
 
-  # Plot OC curve for non-conforming proportion
-  plot(oc_data$x_p, oc_data$y, type = "l", col = "blue", lwd = 2,
-       main = "OC Curve", xlab = "Proportion Nonconforming",
+# Plot the OC curve
+plot(oc_data@pd, oc_data@paccept, type = "l", col = "blue", lwd = 2,
+     main = "OC Curve", xlab = "Proportion Nonconforming",
+     ylab = "P(accept)")
+grid()
+
+# OC curve using mean levels (if applicable)
+if (length(oc_data@process_means) > 0) {
+  plot(oc_data@process_means, oc_data@paccept, type = "l", col = "darkgreen", lwd = 2,
+       main = "OC Curve (by Mean Levels)", xlab = "Mean Levels",
        ylab = "P(accept)")
   grid()
+}
 
-
-  # Example of beta-based sampling plan
-  beta_plan <- optVarPlan(
-    PRQ = 0.05,       # Target quality level (% nonconforming)
-    CRQ = 0.20,       # Minimum quality level (% nonconforming)
-    alpha = 0.05,      # Producer's risk
-    beta = 0.10,        # Consumer's risk
-    distribution = "beta",
-    theta = 4.4e+07,
-    theta_type = "known",
-    spec_limit = 10e-06,
-    limit_type = "lower"
-  )
-  
-  # Generate OC data, could use manual p_seq as need 
-  p_seq <- seq(0.005, 0.5, by = 0.005)
-  oc_data <- OCdata(beta_plan, pd = p_seq)
-  
-  # Plot the OC curve with Mean Level (x_m) and Probability of Acceptance (y)
-  plot(oc_data$x_m, oc_data$y, type = "l", col = "blue", lwd = 2,
-       main = "OC Curve", xlab = "Mean Levels",
-       ylab = "P(accept)")
-  grid()
+# Example with custom pd
+custom_pd <- seq(0.01, 0.5, by = 0.01)
+oc_data2 <- OCdata(plan, pd = custom_pd)
 }

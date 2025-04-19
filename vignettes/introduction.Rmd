@@ -86,7 +86,7 @@ summary(norm_plan)
 # Generate OC curve data
 oc_data_normal <- OCdata(norm_plan)
 # show data of Proportion Nonconforming (x_p) vs Probability Acceptance (y)
-head(oc_data_normal, 15) 
+#head(oc_data_normal, 15) 
 plotOC(norm_plan)
 ```
 
@@ -124,13 +124,13 @@ oc_data1 <- OCdata(plan1)
 oc_data2 <- OCdata(plan2)
 
 # Plot the first OC curve (solid red line)
-plot(oc_data1$x_p, oc_data1$y, type = "l", col = "red", lwd = 2,
+plot(oc_data1@pd, oc_data1@paccept, type = "l", col = "red", lwd = 2,
      main = "Operating Characteristic (OC) Curve", 
      xlab = "Proportion Nonconforming", 
      ylab = "P(accept)")
 
 # Add the second OC curve (dashed blue line)
-lines(oc_data2$x_p, oc_data2$y, col = "blue", lwd = 2, lty = 2)
+lines(oc_data2@pd, oc_data2@paccept, col = "blue", lwd = 2, lty = 2)
 
 abline(v = c(p1, p2), lty = 1, col = "gray")
 abline(h = c(1 - alpha, beta), lty = 1, col = "gray")
@@ -168,13 +168,13 @@ plotOC(beta_plan)
 # Generate OC data
 p_seq <- seq(0.005, 0.5, by = 0.005)
 oc_data <- OCdata(beta_plan, pd = p_seq)
-head(oc_data)
+#head(oc_data)
 
 # plot use S3 method
 plot(oc_data)
 
 # Plot the OC curve with Mean Level (x_m) and Probability of Acceptance (y)
-plot(oc_data$x_m, oc_data$y, type = "l", col = "blue", lwd = 2,
+plot(oc_data@pd, oc_data@paccept, type = "l", col = "blue", lwd = 2,
      main = "OC Curve by the mean levels (plot by data)", xlab = "Mean Levels",
      ylab = "P(accept)")
 grid()
@@ -221,13 +221,13 @@ oc_beta_data1 <- OCdata(beta_plan1)
 oc_beta_data2 <- OCdata(beta_plan2)
 
 # Plot the first OC curve (solid red line)
-plot(oc_beta_data1$x_p, oc_beta_data1$y, type = "l", col = "red", lwd = 2,
+plot(oc_beta_data1@pd, oc_beta_data1@paccept, type = "l", col = "red", lwd = 2,
      main = "Operating Characteristic (OC) Curve", 
      xlab = "Proportion Nonconforming", 
      ylab = "P(accept)")
 
 # Add the second OC curve (dashed blue line)
-lines(oc_beta_data2$x_p, oc_beta_data2$y, col = "blue", lwd = 2, lty = 2)
+lines(oc_beta_data2@pd, oc_beta_data2@paccept, col = "blue", lwd = 2, lty = 2)
 
 abline(v = c(p1, p2), lty = 1, col = "gray")
 abline(h = c(1 - alpha, beta), lty = 1, col = "gray")
