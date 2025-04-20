@@ -230,7 +230,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     r_alpha <- 1 - accProb(objPlan, PRQ)
     r_beta <- accProb(objPlan, CRQ)
     sample_size <- m
-    n <- NA  # Not applicable for beta
+    n <- m  # Not applicable for beta
   }
   
   return(structure(

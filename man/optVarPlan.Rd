@@ -50,8 +50,7 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10,
   \item{distribution}{Distribution used ("normal" or "beta").}
   \item{sample_size}{Final sample size after rounding (integer).}
   \item{k}{Acceptance constant.}
-  \item{n}{Unrounded sample size for the normal distribution.}
-  \item{m}{Unrounded sample size for the beta distribution.}
+  \item{n}{Unrounded sample size.}
 }
 \references{
   ISO 3951-1:2013 - Sampling procedures for inspection by variables.

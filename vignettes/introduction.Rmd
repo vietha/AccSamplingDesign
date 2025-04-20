@@ -106,7 +106,7 @@ plan1 <- optVarPlan(
   distribution = "normal",
   sigma_type = "know")
 summary(plan1)
-#plotOC(plan1)
+plot(plan1)
 
 # unknown sigma plan
 plan2 <- optVarPlan(
@@ -117,7 +117,7 @@ plan2 <- optVarPlan(
   distribution = "normal",
   sigma_type = "unknow")
 summary(plan2)
-#plotOC(plan2)
+plot(plan2)
 
 # Generate OC curve data
 oc_data1 <- OCdata(plan1)
@@ -229,8 +229,8 @@ lines(oc_beta_data2@pd, oc_beta_data2@paccept, col = "blue", lwd = 2, lty = 2)
 abline(v = c(p1, p2), lty = 1, col = "gray")
 abline(h = c(1 - alpha, beta), lty = 1, col = "gray")
 
-legend1 = paste0("Known Theta (m=", beta_plan1$sample_size, ", k=", beta_plan1$k, ")")
-legend2 = paste0("Unknown Theta (m=", beta_plan2$sample_size, ", k=", beta_plan2$k, ")")
+legend1 = paste0("Known Theta (n=", beta_plan1$sample_size, ", k=", beta_plan1$k, ")")
+legend2 = paste0("Unknown Theta (n=", beta_plan2$sample_size, ", k=", beta_plan2$k, ")")
 # Add a legend to distinguish the two curves
 legend("topright", legend = c(legend1, legend2), 
        col = c("red", "blue"), lwd = 2, lty = c(1, 2))
