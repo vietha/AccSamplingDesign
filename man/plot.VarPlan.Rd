@@ -5,7 +5,7 @@
   Plots the Operating Characteristic (OC) curve for an object of class \code{VarPlan}. Supports plotting against either the proportion of nonconforming items or the corresponding process mean levels, depending on availability.
 }
 \usage{
-plot(x, pd = NULL, by = c("pd", "mean"), ...)
+\method{plot}{VarPlan}(x, pd = NULL, by = c("pd", "mean"), ...)
 }
 \arguments{
   \item{x}{An object of class \code{VarPlan} representing a variable acceptance sampling plan.}
@@ -35,7 +35,7 @@ plan <- optVarPlan(
   PRQ = 0.025, CRQ = 0.1,
   alpha = 0.05, beta = 0.1,
   distribution = "normal",
-  limit_type = "upper", spec_limit = 3, sigma = 0.1
+  USL = 3, sigma = 0.1
 )
 
 # Plot by proportion nonconforming

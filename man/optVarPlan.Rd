@@ -56,7 +56,7 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10,
 \references{
   ISO 3951-1:2013 - Sampling procedures for inspection by variables.
   
-  Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Physica, Heidelberg. \url{https://doi.org/10.1007/978-3-7908-2674-6_4}
+  Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Physica, Heidelberg. \doi{10.1007/978-3-7908-2674-6_4}
   
   K. Govindaraju and R. Kissling (2015). Sampling plans for Beta-distributed compositional fractions.
 }

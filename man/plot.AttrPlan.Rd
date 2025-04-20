@@ -5,7 +5,7 @@
   Plots the Operating Characteristic (OC) curve for an attribute sampling plan object of class \code{AttrPlan}.
 }
 \usage{
-plot(x, pd = NULL, ...)
+\method{plot}{AttrPlan}(x, pd = NULL, ...)
 }
 \arguments{
   \item{x}{An object of class \code{AttrPlan} representing an attribute acceptance sampling plan.}

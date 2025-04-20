@@ -7,68 +7,70 @@
 \usage{
 OCdata(plan = NULL, pd = NULL,
        distribution = c("binomial", "normal", "beta"),
-       PRQ = NULL, CRQ = NULL,
+       PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
+       USL = NULL, LSL = NULL,
        n = NULL, c = NULL, k = NULL,
-       spec_limit = NULL,
-       limit_type = c("upper", "lower"),
        sigma_type = c("known", "unknown"),
        theta_type = c("known", "unknown"),
-       sigma = NULL, theta = NULL,
-       alpha = NULL, beta = NULL)
+       sigma = NULL, theta = NULL)
 }
 \arguments{
   \item{plan}{An optional acceptance plan object of class \code{AttrPlan} or \code{VarPlan}. If supplied, this overrides other individual parameter inputs.}
-  
-  \item{pd}{An optional manual input vector of proportions of nonconforming items. If \code{NULL} (default), the function generates a sequence automatically based on the plan’s rejectable quality level (\code{CRQ}).}
+
+  \item{pd}{An optional vector of proportions of nonconforming items. If \code{NULL}, the function generates a default sequence based on \code{CRQ}.}
 
   \item{distribution}{Distribution type used for the plan. Options are \code{"binomial"}, \code{"normal"}, or \code{"beta"}. Required if \code{plan} is not provided.}
-  
-  \item{PRQ}{Producer's Risk Quality level.}
-  
-  \item{CRQ}{Consumer's Risk Quality level.}
-  
+
+  \item{PRQ}{Producer's Risk Quality level (used to define OC curve range when \code{pd} is not provided).}
+
+  \item{CRQ}{Consumer's Risk Quality level (used to define OC curve range when \code{pd} is not provided).}
+
+  \item{alpha}{Producer’s risk (Type I error, numeric between 0 and 1).}
+
+  \item{beta}{Consumer’s risk (Type II error, numeric between 0 and 1).}
+
+  \item{USL}{Upper Specification Limit (used for variable sampling plans). Only one of \code{USL} or \code{LSL} should be provided.}
+
+  \item{LSL}{Lower Specification Limit (used for variable sampling plans). Only one of \code{USL} or \code{LSL} should be provided.}
+
   \item{n}{Sample size.}
-  
+
   \item{c}{Acceptance number (for attribute plans).}
-  
-  \item{k}{Acceptance constant (for variable sampling plans).}
-  
-  \item{spec_limit}{Specification limit for the variable plan (required for beta distribution).}
-  
-  \item{limit_type}{Type of specification limit: \code{"upper"} or \code{"lower"}.}
-  
-  \item{sigma_type}{Type of sigma: \code{"known"} or \code{"unknown"}.}
-  
-  \item{theta_type}{Type of theta: \code{"known"} or \code{"unknown"}.}
-  
-  \item{sigma}{Standard deviation (if known).}
-  
-  \item{theta}{Process parameter (e.g., shape or rate for beta distribution).}
-  
-  \item{alpha}{Producer’s risk (Type I error).}
-  
-  \item{beta}{Consumer’s risk (Type II error).}
+
+  \item{k}{Acceptance constant (for variable plans).}
+
+  \item{sigma_type}{Whether sigma is \code{"known"} or \code{"unknown"} (for normal distribution).}
+
+  \item{theta_type}{Whether theta is \code{"known"} or \code{"unknown"} (for beta distribution).}
+
+  \item{sigma}{Standard deviation (if \code{sigma_type = "known"}).}
+
+  \item{theta}{Precision or shape parameter (if \code{theta_type = "known"}, for beta distribution).}
 }
 \details{
-  The function evaluates the operating characteristic (OC) curve by calculating the probability of acceptance across a range of proportions of nonconforming items (\code{pd}).
-  
-  If a \code{plan} object is supplied, it will be used directly. Otherwise, a plan will be constructed based on the provided parameters. For binomial distributions, \code{n} and \code{c} are required. For normal or beta variable plans, \code{n} and \code{k} are needed.
-  
-  When specification limits are included (for variable plans), the corresponding process mean values will also be estimated using \code{muEst()}.
-  
-  The returned object is of class \code{"OCdata"}, which includes OC curve values and metadata about the sampling plan.
+  The function evaluates the Operating Characteristic (OC) curve by computing the probability of acceptance across a range of proportions nonconforming (\code{pd}). This can be either directly specified or derived based on the plan inputs.
+
+  If a \code{plan} object is supplied, it overrides the other input parameters and uses stored plan details. If no plan is provided, a new one will be constructed from the inputs.
+
+  For:
+  \itemize{
+    \item \code{binomial} distribution: \code{n} and \code{c} must be provided.
+    \item \code{normal} or \code{beta} distribution: \code{n} (or \code{m}) and \code{k} are required. Either \code{USL} or \code{LSL} must be specified to compute process mean values using \code{\link{muEst}}.
+  }
+
+  The resulting OC curve data includes acceptance probabilities at various quality levels and, for variable plans, optionally maps these probabilities to corresponding mean levels.
 }
 \value{
   An S4 object of class \code{"OCdata"} with the following slots:
 
   \tabular{ll}{
-    \code{pd} \tab Proportion of nonconforming items. \cr
-    \code{paccept} \tab Probability of acceptance at each nonconforming level. \cr
-    \code{type} \tab Type of the distribution (\code{"binomial"}, \code{"normal"}, or \code{"beta"}). \cr
+    \code{pd} \tab Vector of proportions nonconforming. \cr
+    \code{paccept} \tab Probability of acceptance at each level of nonconformance. \cr
+    \code{type} \tab Distribution type (\code{"binomial"}, \code{"normal"}, or \code{"beta"}). \cr
     \code{n} \tab Sample size used in the plan. \cr
-    \code{k} \tab Acceptance constant (for variable sampling plans), if available. \cr
-    \code{c} \tab Acceptance number (for attribute plans), if available. \cr
-    \code{process_means} \tab Estimated process means corresponding to each nonconforming proportion (only if specification limits are used). \cr
+    \code{k} \tab Acceptance constant (if applicable). \cr
+    \code{c} \tab Acceptance number (if applicable). \cr
+    \code{process_means} \tab Estimated mean values (only for variable plans with specification limits). \cr
   }
 }
 \author{
@@ -88,20 +90,12 @@ plan <- optVarPlan(
 oc_data <- OCdata(plan)
 
 # Plot the OC curve
-plot(oc_data@pd, oc_data@paccept, type = "l", col = "blue", lwd = 2,
-     main = "OC Curve (by Proportion Nonconforming)", xlab = "Proportion Nonconforming",
-     ylab = "P(accept)")
-grid()
+plot(oc_data)
 
-# If applicable, plot mean-level based OC
-if (length(oc_data@process_means) > 0) {
-  plot(oc_data@process_means, oc_data@paccept, type = "l", col = "darkgreen", lwd = 2,
-       main = "OC Curve (by Mean Levels)", xlab = "Mean Levels",
-       ylab = "P(accept)")
-  grid()
-}
+# Example 2: Attribute plan using direct input
+oc_data2 <- OCdata(n = 132, c = 5, PRQ = 0.01, CRQ = 0.05, 
+                   distribution = "binomial")
+oc_data2
+plot(oc_data2)
 
-# Example 2: Attribute plan using only inputs (no plan object)
-oc_data2 <- OCdata(n = 132, c = 5, PRQ = 0.01, CRQ = 0.05, distribution = "binomial")
-plot(oc_data2@pd, oc_data2@paccept, type = "l", col = "purple", lwd = 2)
 }

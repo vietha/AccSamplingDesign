@@ -5,7 +5,7 @@
   Plots the Operating Characteristic (OC) curve from an object of class \code{"OCdata"}, either by proportion nonconforming or process mean levels.
 }
 \usage{
-plot(x, by = c("pd", "mean"), ...)
+\method{plot}{OCdata}(x, by = c("pd", "mean"), ...)
 }
 \arguments{
   \item{x}{An object of class \code{"OCdata"}, typically generated using \code{OCdata()}.}
@@ -34,8 +34,8 @@ plot(oc_attr)               # OC curve by pd (default)
 plot(oc_attr, by = "mean")  # Will show message if not available
 
 # Variable plan
-plan_var <- optVarPlan(PRQ = 0.025, CRQ = 0.1, distribution = "normal",
-                        spec_limit=0.1,  limit_type = "upper", sigma=0.01)
+plan_var <- optVarPlan(PRQ = 0.025, CRQ = 0.1, USL = 0.1,
+                       distribution = "normal", sigma=0.01)
 oc_var <- OCdata(plan_var)
 plot(oc_var)                # OC curve by pd
 plot(oc_var, by = "mean")   # OC curve by mean levels

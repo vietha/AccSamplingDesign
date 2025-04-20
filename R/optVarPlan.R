@@ -15,8 +15,8 @@
 #' Variable Acceptance Sampling Plan
 #' @export
 optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
-                       distribution = c("normal", "beta"),
                        USL = NULL, LSL = NULL,
+                       distribution = c("normal", "beta"),
                        sigma_type = c("known", "unknown"),
                        theta_type = c("known", "unknown"),
                        sigma = NULL, theta = NULL,

@@ -64,7 +64,7 @@ accProb(plan_attr, 0.03)
 
 ## 3.4 OC Curve
 ```{r}
-plotOC(plan_attr)
+plot(plan_attr)
 ```
 
 # 4. Variable Sampling Plans
@@ -87,7 +87,7 @@ summary(norm_plan)
 oc_data_normal <- OCdata(norm_plan)
 # show data of Proportion Nonconforming (x_p) vs Probability Acceptance (y)
 #head(oc_data_normal, 15) 
-plotOC(norm_plan)
+plot(norm_plan)
 ```
 
 ### 4.1.2 Compare known vs unknown sigma plans
@@ -162,7 +162,7 @@ beta_plan <- optVarPlan(
 summary(beta_plan)
 
 # Plot OC use plot function
-plotOC(beta_plan)
+plot(beta_plan)
 
 # Generate OC data
 p_seq <- seq(0.005, 0.5, by = 0.005)
@@ -367,11 +367,9 @@ where \( X \sim \text{Beta}(\theta \mu, \theta (1 - \mu)) \). This links \( \mu 
 ## 6.5 Beta Variable Plan (Case of Unknown \( \theta \)):
 For a beta distribution, the required sample size \(m_s\) (unknown \(\theta\)) is derived from the known-\(\theta\) sample size \(m_\theta\) using the formula:  
 \[
-m_s = \left(1 + 0.85k^2\right)m_\theta
+m_s = \left(1 + 0.5k^2\right)m_\theta
 \]  
-where \(k\) is unchanged. This adjustment accounts for the variance ratio \(R = \frac{\text{Var}(S)}{\text{Var}(\hat{\mu})}\), which quantifies the relative variability of the sample standard deviation \(S\) compared to the estimator \(\hat{\mu}\). Unlike the normal distribution, where \(\text{Var}(S) \approx \frac{\sigma^2}{2n}\), for beta distribution’s, the ratio \(R\) depends on \(\mu\), \(\theta\), and sample size \(m\). The conservative factor \(0.85k^2\) approximates this ratio for practical use.
-
-(See Govindaraju and Kissling - 2015 paper)
+where \(k\) is unchanged. This adjustment accounts for the variance ratio \(R = \frac{\text{Var}(S)}{\text{Var}(\hat{\mu})}\), which quantifies the relative variability of the sample standard deviation \(S\) compared to the estimator \(\hat{\mu}\). Unlike the normal distribution, where \(\text{Var}(S) \approx \frac{\sigma^2}{2n}\), for beta distribution’s, the ratio \(R\) depends on \(\mu\), \(\theta\), and sample size \(m\). The conservative factor \(0.5k^2\) approximates this ratio for practical use.
 
 \newpage
 

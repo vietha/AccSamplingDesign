@@ -39,9 +39,9 @@ muEst(p, USL = NULL, LSL = NULL,
 Ha Truong
 }
 \examples{
-  # Example for normal distribution with lower specification limit
+  # Example for normal distribution with lower specification limit (LSL)
   muEst(p = 0.95, LSL = 10, sigma = 2, dist = "normal")
 
-  # Example for beta distribution with upper specification limit
+  # Example for beta distribution with upper specification limit (USL)
   muEst(p = 0.95, USL = 0.7, theta = 500, dist = "beta")
 }

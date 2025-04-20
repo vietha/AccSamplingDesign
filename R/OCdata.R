@@ -26,14 +26,12 @@ setClass("OCdata",
 #' @export
 OCdata <- function(plan = NULL, pd = NULL,
                    distribution = c("binomial", "normal", "beta"),
-                   PRQ = NULL, CRQ = NULL,
+                   PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
+                   USL = NULL, LSL = NULL, 
                    n = NULL, c = NULL, k = NULL,
-                   spec_limit = NULL,
-                   limit_type = c("upper", "lower"),
                    sigma_type = c("known", "unknown"),
                    theta_type = c("known", "unknown"),
-                   sigma = NULL, theta = NULL,
-                   alpha = NULL, beta = NULL) {
+                   sigma = NULL, theta = NULL) {
   
   if (!is.null(plan)) {
     # Use plan directly
@@ -43,13 +41,12 @@ OCdata <- function(plan = NULL, pd = NULL,
     paccept <- sapply(pd, function(p) accProb(plan, p))
     
     mean_level <- NULL
-    if (!is.null(plan$spec_limit) && !is.null(plan$limtype)) {
+    if (!is.null(plan$USL) || !is.null(plan$LSL)) {
       mean_level <- sapply(pd, function(p) muEst(
-        p, plan$spec_limit,
+        p, USL = plan$USL, LSL = plan$LSL,
         sigma = plan$sigma,
         theta = plan$theta,
-        dist = plan$distribution,
-        limtype = plan$limtype
+        dist = plan$distribution
       ))
     }
     
@@ -65,7 +62,7 @@ OCdata <- function(plan = NULL, pd = NULL,
   
   # Argument matching
   distribution <- match.arg(distribution)
-  limit_type <- match.arg(limit_type)
+  #limit_type <- match.arg(limit_type)
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
   
@@ -83,22 +80,24 @@ OCdata <- function(plan = NULL, pd = NULL,
   if (distribution == "binomial") {
     if (is.null(n) || is.null(c)) stop("n and c must be provided for binomial distribution.")
     plan <- structure(list(n = n, c = c, PRQ = PRQ, CRQ = CRQ, 
+                           PR = alpha, CR = beta,
+                           USL = USL, LSL = LSL,
                            sample_size = n,
-                           distribution = distribution,
-                           PR = alpha, CR = beta),
+                           distribution = distribution),
                       class = "AttrPlan")
     
   } else if (distribution %in% c("normal", "beta")) {
     if (is.null(n) || is.null(k)) stop("n and k must be provided for variable plans.")
-    if (distribution == "beta" && (is.null(spec_limit) || is.null(theta))) {
-      stop("For beta distribution, spec_limit and theta must be provided.")
+    if (distribution == "beta" && is.null(theta) && (is.null(USL) || is.null(LSL))) {
+      stop("For beta distribution, specification limit and theta must be provided.")
     }
     plan <- structure(list(n = n, k = k, PRQ = PRQ, CRQ = CRQ,
-                           sample_size = n,
+                           USL = USL, LSL = LSL,
                            PR = alpha, CR = beta,
+                           sample_size = n,
                            distribution = distribution,
-                           spec_limit = spec_limit,
-                           limit_type = limit_type,
+                           #spec_limit = spec_limit,
+                           #limit_type = limit_type,
                            sigma_type = sigma_type,
                            theta_type = theta_type,
                            sigma = sigma,
