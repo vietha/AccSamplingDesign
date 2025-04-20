@@ -31,6 +31,10 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
   if (is.null(sigma_type)) sigma_type <- "known"
   if (is.null(theta_type)) theta_type <- "known"
   
+  if (!is.null(USL) && !is.null(LSL)) {
+    stop("Double specification limits (both USL and LSL) are not supported. 
+         Please specify only one limit: either USL or LSL.")
+  }
   # This upper limit case
   if (!is.null(USL)) {
     limit_type <- "upper"

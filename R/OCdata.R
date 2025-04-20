@@ -88,8 +88,15 @@ OCdata <- function(plan = NULL, pd = NULL,
     
   } else if (distribution %in% c("normal", "beta")) {
     if (is.null(n) || is.null(k)) stop("n and k must be provided for variable plans.")
-    if (distribution == "beta" && is.null(theta) && (is.null(USL) || is.null(LSL))) {
-      stop("For beta distribution, specification limit and theta must be provided.")
+    if (distribution == "beta" && is.null(theta)) {
+      stop("For beta distribution, theta parameter must be provided.")
+    }
+    if (distribution == "beta" && is.null(USL) && is.null(LSL)) {
+      stop("For beta distribution, a specification limit (USL/LSL) must be provided.")
+    }
+    if (!is.null(USL) && !is.null(LSL)) {
+      stop("Double specification limits (both USL and LSL) are not supported. 
+         Please specify only one limit: either USL or LSL.")
     }
     plan <- structure(list(n = n, k = k, PRQ = PRQ, CRQ = CRQ,
                            USL = USL, LSL = LSL,
