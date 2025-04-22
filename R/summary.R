@@ -14,6 +14,7 @@
 summary.AttrPlan <- function(object, ...) {
   cat("Attribute Acceptance Sampling Plan\n")
   cat("----------------------------------\n")
+  cat("Distribution:", object$distribution, "\n")
   cat("Sample Size (n):", object$n, "\n")
   cat("Acceptance Number (c):", object$c, "\n")
   cat("Producer's Risk (PR =", object$PR, ") at PRQ =", object$PRQ, "\n")

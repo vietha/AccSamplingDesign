@@ -1,6 +1,7 @@
 export(accProb)
 export(optAttrPlan)
 export(optVarPlan)
+export(optPlan)
 export(OCdata)
 export(muEst)
 S3method(accProb,AttrPlan)
