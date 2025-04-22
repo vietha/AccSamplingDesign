@@ -256,7 +256,7 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
   
   # Default pd if not supplied
   if (is.null(pd)) {
-    pd <- seq(1e-10, min(x$CRQ * 2, 1), length.out = 100)
+    pd <- seq(max(x$PRQ * 0.5, 1e-10), min(x$CRQ * 1.5, 1), length.out = 100)
   }
   
   if (by == "pd") {
@@ -274,7 +274,11 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
     if (is.null(x$USL) && is.null(x$LSL)) {
       stop("Mean-level plot requires 'USL' or 'LSL' in the plan.")
     }
-    
+    # estimate mu from PRQ/CRQ
+    mu_PRQ <- muEst(x$PRQ, USL = x$USL, LSL = x$LSL, sigma = x$sigma, 
+                    theta = x$theta, dist = x$distribution)
+    mu_CRQ <- muEst(x$CRQ, USL = x$USL, LSL = x$LSL, sigma = x$sigma, 
+                    theta = x$theta, dist = x$distribution)      
     # Estimate mean levels based on pd
     mu_vals <- sapply(pd, function(p) muEst(
       p, USL = x$USL, LSL = x$LSL,
@@ -291,6 +295,8 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
          main = paste0("Variable OC Curve by Mean - ", x$distribution,
                        " | n=", x$sample_size, ", k=", x$k),
          xlab = "Process Mean", ylab = "P(accept)", ...)
+    abline(v = c(mu_PRQ, mu_CRQ), lty = 2, col = "gray")
+    abline(h = c(1 - x$PR, x$CR), lty = 2, col = "gray")
     grid()
   }
 }
