@@ -14,41 +14,19 @@
 #' @export
 optAttrPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10, 
                         measurement_error = 0) {
-  
   # Input validation
   if(PRQ >= CRQ) stop("PRQ must be < CRQ")
   if(alpha <= 0 || alpha >= 1) stop("alpha must be in (0,1)")
   if(beta <= 0 || beta >= 1) stop("beta must be in (0,1)")
   
-  ## Find ATTR plan use bruce force
-  ## Plan calculation logic
-  # n <- 1
-  # while(TRUE) {
-  #   for(c in 0:n) {
-  #     pa_p <- pbinom(c, n, PRQ)
-  #     pa_c <- pbinom(c, n, CRQ)
-  #     if(pa_p >= (1 - alpha) && pa_c <= beta) {
-  #       return(structure(
-  #         list(
-  #           n = n,
-  #           c = c,
-  #           PR = 1 - pa_p,
-  #           CR = pa_c,
-  #           PRQ = PRQ,
-  #           CRQ = CRQ,
-  #           measurement_error = measurement_error
-  #         ),
-  #         class = "AttrPlan"
-  #       ))
-  #     }
-  #   }
-  #   n <- n + 1
-  # }
-  # 
-  max_n = 1e5
-  for (n in 1:max_n) {
-    # Smallest c meeting PA_P >= 1 - alpha
-    c <- qbinom(1 - alpha, n, PRQ, lower.tail = TRUE)  
+  n_vec <- 1:1e5 #define Maximum vector n
+  
+  # Vectorized qbinom to find c for all n
+  c_vec <- qbinom(1 - alpha, n_vec, PRQ, lower.tail = TRUE)
+  
+  for (i in seq_along(n_vec)) {
+    n <- n_vec[i]
+    c <- c_vec[i]
     pa_c <- pbinom(c, n, CRQ)
     pa_p <- pbinom(c, n, PRQ)
     if (pa_c <= beta) {
