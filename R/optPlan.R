@@ -13,7 +13,7 @@
 #' Optimal Acceptance Sampling Plan
 #' @export
 optPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
-                    distribution = c("binomial", "normal", "beta"),
+                    distribution = c("binomial", "poisson", "normal", "beta"),
                     sigma_type = c("known", "unknown"),
                     theta_type = c("known", "unknown"),
                     sigma = NULL, theta = NULL,
@@ -94,8 +94,9 @@ optPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   opt_plan = NULL
   
   # ------------Binomial ----------
-  if (distribution == "binomial") {
+  if (distribution == "binomial"|| distribution == "poisson") {
     opt_plan <- optAttrPlan(PRQ = PRQ, CRQ = CRQ, alpha = alpha, beta = beta, 
+                            distribution = distribution,
                             measurement_error = measurement_error)
   }
   # ------------Normal/Beta ------------

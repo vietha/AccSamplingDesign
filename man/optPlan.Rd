@@ -8,7 +8,7 @@ or unknown standard deviation and process parameters.
 }
 \usage{
 optPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
-        distribution = c("binomial", "normal", "beta"),
+        distribution = c("binomial", "poisson", "normal", "beta"),
         sigma_type = c("known", "unknown"),
         theta_type = c("known", "unknown"),
         sigma = NULL, theta = NULL,
