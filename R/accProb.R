@@ -17,7 +17,13 @@ accProb <- function(plan, p) {
 
 #' @export
 accProb.AttrPlan <- function(plan, p) {
-  pbinom(plan$c, plan$n, p)
+  if (plan$distribution == "binomial") {
+    pbinom(plan$c, plan$n, p)
+  } else if (plan$distribution == "poisson") {
+    ppois(plan$c, lambda = plan$n * p)
+  } else {
+    stop("Unknown distribution type: ", plan$distribution)
+  }
 }
 
 #' @export
