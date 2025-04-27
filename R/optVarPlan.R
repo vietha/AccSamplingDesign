@@ -12,6 +12,39 @@
 ## 20 Apr, 2025: remove spec_limit and limit_type. Replace by USL/LSL
 ## -----------------------------------------------------------------------------
 
+
+# Define optimization function to minimize difference between Pa and target 
+# values for alpha and beta (t-distribution)
+t_optimize_sampling_plan <- function(alpha, beta, p_alpha, p_beta, n_init, k_init) 
+{
+  # Define function to calculate Pa based on the non-central t-distribution
+  Pa_tdist <- function(n, k, p) {
+    # Calculate the acceptance probability using non-central t-distribution
+    non_central_t <- pt(k * sqrt(n), df = n - 1, ncp = -qnorm(p) * sqrt(n))
+    return(1 - non_central_t)
+  }
+
+  # Objective function to minimize
+  objective_function <- function(params) {
+    n_s <- params[1]
+    k_s <- params[2]
+    
+    # Calculate Pa for both p_alpha and p_beta
+    Pa_alpha <- Pa_tdist(n_s, k_s, p_alpha)
+    Pa_beta <- Pa_tdist(n_s, k_s, p_beta)
+    
+    # Minimize the differences from target acceptance probabilities
+    return(abs(Pa_alpha - (1 - alpha)) + abs(Pa_beta - beta))
+  }
+  
+  # Initial guess for n_s and k_s
+  init_params <- c(n_init, k_init)  # Example initial guess
+  
+  # Solve the optimization problem
+  result <- optim(init_params, objective_function)
+  return(result$par)  # Return optimized n_s and k_s
+}
+
 #' Variable Acceptance Sampling Plan
 #' @export
 optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
@@ -103,8 +136,13 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     k <- (u_p1 * u_beta + u_p2 * u_alpha) / (u_alpha + u_beta)
 
     if(sigma_type == "unknown") {
-      # adjust k base on sample standard deviation
-      n <- ceiling(n) * (1 + k^2/2)
+      # find n_s by approximate from n
+      # n <- ceiling(n) * (1 + k^2/2)
+      
+      # Get optimal n_s and k_s set n,k as init value for optimize function
+      optimal_params <- t_optimize_sampling_plan(alpha, beta, p_alpha, p_beta, n, k) 
+      n = optimal_params[1]
+      k = optimal_params[2]
     }
     
     sample_size <- n
