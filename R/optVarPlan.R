@@ -140,7 +140,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
       # n <- ceiling(n) * (1 + k^2/2)
       
       # Get optimal n_s and k_s set n,k as init value for optimize function
-      optimal_params <- t_optimize_sampling_plan(alpha, beta, p_alpha, p_beta, n, k) 
+      optimal_params <- t_optimize_sampling_plan(alpha, beta, PRQ, CRQ, n, k) 
       n = optimal_params[1]
       k = optimal_params[2]
     }
