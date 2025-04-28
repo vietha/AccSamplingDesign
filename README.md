@@ -7,7 +7,6 @@ The AccSamplingDesign package provides tools for designing acceptance sampling p
 
 - **Attribute sampling plans** (pass/fail inspection based on nonconforming proportion)
 - **Variable sampling plans** for normal and beta distributions, focusing on the proportion of nonconforming units
-- **Measurement error adjustments** to account for variability in the data
 - **OC curve visualization** to evaluate sampling plan performance
 - **Risk-based optimization** to minimize producer's and consumer's risks while meeting specified quality levels of Producer’s Risk Quality (PRQ) and Consumer’s Risk Quality (CRQ)
 
