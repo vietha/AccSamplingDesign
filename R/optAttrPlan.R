@@ -43,7 +43,7 @@ find_plan_binomial <- function(PRQ, CRQ, alpha, beta, measurement_error = 0) {
       ))
     }
   }
-  stop("No solution found within max_n = ", max_n)
+  stop("No solution found!")
 }
 
 

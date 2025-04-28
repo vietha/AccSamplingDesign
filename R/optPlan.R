@@ -16,8 +16,7 @@ optPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
                     distribution = c("binomial", "poisson", "normal", "beta"),
                     sigma_type = c("known", "unknown"),
                     theta_type = c("known", "unknown"),
-                    sigma = NULL, theta = NULL,
-                    measurement_error = 0) {
+                    sigma = NULL, theta = NULL) {
   
   # Match arguments to ensure valid input
   distribution <- match.arg(distribution)
@@ -86,9 +85,9 @@ optPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   }
   
   # Check measurement error is non-negative
-  if (measurement_error < 0) {
-    stop("measurement_error must be non-negative.")
-  }
+  # if (measurement_error < 0) {
+  #   stop("measurement_error must be non-negative.")
+  # }
   
   # Init an optimal plan
   opt_plan = NULL
@@ -96,16 +95,14 @@ optPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   # ------------Binomial ----------
   if (distribution == "binomial"|| distribution == "poisson") {
     opt_plan <- optAttrPlan(PRQ = PRQ, CRQ = CRQ, alpha = alpha, beta = beta, 
-                            distribution = distribution,
-                            measurement_error = measurement_error)
+                            distribution = distribution)
   }
   # ------------Normal/Beta ------------
   if (distribution == "normal" || distribution == "beta") {
     opt_plan <- optVarPlan(PRQ = PRQ, CRQ = CRQ, alpha = alpha, beta = beta, 
                            USL = USL, LSL = LSL, distribution = distribution,
                            sigma_type = sigma_type, theta_type = theta_type,
-                           sigma = sigma, theta = theta,
-                           measurement_error = measurement_error)
+                           sigma = sigma, theta = theta)
   }
   return(opt_plan)
 }

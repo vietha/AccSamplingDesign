@@ -11,8 +11,7 @@ optPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
         distribution = c("binomial", "poisson", "normal", "beta"),
         sigma_type = c("known", "unknown"),
         theta_type = c("known", "unknown"),
-        sigma = NULL, theta = NULL,
-        measurement_error = 0)
+        sigma = NULL, theta = NULL)
 }
 \arguments{
   \item{PRQ}{Producer's risk quality level (e.g., acceptable quality level).}
@@ -26,7 +25,6 @@ optPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   \item{theta_type}{Indicates if the process parameter (\code{theta}) is known or unknown.}
   \item{sigma}{Known standard deviation of the process, if applicable.}
   \item{theta}{Known process parameter (e.g., mean), if applicable.}
-  \item{measurement_error}{Amount of measurement error to include in the design (default is 0).}
 }
 \details{
 This function designs optimal acceptance sampling plans by balancing producer's 

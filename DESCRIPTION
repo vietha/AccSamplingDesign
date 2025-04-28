@@ -8,11 +8,13 @@ Authors@R:
       person("Victor", "Miranda", role = c("ths", "rev")),  
       person("Roger", "Kissling", role = c("ths", "rev"))  
     )
-Description: An R package for designing and analyzing acceptance sampling plans.
-    Supports both attribute-based (binomial) and variable-based (normal and beta)
-    sampling. Includes tools for measurement error adjustments and OC curve
-    visualization, enabling quality control for fractional and compositional data.
-License: GPL-3 + file LICENSE
+Description: Provides tools for designing and analyzing acceptance sampling plans.
+    Supports both attribute-based Binomial and Poisson) and variable-based (Normal and Beta)
+    sampling, enabling quality control for fractional and compositional data.
+    Uses nonlinear programming (NLP) for sampling plan optimization, minimizing sample size
+    while balancing producer's and consumer's risks. Operating Characteristic (OC) curves
+    are available for plan visualization.
+License: file LICENSE
 Encoding: UTF-8
 Imports:
     stats,
