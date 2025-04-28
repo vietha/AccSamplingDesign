@@ -1,8 +1,6 @@
 # AccSamplingDesign: Acceptance Sampling Plan Design
 An R package for designing and analyzing acceptance sampling plans.
 
-
-
 # 1. Introduction
 
 The AccSamplingDesign package provides tools for designing acceptance sampling plans for both attribute and variable data. Key features include:
@@ -28,8 +26,8 @@ library(AccSamplingDesign)
 ## 3.1 Create Attribute Plan
 ```{r}
 plan_attr <- optAttrPlan(
-  PRQ = 0.01,  # Acceptable Quality Level (1% defects)
-  CRQ = 0.05,  # Rejectable Quality Level (5% defects)
+  PRQ = 0.01,   # Acceptable Quality Level (1% defects)
+  CRQ = 0.05,   # Rejectable Quality Level (5% defects)
   alpha = 0.05, # Producer's risk
   beta = 0.10   # Consumer's risk
 )
@@ -48,37 +46,179 @@ accProb(plan_attr, 0.03)
 
 ## 3.4 OC Curve
 ```{r}
-plotOC(plan_attr)
+plot(plan_attr)
 ```
 
 # 4. Variable Sampling Plans
 
 ## 4.1 Normal Distribution 
+### 4.1.1 Find an optimal plan and plot OC chart
 ```{r}
 norm_plan <- optVarPlan(
-  PRQ = 0.025,        # Acceptable quality level (% nonconforming)
+  PRQ = 0.025,       # Acceptable quality level (% nonconforming)
   CRQ = 0.1,         # Rejectable quality level (% nonconforming)
   alpha = 0.05,      # Producer's risk
   beta = 0.1,        # Consumer's risk
-  distribution = "normal"
+  distribution = "normal",
+  sigma_type = "known"
 )
 
 summary(norm_plan)
+
+# Generate OC curve data
+oc_data_normal <- OCdata(norm_plan)
+# show data of Proportion Nonconforming (x_p) vs Probability Acceptance (y)
+#head(oc_data_normal, 15) 
+plot(norm_plan)
+```
+
+### 4.1.2 Compare known vs unknown sigma plans
+```{r}
+p1 = 0.005
+p2 = 0.03
+alpha = 0.05
+beta = 0.1
+
+# known sigma plan
+plan1 <- optVarPlan(
+  PRQ = p1,        # Acceptable quality level (% nonconforming)
+  CRQ = p2,         # Rejectable quality level (% nonconforming)
+  alpha = alpha,      # Producer's risk
+  beta = beta,        # Consumer's risk
+  distribution = "normal",
+  sigma_type = "know")
+summary(plan1)
+plot(plan1)
+
+# unknown sigma plan
+plan2 <- optVarPlan(
+  PRQ = p1,        # Acceptable quality level (% nonconforming)
+  CRQ = p2,         # Rejectable quality level (% nonconforming)
+  alpha = alpha,      # Producer's risk
+  beta = beta,        # Consumer's risk
+  distribution = "normal",
+  sigma_type = "unknow")
+summary(plan2)
+plot(plan2)
+
+# Generate OC curve data
+oc_data1 <- OCdata(plan1)
+oc_data2 <- OCdata(plan2)
+
+# Plot the first OC curve (solid red line)
+plot(oc_data1@pd, oc_data1@paccept, type = "l", col = "red", lwd = 2,
+     main = "Operating Characteristic (OC) Curve", 
+     xlab = "Proportion Nonconforming", 
+     ylab = "P(accept)")
+
+# Add the second OC curve (dashed blue line)
+lines(oc_data2@pd, oc_data2@paccept, col = "blue", lwd = 2, lty = 2)
+
+abline(v = c(p1, p2), lty = 1, col = "gray")
+abline(h = c(1 - alpha, beta), lty = 1, col = "gray")
+
+legend1 = paste0("Known Sigma (n=", plan1$sample_size, ", k=", plan1$k, ")")
+legend2 = paste0("Unknown Sigma (n=", plan2$sample_size, ", k=", plan2$k, ")")
+# Add a legend to distinguish the two curves
+legend("topright", legend = c(legend1, legend2), 
+       col = c("red", "blue"), lwd = 2, lty = c(1, 2))
+
+# Add a grid
+grid()
 ```
 
 ## 4.2 Beta Distribution
+
+### 4.2.1 Find an optimal plan and plot OC chart
 ```{r}
 beta_plan <- optVarPlan(
-  PRQ = 0.025,       # Target quality level (% nonconforming)
-  CRQ = 0.1,       # Minimum quality level (% nonconforming)
+  PRQ = 0.05,        # Target quality level (% nonconforming)
+  CRQ = 0.2,         # Minimum quality level (% nonconforming)
   alpha = 0.05,      # Producer's risk
   beta = 0.1,        # Consumer's risk
   distribution = "beta",
   theta = 44000000,
-  spec_limit = 0.00001, # Lower reliability limit
-  limit_type = "lower"
+  theta_type = "known",
+  LSL = 0.00001
 )
 summary(beta_plan)
+
+# Plot OC use plot function
+plot(beta_plan)
+
+# Generate OC data
+p_seq <- seq(0.005, 0.5, by = 0.005)
+oc_data <- OCdata(beta_plan, pd = p_seq)
+#head(oc_data)
+
+# plot use S3 method
+plot(oc_data)
+
+# Plot the OC curve with Mean Level (x_m) and Probability of Acceptance (y)
+plot(oc_data@pd, oc_data@paccept, type = "l", col = "blue", lwd = 2,
+     main = "OC Curve by the mean levels (plot by data)", xlab = "Mean Levels",
+     ylab = "P(accept)")
+grid()
+```
+
+### 4.2.2 Compare known vs unknown theta plans
+```{r}
+p1 = 0.005
+p2 = 0.03
+alpha = 0.05
+beta = 0.1
+spec_limit = 0.05 # use for Beta distribution
+theta = 500
+
+# My package for beta plan
+beta_plan1 <- optVarPlan(
+  PRQ = p1,       # Target quality level (% nonconforming)
+  CRQ = p2,       # Minimum quality level (% nonconforming)
+  alpha = alpha,      # Producer's risk
+  beta = beta,        # Consumer's risk
+  distribution = "beta",
+  theta = theta,
+  theta_type = "known",
+  USL = spec_limit
+)
+summary(beta_plan1)
+
+beta_plan2 <- optVarPlan(
+  PRQ = p1,       # Target quality level (% nonconforming)
+  CRQ = p2,       # Minimum quality level (% nonconforming)
+  alpha = alpha,      # Producer's risk
+  beta = beta,        # Consumer's risk
+  distribution = "beta",
+  theta = theta,
+  theta_type = "unknown",
+  USL = spec_limit
+)
+summary(beta_plan2)
+
+# Generate OC curve data
+oc_beta_data1 <- OCdata(beta_plan1)
+oc_beta_data2 <- OCdata(beta_plan2)
+
+# Plot the first OC curve (solid red line)
+plot(oc_beta_data1@pd, oc_beta_data1@paccept, type = "l", col = "red", lwd = 2,
+     main = "Operating Characteristic (OC) Curve", 
+     xlab = "Proportion Nonconforming", 
+     ylab = "P(accept)")
+
+# Add the second OC curve (dashed blue line)
+lines(oc_beta_data2@pd, oc_beta_data2@paccept, col = "blue", lwd = 2, lty = 2)
+
+abline(v = c(p1, p2), lty = 1, col = "gray")
+abline(h = c(1 - alpha, beta), lty = 1, col = "gray")
+
+legend1 = paste0("Known Theta (n=", beta_plan1$sample_size, ", k=", beta_plan1$k, ")")
+legend2 = paste0("Unknown Theta (n=", beta_plan2$sample_size, ", k=", beta_plan2$k, ")")
+# Add a legend to distinguish the two curves
+legend("topright", legend = c(legend1, legend2), 
+       col = c("red", "blue"), lwd = 2, lty = c(1, 2))
+
+# Add a grid
+grid()
 ```
 
 ## 4.3 Variable Plan Acceptance Probability
@@ -90,101 +230,120 @@ accProb(norm_plan, 0.1)
 accProb(beta_plan, 0.05)
 ```
 
-## 4.4 Variable OC Curves
-```{r}
-# Generate OC curve data
-oc_data_normal <- OCdata(norm_plan)
-# show data of Proportion Nonconforming (x_p) vs Probability Acceptance (y)
-head(oc_data_normal, 15) 
-plotOC(norm_plan)
-oc_data_beta <- OCdata(beta_plan)
-head(oc_data_beta, 15)
-plotOC(beta_plan)
-```
-
-# 5. Measurement Error Adjustment
-```{r}
-error_plan <- optAttrPlan(
-  PRQ = 0.01,
-  CRQ = 0.05,
-  measurement_error = 0.2 # 20% measurement error
-)
-summary(error_plan)
-```
-
 # 6. Technical Specifications
 
 ## 6.1 Attribute Plan:  
-$$P(accept|p) = \sum_{i=0}^c \binom{n}{i}p^i(1-p)^{n-i}$$  
+The Probability of Acceptance (\( Pa \)) is given by:
+$$Pa(p) = \sum_{i=0}^c \binom{n}{i}p^i(1-p)^{n-i}$$  
+where:
+
+- n is sample size
+- c is acceptance number
+- \( p \) is the quality level (non-conforming proportion)
 
 ## 6.2 Normal Variable Plan (Case of Known \( \sigma \)):
 The Probability of Acceptance (\( Pa \)) is given by:
 
-$$
-Pa = 1 - \Phi\left( \sqrt{n} \cdot (z_p + k) \right)
-$$
+\[
+Pa(p) = \Phi\left( -\sqrt{n_{\sigma}} \cdot (\Phi^{-1}(p) + k_{\sigma}) \right)
+\]
 
-where:<br>
-- $$\Phi(\cdot)$$ is the CDF of the standard normal distribution.<br>
-- $$z_p = \Phi^{-1}(p)$$ is the standard normal quantile corresponding to the quality level \( p \).<br>
-- $$n$$ is the sample size.<br>
-- $$k$$ is the acceptance constant.
+Or we could write:
 
-The required sample size (\( n \)) and acceptance constant (\( k \)) are:
+\[
+Pa(p) = 1 - \Phi\left( \sqrt{n_{\sigma}} \cdot (\Phi^{-1}(p) + k_{\sigma}) \right)
+\]
 
-$$
-n = \left( \frac{z_{1 - \alpha} + z_{1 - \beta}}{z_{1 - PRQ} - z_{1 - CRQ}} \right)^2
-$$
 
-$$
-k = \frac{z_{1 - PRQ} \cdot z_{1 - \beta} + z_{1 - CRQ} \cdot z_{1 - \alpha}}{z_{1 - \alpha} + z_{1 - \beta}}
-$$
+where:
 
+- \( \Phi(\cdot) \) is the CDF of the standard normal distribution.
+- \( \Phi^{-1}(p) \) is the standard normal quantile corresponding to the quality level \( p \).
+- \( n_{\sigma} \) is the sample size.
+- \( k_{\sigma} \) is the acceptance constant.
+
+The required sample size (\( n_{\sigma} \)) and acceptance constant (\( k_{\sigma} \)) are:
+\[
+n_{\sigma} = \left( \frac{\Phi^{-1}(1 - \alpha) + \Phi^{-1}(1 - \beta)}{\Phi^{-1}(1 - PRQ) - \Phi^{-1}(1 - CRQ)} \right)^2
+\]
+
+\[
+k_{\sigma} = \frac{\Phi^{-1}(1 - PRQ) \cdot \Phi^{-1}(1 - \beta) + \Phi^{-1}(1 - CRQ) \cdot \Phi^{-1}(1 - \alpha)}{\Phi^{-1}(1 - \alpha) + \Phi^{-1}(1 - \beta)}
+\]
 where:  
-- $$\alpha$$ and $$\beta$$ are the producer's and consumer's risks, respectively. <br>
-- $$PRQ$$ and $$CRQ$$ are the Producer's Risk Quality and Consumer's Risk Quality, respectively.
 
-(See Wilrich, PT. (2004) for more detail of calculation)
+- \( \alpha \) and \( \beta \) are the producer's and consumer's risks, respectively. <br>
+- \( PRQ \) and \( CRQ \) are the Producer's Risk Quality and Consumer's Risk Quality, respectively.
+
 
 ## 6.3 Normal Variable Plan (Case of Unknown \( \sigma \)):
 
-## 6.4 Beta Variable Plan:
+The formula for the probability of acceptance (\( Pa \)) is:
 
-Traditional acceptance sampling using normal distributions can be inadequate for compositional data bounded within [0,1]. Govindaraju and Kissling (2015) proposed Beta-based plans, where component proportions (e.g., protein content) follow $$X \sim \text{Beta}(a, b)$$, with density:
+\[
+Pa(p) = \Phi \left( \sqrt{\frac{n_s}{1 + \frac{k_s^2}{2}}} \left( \Phi^{-1}(1 - p) - k_s \right) \right)
+\]
 
-$$
+where:
+
+- **\( k_s = k_{\sigma} \)** is the acceptance constant.
+
+- **\( n_s \)**: This is the adjusted sample size when the sample standard deviation \( s \) (instead of population \( \sigma \)) is used for estimation. It accounts for the additional variability due to estimation:
+
+\[
+n_s = n_{\sigma} \times \left( 1 + \frac{k_s^2}{2} \right)
+\]
+
+(See Wilrich, PT. (2004) for more detail about calculation used in sessions 6.2 and 6.3)
+
+## 6.4 Beta Variable Plan (Case of Known \( \theta \)):
+
+Traditional acceptance sampling using normal distributions can be inadequate for compositional data bounded within [0,1]. Govindaraju and Kissling (2015) proposed Beta-based plans, where component proportions (e.g., protein content) follow \( X \sim \text{Beta}(a, b) \), with density:
+
+\[
 f(x; a, b) = \frac{x^{a-1} (1 - x)^{b-1}}{B(a, b)},
-$$
+\]
 
-where $$B(a, b)$$ is the Beta function. The distribution is reparameterized via mean $$\mu$$ and precision $$\theta$$:
+where \( B(a, b) \) is the Beta function. The distribution is reparameterized via mean \( \mu \) and precision \( \theta \):
 
-$$
+\[
 \mu = \frac{a}{a + b}, \quad \theta = a + b, \quad \sigma^2 \approx \frac{\mu(1 - \mu)}{\theta} \quad (\text{for large } \theta).
-$$
+\]
 
-Higher $$\theta$$ reduces variance, concentrating values around $$\mu$$. The probability of acceptance ($$Pa$$) parallels normal-based plans:
+Higher \( \theta \) reduces variance, concentrating values around \( \mu \). The probability of acceptance (\( Pa \)) parallels normal-based plans:
 
-$$
+\[
 Pa = P(\mu - k \sigma \geq L \mid \mu, \theta, m, k),
-$$
+\]
 
-where $$L$$ is the lower specification limit, $$m$$ is the sample size, and $$k$$ is the acceptability constant. Parameters $$m$$ and $$k$$ ensure:
+where \( L \) is the lower specification limit, \( m \) is the sample size, and \( k \) is the acceptability constant. Parameters \( m \) and \( k \) ensure:
 
-$$
+\[
 Pa(\mu_{PRQ}) = 1 - \alpha, \quad Pa(\mu_{CRQ}) = \beta,
-$$
+\]
 
-with $$\alpha$$ (producer’s risk) and $$\beta$$ (consumer’s risk) at specified quality levels (PRQ/CRQ).
+with \( \alpha \) (producer’s risk) and \( \beta \) (consumer’s risk) at specified quality levels (PRQ/CRQ).
+
+Note that: this problem is solved to find \( m \) and \( k \) used Non-linear programming and Monte Carlo simulation.
 
 ### Implementation Note:
-For a nonconforming proportion $$p$$ (e.g.,PRQ or CRQ), the mean $$\mu$$ at a quality level (PRQ/CRQ) is derived by solving:
+For a nonconforming proportion \( p \) (e.g.,PRQ or CRQ), the mean \( \mu \) at a quality level (PRQ/CRQ) is derived by solving:
 
-$$
+\[
 P(X \leq L \mid \mu, \theta) = p,
-$$
+\]
 
-where $$X \sim \text{Beta}(\theta \mu, \theta (1 - \mu))$$. This links $$\mu$$ to $$p$$ via the Beta cumulative distribution function (CDF) at $$L$$.
+where \( X \sim \text{Beta}(\theta \mu, \theta (1 - \mu)) \). This links \( \mu \) to \( p \) via the Beta cumulative distribution function (CDF) at \( L \).
 
+
+## 6.5 Beta Variable Plan (Case of Unknown \( \theta \)):
+For a beta distribution, the required sample size \(m_s\) (unknown \(\theta\)) is derived from the known-\(\theta\) sample size \(m_\theta\) using the formula:  
+\[
+m_s = \left(1 + 0.5k^2\right)m_\theta
+\]  
+where \(k\) is unchanged. This adjustment accounts for the variance ratio \(R = \frac{\text{Var}(S)}{\text{Var}(\hat{\mu})}\), which quantifies the relative variability of the sample standard deviation \(S\) compared to the estimator \(\hat{\mu}\). Unlike the normal distribution, where \(\text{Var}(S) \approx \frac{\sigma^2}{2n}\), for beta distribution’s, the ratio \(R\) depends on \(\mu\), \(\theta\), and sample size \(m\). The conservative factor \(0.5k^2\) approximates this ratio for practical use.
+
+\newpage
 
 # 7. References
 1. Schilling, E.G., & Neubauer, D.V. (2017). Acceptance Sampling in Quality Control (3rd ed.). Chapman and Hall/CRC. https://doi.org/10.4324/9781315120744
@@ -193,5 +352,4 @@ where $$X \sim \text{Beta}(\theta \mu, \theta (1 - \mu))$$. This links $$\mu$$ t
 Quality Engineering, vol. 27, no. 1, pp. 1-13. https://doi.org/10.1016/j.chemolab.2015.12.009
 4. ISO 2859-1:1999 - Sampling procedures for inspection by attributes  
 5. ISO 3951-1:2013 - Sampling procedures for inspection by variables  
-
 
