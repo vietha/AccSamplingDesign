@@ -47,7 +47,7 @@ find_plan_binomial <- function(PRQ, CRQ, alpha, beta, measurement_error = 0) {
 }
 
 
-find_plan_poisson <- function(PRQ, CRQ, alpha, beta, measurement_error = NULL) {
+find_plan_poisson <- function(PRQ, CRQ, alpha, beta, measurement_error = 0) {
   # Input validation
   if (PRQ >= CRQ) stop("PRQ must be < CRQ")
   if (alpha <= 0 || alpha >= 1) stop("alpha must be in (0,1)")
@@ -88,8 +88,7 @@ find_plan_poisson <- function(PRQ, CRQ, alpha, beta, measurement_error = NULL) {
 #' Attribute Acceptance Sampling Plan
 #' @export
 optAttrPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10, 
-                        distribution = c("binomial", "poisson"),
-                        measurement_error = 0) {
+                        distribution = c("binomial", "poisson")) {
   distribution <- match.arg(distribution)
   # Input validation
   if(PRQ >= CRQ) stop("PRQ must be < CRQ")
@@ -102,14 +101,12 @@ optAttrPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
   # ------------Binomial ----------
   if (distribution == "binomial") {
     attr_plan <- find_plan_binomial(PRQ = PRQ, CRQ = CRQ, 
-                                    alpha = alpha, beta = beta, 
-                                    measurement_error = measurement_error)
+                                    alpha = alpha, beta = beta)
   }
   # ------------Poisson ------------
   if (distribution == "poisson") {
     attr_plan <- find_plan_poisson(PRQ = PRQ, CRQ = CRQ, 
-                                   alpha = alpha, beta = beta, 
-                                   measurement_error = measurement_error)
+                                   alpha = alpha, beta = beta)
   }
   return(attr_plan)
 }

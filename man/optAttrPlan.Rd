@@ -6,8 +6,7 @@ Designs binomial-based acceptance sampling plans using producer/consumer risk cr
 }
 \usage{
 optAttrPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, 
-            distribution = c("binomial", "poisson"),
-            measurement_error = 0)
+            distribution = c("binomial", "poisson"))
 }
 \arguments{
   \item{PRQ}{Producer Risk Quality (0 < PRQ < 1)}
@@ -15,7 +14,6 @@ optAttrPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10,
   \item{alpha}{Producer's risk (0.05 default)}
   \item{beta}{Consumer's risk (0.10 default)}
   \item{distribution}{Support binomial and poisson distribution}
-  \item{measurement_error}{Inspection error ratio (0-1)}
 }
 \value{
 AttrPlan object containing:

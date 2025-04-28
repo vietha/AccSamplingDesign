@@ -248,16 +248,6 @@ accProb(norm_plan, 0.1)
 accProb(beta_plan, 0.05)
 ```
 
-# 5. Measurement Error Adjustment
-```{r}
-error_plan <- optAttrPlan(
-  PRQ = 0.01,
-  CRQ = 0.05,
-  measurement_error = 0.2 # 20% measurement error
-)
-summary(error_plan)
-```
-
 # 6. Technical Specifications
 
 ## 6.1 Attribute Plan:  

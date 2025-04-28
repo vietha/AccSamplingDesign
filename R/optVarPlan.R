@@ -52,8 +52,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
                        distribution = c("normal", "beta"),
                        sigma_type = c("known", "unknown"),
                        theta_type = c("known", "unknown"),
-                       sigma = NULL, theta = NULL,
-                       measurement_error = 0) {
+                       sigma = NULL, theta = NULL) {
   
   # Match arguments to ensure valid input
   distribution <- match.arg(distribution)
@@ -119,9 +118,9 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
   }
   
   # Check measurement error is non-negative
-  if (measurement_error < 0) {
-    stop("measurement_error must be non-negative.")
-  }
+  # if (measurement_error < 0) {
+  #   stop("measurement_error must be non-negative.")
+  # }
   
   if (distribution == "normal") {
     # Define quantile functions for standard normal

@@ -5,13 +5,9 @@
   Creates variable sampling plans for normal or beta distributed measurements.
 }
 \usage{
-optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10,
-           USL = NULL, LSL = NULL,
-           distribution = c("normal", "beta"),
-           sigma_type = c("known", "unknown"),
-           theta_type = c("known", "unknown"),
-           sigma = NULL, theta = NULL,
-           measurement_error = 0)
+optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
+           distribution = c("normal", "beta"), sigma_type = c("known", "unknown"),
+           theta_type = c("known", "unknown"), sigma = NULL, theta = NULL)
 }
 \arguments{
   \item{PRQ}{Producer Risk Quality (must be within valid range for the chosen distribution).}
@@ -35,8 +31,6 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10,
   \item{sigma}{Known standard deviation (used for normal distribution). Required if \code{sigma_type = "known"}.}
   
   \item{theta}{Dispersion parameter (used for beta distribution). Required if \code{theta_type = "known"}.}
-  
-  \item{measurement_error}{Measurement error ratio (numeric, default is 0).}
 }
 \details{
   The function generates variable acceptance sampling plans based on specified producer and consumer risks and either a normal or beta distribution model.
