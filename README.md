@@ -231,124 +231,138 @@ accProb(beta_plan, 0.05)
 
 # 6. Technical Specifications
 
-## 6.1 Attribute Plan:  
-The Probability of Acceptance (\( Pa \)) is given by:
-$$Pa(p) = \sum_{i=0}^c \binom{n}{i}p^i(1-p)^{n-i}$$  
+## 6.1 Attribute Plan
+The Probability of Acceptance (Pa) is:
+
+$$
+Pa(p) = \sum_{i=0}^c \binom{n}{i}p^i(1-p)^{n-i}
+$$
+
 where:
+- $n$ is sample size
+- $c$ is acceptance number
+- $p$ is the quality level (non-conforming proportion)
 
-- n is sample size
-- c is acceptance number
-- \( p \) is the quality level (non-conforming proportion)
+## 6.2 Normal Variable Plan (Case of Known $\sigma$)
 
-## 6.2 Normal Variable Plan (Case of Known \( \sigma \)):
-The Probability of Acceptance (\( Pa \)) is given by:
+The Probability of Acceptance (Pa) is:
 
-\[
+$$
 Pa(p) = \Phi\left( -\sqrt{n_{\sigma}} \cdot (\Phi^{-1}(p) + k_{\sigma}) \right)
-\]
+$$
 
-Or we could write:
+or:
 
-\[
+$$
 Pa(p) = 1 - \Phi\left( \sqrt{n_{\sigma}} \cdot (\Phi^{-1}(p) + k_{\sigma}) \right)
-\]
-
+$$
 
 where:
+- $\Phi(\cdot)$ is the CDF of the standard normal distribution.
+- $\Phi^{-1}(p)$ is the standard normal quantile corresponding to $p$.
+- $n_{\sigma}$ is the sample size.
+- $k_{\sigma}$ is the acceptance constant.
 
-- \( \Phi(\cdot) \) is the CDF of the standard normal distribution.
-- \( \Phi^{-1}(p) \) is the standard normal quantile corresponding to the quality level \( p \).
-- \( n_{\sigma} \) is the sample size.
-- \( k_{\sigma} \) is the acceptance constant.
+Sample size and acceptance constant:
 
-The required sample size (\( n_{\sigma} \)) and acceptance constant (\( k_{\sigma} \)) are:
-\[
+$$
 n_{\sigma} = \left( \frac{\Phi^{-1}(1 - \alpha) + \Phi^{-1}(1 - \beta)}{\Phi^{-1}(1 - PRQ) - \Phi^{-1}(1 - CRQ)} \right)^2
-\]
+$$
 
-\[
+$$
 k_{\sigma} = \frac{\Phi^{-1}(1 - PRQ) \cdot \Phi^{-1}(1 - \beta) + \Phi^{-1}(1 - CRQ) \cdot \Phi^{-1}(1 - \alpha)}{\Phi^{-1}(1 - \alpha) + \Phi^{-1}(1 - \beta)}
-\]
-where:  
-
-- \( \alpha \) and \( \beta \) are the producer's and consumer's risks, respectively. <br>
-- \( PRQ \) and \( CRQ \) are the Producer's Risk Quality and Consumer's Risk Quality, respectively.
-
-
-## 6.3 Normal Variable Plan (Case of Unknown \( \sigma \)):
-
-The formula for the probability of acceptance (\( Pa \)) is:
-
-\[
-Pa(p) = \Phi \left( \sqrt{\frac{n_s}{1 + \frac{k_s^2}{2}}} \left( \Phi^{-1}(1 - p) - k_s \right) \right)
-\]
+$$
 
 where:
+- $\alpha$ and $\beta$ are the producer's and consumer's risks, respectively.
+- $PRQ$ and $CRQ$ are the Producer's Risk Quality and Consumer's Risk Quality.
 
-- **\( k_s = k_{\sigma} \)** is the acceptance constant.
+## 6.3 Normal Variable Plan (Case of Unknown $\sigma$)
 
-- **\( n_s \)**: This is the adjusted sample size when the sample standard deviation \( s \) (instead of population \( \sigma \)) is used for estimation. It accounts for the additional variability due to estimation:
+The formula for the probability of acceptance (Pa) is:
 
-\[
+$$
+Pa(p) = \Phi \left( \sqrt{\frac{n_s}{1 + \frac{k_s^2}{2}}} \left( \Phi^{-1}(1 - p) - k_s \right) \right)
+$$
+
+where:
+- $k_s = k_{\sigma}$ is the acceptance constant.
+- $n_s$ is the adjusted sample size:
+
+$$
 n_s = n_{\sigma} \times \left( 1 + \frac{k_s^2}{2} \right)
-\]
+$$
 
-(See Wilrich, PT. (2004) for more detail about calculation used in sessions 6.2 and 6.3)
+(Reference: Wilrich, P.T. (2004))
 
-## 6.4 Beta Variable Plan (Case of Known \( \theta \)):
+## 6.4 Beta Variable Plan (Case of Known $\theta$)
 
-Traditional acceptance sampling using normal distributions can be inadequate for compositional data bounded within [0,1]. Govindaraju and Kissling (2015) proposed Beta-based plans, where component proportions (e.g., protein content) follow \( X \sim \text{Beta}(a, b) \), with density:
+For Beta distributed data:
 
-\[
-f(x; a, b) = \frac{x^{a-1} (1 - x)^{b-1}}{B(a, b)},
-\]
+$$
+f(x; a, b) = \frac{x^{a-1} (1 - x)^{b-1}}{B(a, b)}
+$$
 
-where \( B(a, b) \) is the Beta function. The distribution is reparameterized via mean \( \mu \) and precision \( \theta \):
+where $B(a, b)$ is the Beta function.
 
-\[
-\mu = \frac{a}{a + b}, \quad \theta = a + b, \quad \sigma^2 \approx \frac{\mu(1 - \mu)}{\theta} \quad (\text{for large } \theta).
-\]
+Reparameterized as:
 
-Higher \( \theta \) reduces variance, concentrating values around \( \mu \). The probability of acceptance (\( Pa \)) parallels normal-based plans:
+$$
+\mu = \frac{a}{a + b}, \quad \theta = a + b, \quad \sigma^2 \approx \frac{\mu(1 - \mu)}{\theta} \quad (\text{for large } \theta)
+$$
 
-\[
-Pa = P(\mu - k \sigma \geq L \mid \mu, \theta, m, k),
-\]
+Probability of acceptance:
 
-where \( L \) is the lower specification limit, \( m \) is the sample size, and \( k \) is the acceptability constant. Parameters \( m \) and \( k \) ensure:
+$$
+Pa = P(\mu - k \sigma \geq L \mid \mu, \theta, m, k)
+$$
 
-\[
-Pa(\mu_{PRQ}) = 1 - \alpha, \quad Pa(\mu_{CRQ}) = \beta,
-\]
+where:
+- $L$ = lower specification limit
+- $m$ = sample size
+- $k$ = acceptability constant
 
-with \( \alpha \) (producer’s risk) and \( \beta \) (consumer’s risk) at specified quality levels (PRQ/CRQ).
+Parameters $m$ and $k$ are found to satisfy:
 
-Note that: this problem is solved to find \( m \) and \( k \) used Non-linear programming and Monte Carlo simulation.
+$$
+Pa(\mu_{PRQ}) = 1 - \alpha, \quad Pa(\mu_{CRQ}) = \beta
+$$
 
-### Implementation Note:
-For a nonconforming proportion \( p \) (e.g.,PRQ or CRQ), the mean \( \mu \) at a quality level (PRQ/CRQ) is derived by solving:
+**Implementation Note:**  
+For a nonconforming proportion $p$ (e.g., PRQ or CRQ), the mean $\mu$ is derived by solving:
 
-\[
-P(X \leq L \mid \mu, \theta) = p,
-\]
+$$
+P(X \leq L \mid \mu, \theta) = p
+$$
 
-where \( X \sim \text{Beta}(\theta \mu, \theta (1 - \mu)) \). This links \( \mu \) to \( p \) via the Beta cumulative distribution function (CDF) at \( L \).
+where $X \sim \text{Beta}(\theta \mu, \theta (1-\mu))$.
 
+> Problem is solved using Non-linear programming and Monte Carlo simulation.
 
-## 6.5 Beta Variable Plan (Case of Unknown \( \theta \)):
-For a beta distribution, the required sample size \(m_s\) (unknown \(\theta\)) is derived from the known-\(\theta\) sample size \(m_\theta\) using the formula:  
-\[
+## 6.5 Beta Variable Plan (Case of Unknown $\theta$)
+
+For unknown $\theta$, sample size is adjusted:
+
+$$
 m_s = \left(1 + 0.5k^2\right)m_\theta
-\]  
-where \(k\) is unchanged. This adjustment accounts for the variance ratio \(R = \frac{\text{Var}(S)}{\text{Var}(\hat{\mu})}\), which quantifies the relative variability of the sample standard deviation \(S\) compared to the estimator \(\hat{\mu}\). Unlike the normal distribution, where \(\text{Var}(S) \approx \frac{\sigma^2}{2n}\), for beta distribution’s, the ratio \(R\) depends on \(\mu\), \(\theta\), and sample size \(m\). The conservative factor \(0.5k^2\) approximates this ratio for practical use.
+$$
 
-\newpage
+where:
+- $k$ remains the same.
+
+This adjustment considers the variance ratio:
+
+$$
+R = \frac{\text{Var}(S)}{\text{Var}(\hat{\mu})}
+$$
+
+Unlike the normal distribution where $\text{Var}(S) \approx \frac{\sigma^2}{2n}$, in the Beta case, $R$ depends on $\mu$, $\theta$, and sample size $m$.
+
+---
 
 # 7. References
-1. Schilling, E.G., & Neubauer, D.V. (2017). Acceptance Sampling in Quality Control (3rd ed.). Chapman and Hall/CRC. https://doi.org/10.4324/9781315120744
-2. Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Frontiers in Statistical Quality Control, vol 7. Physica, Heidelberg. https://doi.org/10.1007/978-3-7908-2674-6_4
-3. K. Govindaraju and R. Kissling (2015). Sampling plans for Beta-distributed compositional fractions.
-Quality Engineering, vol. 27, no. 1, pp. 1-13. https://doi.org/10.1016/j.chemolab.2015.12.009
-4. ISO 2859-1:1999 - Sampling procedures for inspection by attributes  
-5. ISO 3951-1:2013 - Sampling procedures for inspection by variables  
-
+1. Schilling, E.G., & Neubauer, D.V. (2017). *Acceptance Sampling in Quality Control* (3rd ed.). [Link](https://doi.org/10.4324/9781315120744)
+2. Wilrich, P.T. (2004). *Frontiers in Statistical Quality Control 7*. [Link](https://doi.org/10.1007/978-3-7908-2674-6_4)
+3. Govindaraju, K., & Kissling, R. (2015). *Sampling plans for Beta-distributed compositional fractions*. [Link](https://doi.org/10.1016/j.chemolab.2015.12.009)
+4. ISO 2859-1:1999 - Sampling procedures for inspection by attributes
+5. ISO 3951-1:2013 - Sampling procedures for inspection by variables
