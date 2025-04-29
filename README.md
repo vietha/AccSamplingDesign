@@ -14,10 +14,10 @@ The AccSamplingDesign package provides tools for designing acceptance sampling p
 
 ```{r eval=FALSE}
 # Install from GitHub
-devtools::install_github("vietha/AccSamplingDesign")
+R> devtools::install_github("vietha/AccSamplingDesign")
 
 # Load package
-library(AccSamplingDesign)
+R> library(AccSamplingDesign)
 ```
 
 # 3. Attribute Sampling Plans
