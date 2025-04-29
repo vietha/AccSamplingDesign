@@ -16,6 +16,10 @@ Detailed summaries for variable acceptance plans.
 Ha Truong
 }
 
+\value{
+No return value. This function is called for its side effect of printing a 
+formatted summary of the variable sampling plan to the console.
+}
 
 \examples{
 var_plan <- optVarPlan(

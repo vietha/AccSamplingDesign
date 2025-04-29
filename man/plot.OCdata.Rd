@@ -26,6 +26,11 @@
 
   If \code{by = "mean"} is requested but no mean estimates are available (e.g., for attribute plans), a message will be shown and no plot will be drawn.
 }
+
+\value{
+  A plot showing the OC curve for the given attribute/variable sampling plan.
+}
+
 \examples{
 # Attribute plan
 plan_attr <- optAttrPlan(PRQ = 0.01, CRQ = 0.05)

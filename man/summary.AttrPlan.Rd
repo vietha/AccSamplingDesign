@@ -16,6 +16,11 @@ Detailed summaries for attribute acceptance plans.
 Ha Truong
 }
 
+\value{
+No return value. This function is called for its side effect of printing a 
+formatted summary of the attribute sampling plan to the console.
+}
+
 \examples{
 attr_plan <- optAttrPlan(PRQ = 0.01, CRQ = 0.1)
 summary(attr_plan)
