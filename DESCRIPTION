@@ -14,7 +14,7 @@ Description: Provides tools for designing and analyzing acceptance sampling plan
     Uses nonlinear programming (NLP) for sampling plan optimization, minimizing sample size
     while balancing producer's and consumer's risks. Operating Characteristic (OC) curves
     are available for plan visualization.
-License: file LICENSE
+License: GPL-3
 Encoding: UTF-8
 Imports:
     stats,
