@@ -9,7 +9,7 @@ Authors@R:
       person("Roger", "Kissling", role = c("ths", "rev"))  
     )
 Description: Provides tools for designing and analyzing acceptance sampling plans.
-    Supports both attribute-based Binomial and Poisson) and variable-based (Normal and Beta)
+    Supports both attribute-based (Binomial and Poisson) and variable-based (Normal and Beta)
     sampling, enabling quality control for fractional and compositional data.
     Uses nonlinear programming (NLP) for sampling plan optimization, minimizing sample size
     while balancing producer's and consumer's risks. Operating Characteristic (OC) curves
