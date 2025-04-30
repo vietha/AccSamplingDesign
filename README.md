@@ -1,5 +1,5 @@
 # AccSamplingDesign: Acceptance Sampling Plan Design
-An R package for designing and analyzing acceptance sampling plans.
+An R package for designing and analyzing acceptance sampling plans. AccSamplingDesign is now available on CRAN [AccSamplingDesign on CRAN](https://cran.r-project.org/web/packages/AccSamplingDesign/)! 🎉
 
 # 1. Introduction
 
@@ -13,6 +13,9 @@ The AccSamplingDesign package provides tools for designing acceptance sampling p
 # 2. Installation
 
 ```{r eval=FALSE}
+# Install from CRAN
+R> install.packages("AccSamplingDesign")
+
 # Install from GitHub
 R> devtools::install_github("vietha/AccSamplingDesign")
 
