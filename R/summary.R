@@ -12,8 +12,8 @@
 
 #' @export
 summary.AttrPlan <- function(object, ...) {
-  cat("Attribute Acceptance Sampling Plan\n")
-  cat("----------------------------------\n")
+  cat("Attributes Acceptance Sampling Plan\n")
+  cat("-----------------------------------\n")
   cat("Distribution:", object$distribution, "\n")
   cat("Sample Size (n):", object$n, "\n")
   cat("Acceptance Number (c):", object$c, "\n")
@@ -22,14 +22,14 @@ summary.AttrPlan <- function(object, ...) {
   if(object$measurement_error > 0) {
     cat("Measurement Error:", object$measurement_error, "\n")
   }
-  cat("---------------------------------\n")
+  cat("----------------------------------\n")
   invisible(object)
 }
 
 #' @export
 summary.VarPlan <- function(object, ...) {
-  cat("Variable Acceptance Sampling Plan\n")
-  cat("---------------------------------\n")
+  cat("Variables Acceptance Sampling Plan\n")
+  cat("----------------------------------\n")
   cat("Distribution:", object$distribution, "\n")
 
   cat("Sample Size (n):", object$sample_size, "\n")
@@ -50,6 +50,6 @@ summary.VarPlan <- function(object, ...) {
   if(!is.null(object$measurement_error)) {
     cat("Measurement Error:", object$measurement_error, "\n")
   }
-  cat("---------------------------------\n")
+  cat("----------------------------------\n")
   invisible(object)
 }
