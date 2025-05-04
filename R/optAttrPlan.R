@@ -120,8 +120,8 @@ plot.AttrPlan <- function(x, pd = NULL, ...) {
   pa <- sapply(pd, function(p) accProb(x, p))
   
   plot(pd, pa, type = "l", col = "blue", lwd = 2,
-       main = paste0("Attribute OC Curve - ", x$distribution, " distribution | n=", 
-                     x$sample_size, ", c=", x$c),
+       main = paste0("Attributes Sampling OC Curve", " | n=", 
+                     x$sample_size, ", c=", x$c, " | ", x$distribution),
        xlab = "Proportion Nonconforming", ylab = "P(accept)", ...)
   abline(v = c(x$PRQ, x$CRQ), lty = 2, col = "gray")
   abline(h = c(1 - x$PR, x$CR), lty = 2, col = "gray")

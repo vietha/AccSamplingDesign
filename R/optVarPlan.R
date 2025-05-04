@@ -299,8 +299,8 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
   if (by == "pd") {
     pa <- sapply(pd, function(p) accProb(x, p))
     plot(pd, pa, type = "l", col = "red", lwd = 2,
-         main = paste0("Variable OC Curve - ", x$distribution,
-                       " distribution | n=", x$sample_size, ", k=", x$k),
+         main = paste0("Variables Sampling OC Curve by Pd",
+                       " | n=", x$sample_size, ", k=", x$k, " | ", x$distribution),
          xlab = "Proportion Nonconforming", ylab = "P(accept)", ...)
     abline(v = c(x$PRQ, x$CRQ), lty = 2, col = "gray")
     abline(h = c(1 - x$PR, x$CR), lty = 2, col = "gray")
@@ -329,8 +329,8 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
     
     pa <- sapply(pd, function(p) accProb(x, p))
     plot(mu_vals, pa, type = "l", col = "blue", lwd = 2,
-         main = paste0("Variable OC Curve by Mean - ", x$distribution,
-                       " | n=", x$sample_size, ", k=", x$k),
+         main = paste0("Variables Sampling OC Curve by Mean",
+                       " | n=", x$sample_size, ", k=", x$k, " | ", x$distribution),
          xlab = "Process Mean", ylab = "P(accept)", ...)
     abline(v = c(mu_PRQ, mu_CRQ), lty = 2, col = "gray")
     abline(h = c(1 - x$PR, x$CR), lty = 2, col = "gray")
