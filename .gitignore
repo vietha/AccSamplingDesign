@@ -1,9 +1,11 @@
 # History files
+.Rbuildignore
 .Rhistory
 .Rapp.history
 .zip 
 .html
 .DS_Store
+LICENSE
 
 # Session Data files
 .RData
