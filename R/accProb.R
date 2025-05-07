@@ -102,6 +102,10 @@ accProb.VarPlan <- function(plan, p) {
       } else {
         pa <- pbeta(z1, a, b)
       }
+      
+      if (length(pa) != 1 || !is.numeric(pa) || is.na(pa)) {
+        stop("No solution - Paccept can not be calculated base on input plan.")
+      }
       return(pa)
     }
   }
