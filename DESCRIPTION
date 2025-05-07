@@ -1,6 +1,6 @@
 Package: AccSamplingDesign
 Title: Acceptance Sampling Plans Design
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: 
     c(person("Ha", "Truong", 
            email = "truongvietha87@gmail.com",
@@ -11,13 +11,14 @@ Authors@R:
 Description: Provides tools for designing and analyzing acceptance sampling plans.
     Supports both attribute-based (Binomial and Poisson) and variable-based (Normal and Beta)
     sampling, enabling quality control for fractional and compositional data.
-    Uses nonlinear programming (NLP) for sampling plan optimization, minimizing sample size
-    while balancing producer's and consumer's risks. Operating Characteristic (OC) curves
+    Uses nonlinear programming for sampling plan optimization, minimizing sample size
+    while balancing producer's and consumer's risks. Operating Characteristic curves
     are available for plan visualization.
 License: GPL-3
 Encoding: UTF-8
 Imports:
     stats,
+    optim,
     methods
 Suggests:
     knitr,

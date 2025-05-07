@@ -21,21 +21,30 @@ library(AccSamplingDesign)
 
 # 1. Introduction
 
-The AccSamplingDesign package provides tools for designing acceptance sampling plans for both attribute and variable data. Key features include:
+The **AccSamplingDesign** package provides tools for designing and evaluating **Acceptance Sampling plans** for quality control in manufacturing and inspection settings. It supports both attributes and variables sampling methods with a focus on minimizing producer’s and consumer’s risks.
 
-- **Attribute sampling plans** (pass/fail inspection based on nonconforming proportion)
-- **Variable sampling plans** for normal and beta distributions, focusing on the proportion of nonconforming units
-- **Measurement error adjustments** to account for variability in the data
-- **OC curve visualization** to evaluate sampling plan performance
-- **Risk-based optimization** to minimize producer's and consumer's risks while meeting specified quality levels of Producer’s Risk Quality (PRQ) and Consumer’s Risk Quality (CRQ)
+### Key features include:
+
+- **Attributes Sampling Plans** — pass/fail decisions based on the proportion of nonconforming units.
+- **Variables Sampling Plans** — support for normal and beta distributions, including compositional data.
+- **Operating Characteristic (OC) Curve Visualization** — assess and compare plan performance.
+- **Risk-Based Optimization** — determine sampling plans that meet target Producer’s Risk (PR) and Consumer’s Risk (CR).
+- **Custom Plan Comparison** — compare user-defined plans against optimized designs.
 
 # 2. Installation
 
-```{r eval=FALSE}
-# Install from GitHub
-devtools::install_github("vietha/AccSamplingDesign")
+Install the stable release from **CRAN**:
 
-# Load package
+```r
+install.packages("AccSamplingDesign")
+```
+
+Or install from GitHub
+```{r eval=FALSE}
+devtools::install_github("vietha/AccSamplingDesign")
+```
+Load package
+```r
 library(AccSamplingDesign)
 ```
 
@@ -67,7 +76,7 @@ accProb(plan_attr, 0.03)
 plot(plan_attr)
 ```
 
-# 4. Variable Sampling Plans
+# 4. Variables Sampling Plans
 
 ## 4.1 Normal Distribution 
 ### 4.1.1 Find an optimal plan and plot OC chart
@@ -239,7 +248,7 @@ legend("topright", legend = c(legend1, legend2),
 grid()
 ```
 
-## 4.3 Variable Plan Acceptance Probability
+## 4.3 Variables Plan Acceptance Probability
 ```{r}
 # Probability of accepting 10% defective
 accProb(norm_plan, 0.1)
@@ -259,7 +268,7 @@ where:
 - c is acceptance number
 - \( p \) is the quality level (non-conforming proportion)
 
-## 6.2 Normal Variable Plan (Case of Known \( \sigma \)):
+## 6.2 Normal Variables Plan (Case of Known \( \sigma \)):
 The Probability of Acceptance (\( Pa \)) is given by:
 
 \[
@@ -294,7 +303,7 @@ where:
 - \( PRQ \) and \( CRQ \) are the Producer's Risk Quality and Consumer's Risk Quality, respectively.
 
 
-## 6.3 Normal Variable Plan (Case of Unknown \( \sigma \)):
+## 6.3 Normal Variables Plan (Case of Unknown \( \sigma \)):
 
 The formula for the probability of acceptance (\( Pa \)) is:
 
@@ -314,7 +323,7 @@ n_s = n_{\sigma} \times \left( 1 + \frac{k_s^2}{2} \right)
 
 (See Wilrich, PT. (2004) for more detail about calculation used in sessions 6.2 and 6.3)
 
-## 6.4 Beta Variable Plan (Case of Known \( \theta \)):
+## 6.4 Beta Variables Plan (Case of Known \( \theta \)):
 
 Traditional acceptance sampling using normal distributions can be inadequate for compositional data bounded within [0,1]. Govindaraju and Kissling (2015) proposed Beta-based plans, where component proportions (e.g., protein content) follow \( X \sim \text{Beta}(a, b) \), with density:
 
@@ -354,7 +363,7 @@ P(X \leq L \mid \mu, \theta) = p,
 where \( X \sim \text{Beta}(\theta \mu, \theta (1 - \mu)) \). This links \( \mu \) to \( p \) via the Beta cumulative distribution function (CDF) at \( L \).
 
 
-## 6.5 Beta Variable Plan (Case of Unknown \( \theta \)):
+## 6.5 Beta Variables Plans (Case of Unknown \( \theta \)):
 For a beta distribution, the required sample size \(m_s\) (unknown \(\theta\)) is derived from the known-\(\theta\) sample size \(m_\theta\) using the formula:  
 \[
 m_s = \left(1 + 0.5k^2\right)m_\theta
