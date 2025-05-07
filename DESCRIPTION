@@ -18,7 +18,6 @@ License: GPL-3
 Encoding: UTF-8
 Imports:
     stats,
-    optim,
     methods
 Suggests:
     knitr,
