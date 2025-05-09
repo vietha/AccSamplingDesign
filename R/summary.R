@@ -33,7 +33,7 @@ summary.VarPlan <- function(object, ...) {
   cat("Distribution:", object$distribution, "\n")
 
   cat("Sample Size (n):", object$sample_size, "\n")
-  cat("Acceptance Limit (k):", round(object$k, 3), "\n")
+  cat("Acceptance Constance (k):", round(object$k, 3), "\n")
   if(object$distribution == "normal") {
     cat("Population Standard Deviation:", object$sigma_type, "\n")
   } else {
