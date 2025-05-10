@@ -4,29 +4,33 @@ This package is now available on [CRAN](https://cran.r-project.org/package=AccSa
 
 # 1. Introduction
 
-The AccSamplingDesign package provides tools for designing acceptance sampling plans for both attribute and variable data. Key features include:
+The AccSamplingDesign package provides tools for designing Acceptance Sampling plans for both attributes and variables data. Key features include:
 
-- **Attribute sampling plans** (pass/fail inspection based on nonconforming proportion)
-- **Variable sampling plans** for normal and beta distributions, focusing on the proportion of nonconforming units
+- **Attributes Sampling plans** (pass/fail inspection based on nonconforming proportion)
+- **Variables Sampling plans** for normal and beta distributions, focusing on the proportion of nonconforming units
 - **OC curve visualization** to evaluate sampling plan performance
 - **Risk-based optimization** to minimize producer's and consumer's risks while meeting specified quality levels of Producer’s Risk Quality (PRQ) and Consumer’s Risk Quality (CRQ)
 
 # 2. Installation
 
-```{r eval=FALSE}
+```{r}
 # Install from CRAN
 R> install.packages("AccSamplingDesign")
+```
 
+```{r}
 # Install from GitHub
 R> devtools::install_github("vietha/AccSamplingDesign")
+```
 
+```{r}
 # Load package
 R> library(AccSamplingDesign)
 ```
 
-# 3. Attribute Sampling Plans
+# 3. Attributes Sampling Plans
 
-## 3.1 Create Attribute Plan
+## 3.1 Create Attributes Plan
 ```{r}
 plan_attr <- optAttrPlan(
   PRQ = 0.01,   # Acceptable Quality Level (1% defects)
@@ -52,7 +56,7 @@ accProb(plan_attr, 0.03)
 plot(plan_attr)
 ```
 
-# 4. Variable Sampling Plans
+# 4. Variables Sampling Plans
 
 ## 4.1 Normal Distribution 
 ### 4.1.1 Find an optimal plan and plot OC chart
@@ -235,7 +239,7 @@ accProb(beta_plan, 0.05)
 
 # 6. Technical Specifications
 
-## 6.1 Attribute Plan
+## 6.1 Attributes Plan
 The Probability of Acceptance (Pa) is:
 
 $$
