@@ -45,7 +45,7 @@ accProb.VarPlan <- function(plan, p) {
     m = plan$m
     k = plan$k
     if(plan$theta_type == "unknown") {
-      m = m/(1 + 0.5*k^2)
+      m = m/(1 + 0.85*k^2) # follow R&K 2015 simulations
     }
     
     # This upper limit case
