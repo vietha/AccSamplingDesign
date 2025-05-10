@@ -287,9 +287,9 @@ where:
 - \( \Phi(\cdot) \) is the CDF of the standard normal distribution.
 - \( \Phi^{-1}(p) \) is the standard normal quantile corresponding to the quality level \( p \).
 - \( n_{\sigma} \) is the sample size.
-- \( k_{\sigma} \) is the acceptance constant.
+- \( k_{\sigma} \) is the acceptability constant.
 
-The required sample size (\( n_{\sigma} \)) and acceptance constant (\( k_{\sigma} \)) are:
+The required sample size (\( n_{\sigma} \)) and acceptability constant (\( k_{\sigma} \)) are:
 \[
 n_{\sigma} = \left( \frac{\Phi^{-1}(1 - \alpha) + \Phi^{-1}(1 - \beta)}{\Phi^{-1}(1 - PRQ) - \Phi^{-1}(1 - CRQ)} \right)^2
 \]
@@ -313,7 +313,7 @@ Pa(p) = \Phi \left( \sqrt{\frac{n_s}{1 + \frac{k_s^2}{2}}} \left( \Phi^{-1}(1 - 
 
 where:
 
-- **\( k_s = k_{\sigma} \)** is the acceptance constant.
+- **\( k_s = k_{\sigma} \)** is the acceptability constant.
 
 - **\( n_s \)**: This is the adjusted sample size when the sample standard deviation \( s \) (instead of population \( \sigma \)) is used for estimation. It accounts for the additional variability due to estimation:
 

@@ -37,7 +37,7 @@ OCdata(plan = NULL, pd = NULL,
 
   \item{c}{Acceptance number (for attribute plans).}
 
-  \item{k}{Acceptance constant (for variable plans).}
+  \item{k}{Acceptability constant (for variable plans).}
 
   \item{sigma_type}{Whether sigma is \code{"known"} or \code{"unknown"} (for normal distribution).}
 
@@ -68,7 +68,7 @@ OCdata(plan = NULL, pd = NULL,
     \code{paccept} \tab Probability of acceptance at each level of nonconformance. \cr
     \code{type} \tab Distribution type (\code{"binomial"}, \code{"normal"}, or \code{"beta"}). \cr
     \code{n} \tab Sample size used in the plan. \cr
-    \code{k} \tab Acceptance constant (if applicable). \cr
+    \code{k} \tab Acceptability constant (if applicable). \cr
     \code{c} \tab Acceptance number (if applicable). \cr
     \code{process_means} \tab Estimated mean values (only for variable plans with specification limits). \cr
   }

@@ -20,7 +20,7 @@ setClass("OCdata",
            dist = "character",
            n = "numeric", # sample size
            c = "numeric", # acceptance number (sampling by attribute)
-           k = "numeric"  # acceptance constant
+           k = "numeric"  # acceptability constant
          ))
 
 #' @export
@@ -187,7 +187,7 @@ setMethod("show", signature(object = "OCdata"), function(object) {
   cat(sprintf("  Distribution: %s\n", object@dist))
   cat(sprintf("  Sample size (n): %s\n", ifelse(length(object@n) > 0, object@n, "NA")))
   if (length(object@k) > 0) {
-    cat(sprintf("  Acceptance constant (k): %s\n", object@k))
+    cat(sprintf("  Acceptability constant (k): %s\n", object@k))
   } else if (length(object@c) > 0) {
     cat(sprintf("  Acceptance number (c): %s\n", object@c))
   }

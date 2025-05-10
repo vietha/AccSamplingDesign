@@ -265,9 +265,9 @@ where:
 - $\Phi(\cdot)$ is the CDF of the standard normal distribution.
 - $\Phi^{-1}(p)$ is the standard normal quantile corresponding to $p$.
 - $n_{\sigma}$ is the sample size.
-- $k_{\sigma}$ is the acceptance constant.
+- $k_{\sigma}$ is the acceptability constant.
 
-Sample size and acceptance constant:
+Sample size and acceptability constant:
 
 $$
 n_{\sigma} = \left( \frac{\Phi^{-1}(1 - \alpha) + \Phi^{-1}(1 - \beta)}{\Phi^{-1}(1 - PRQ) - \Phi^{-1}(1 - CRQ)} \right)^2
@@ -290,7 +290,7 @@ Pa(p) = \Phi \left( \sqrt{\frac{n_s}{1 + \frac{k_s^2}{2}}} \left( \Phi^{-1}(1 - 
 $$
 
 where:
-- $k_s = k_{\sigma}$ is the acceptance constant.
+- $k_s = k_{\sigma}$ is the acceptability constant.
 - $n_s$ is the adjusted sample size:
 
 $$

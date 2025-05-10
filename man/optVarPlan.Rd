@@ -43,7 +43,7 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   A \code{VarPlan} object containing:
   \item{distribution}{Distribution used ("normal" or "beta").}
   \item{sample_size}{Final sample size after rounding (integer).}
-  \item{k}{Acceptance constant.}
+  \item{k}{Acceptability constant.}
   \item{n}{Unrounded sample size.}
 }
 \references{

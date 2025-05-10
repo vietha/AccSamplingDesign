@@ -131,7 +131,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     
     # Compute sample size n
     n <- ((u_alpha + u_beta) / (u_p1 - u_p2))^2
-    # Compute acceptance constant k
+    # Compute acceptability constant k
     k <- (u_p1 * u_beta + u_p2 * u_alpha) / (u_alpha + u_beta)
 
     if(sigma_type == "unknown") {
