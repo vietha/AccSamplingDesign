@@ -31,8 +31,13 @@ summary.VarPlan <- function(object, ...) {
   cat("Variables Acceptance Sampling Plan\n")
   cat("----------------------------------\n")
   cat("Distribution:", object$distribution, "\n")
-
-  cat("Sample Size (n):", object$sample_size, "\n")
+  if(object$distribution == "normal") {
+    sample_size <- round(object$n, 3)
+  }
+  else{
+    sample_size <- round(object$m, 3)
+  }
+  cat("Sample Size (n):", sample_size, "\n")
   cat("Acceptability Constant (k):", round(object$k, 3), "\n")
   if(object$distribution == "normal") {
     cat("Population Standard Deviation:", object$sigma_type, "\n")
@@ -42,10 +47,10 @@ summary.VarPlan <- function(object, ...) {
   cat("Producer's Risk (PR =", object$PR, ") at PRQ =", object$PRQ, "\n")
   cat("Consumer's Risk (CR =", object$CR, ") at CRQ =", object$CRQ, "\n")
   if (!is.null(object$LSL)) {
-    cat("Lower Specification Limit:", object$LSL, "\n")
+    cat("Lower Specification Limit (LSL):", object$LSL, "\n")
   }
   if (!is.null(object$USL)) {
-    cat("Uper Specification Limit:", object$USL, "\n")
+    cat("Uper Specification Limit (USL):", object$USL, "\n")
   }
   if(!is.null(object$measurement_error)) {
     cat("Measurement Error:", object$measurement_error, "\n")
