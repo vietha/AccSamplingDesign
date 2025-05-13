@@ -25,18 +25,24 @@ setClass("OCdata",
 
 #' @export
 OCdata <- function(plan = NULL, pd = NULL,
-                   distribution = c("binomial", "normal", "beta"),
-                   PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
+                   distribution = c("binomial", "poisson", "normal", "beta"),
                    USL = NULL, LSL = NULL, 
                    n = NULL, c = NULL, k = NULL,
                    sigma_type = c("known", "unknown"),
                    theta_type = c("known", "unknown"),
                    sigma = NULL, theta = NULL) {
   
+  # init default values
+  PRQ = CRQ = alpha =  beta = NULL
+  
   if (!is.null(plan)) {
     # Use plan directly
     if (is.null(pd)) {
-      pd <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
+      if (is.null(CRQ)) {
+        pd <- seq(1e-10, 1, length.out = 200)
+      }else {
+        pd <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
+      }
     }
     paccept <- sapply(pd, function(p) accProb(plan, p))
     
@@ -67,17 +73,15 @@ OCdata <- function(plan = NULL, pd = NULL,
   theta_type <- match.arg(theta_type)
   
   # Input validation
-  if (is.null(PRQ) || is.null(CRQ)) {
-    stop("PRQ and CRQ must be provided when plan is not specified.")
-  }
-  #if (is.null(alpha) || is.null(beta) || alpha <= 0 || alpha >= 1 || beta <= 0 || beta >= 1) {
-  #  stop("alpha and beta must be between 0 and 1 (exclusive).")
-  #}
-  if (CRQ <= PRQ) {
-    stop("CRQ must be greater than PRQ.")
-  }
+  # TODO: do we need PRQ/CRQ for custom plan when already have n,k?
+  # if (is.null(PRQ) || is.null(CRQ)) {
+  #   stop("PRQ and CRQ must be provided when plan is not specified.")
+  # }
+  # if (CRQ <= PRQ) {
+  #   stop("CRQ must be greater than PRQ.")
+  # }
   
-  if (distribution == "binomial") {
+  if (distribution %in% c("binomial", "poisson")) {
     if (is.null(n) || is.null(c)) stop("n and c must be provided for binomial distribution.")
     plan <- structure(list(n = n, c = c, PRQ = PRQ, CRQ = CRQ, 
                            PR = alpha, CR = beta,
