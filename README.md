@@ -326,7 +326,7 @@ where $X \sim \text{Beta}(\theta \mu, \theta (1-\mu))$.
 For unknown $\theta$, sample size is adjusted:
 
 $$
-m_s = \left(1 + 0.5k^2\right)m_\theta
+m_s = \left(1 + 0.85k^2\right)m_\theta
 $$
 
 where:
@@ -338,7 +338,8 @@ $$
 R = \frac{\text{Var}(S)}{\text{Var}(\hat{\mu})}
 $$
 
-Unlike the normal distribution where $\text{Var}(S) \approx \frac{\sigma^2}{2n}$, in the Beta case, $R$ depends on $\mu$, $\theta$, and sample size $m$.
+Unlike the normal distribution where $\text{Var}(S) \approx \frac{\sigma^2}{2n}$, 
+in the Beta case, $R$ depends on $\mu$, $\theta$, and sample size $m$. 
 
 ---
 

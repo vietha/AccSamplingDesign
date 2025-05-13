@@ -350,9 +350,9 @@ where \( X \sim \text{Beta}(\theta \mu, \theta (1 - \mu)) \). This links \( \mu 
 ## 5.5 Beta Variables Plans (Case of Unknown \( \theta \)):
 For a beta distribution, the required sample size \(m_s\) (unknown \(\theta\)) is derived from the known-\(\theta\) sample size \(m_\theta\) using the formula:  
 \[
-m_s = \left(1 + 0.5k^2\right)m_\theta
+m_s = \left(1 + 0.85k^2\right)m_\theta
 \]  
-where \(k\) is unchanged. This adjustment accounts for the variance ratio \(R = \frac{\text{Var}(S)}{\text{Var}(\hat{\mu})}\), which quantifies the relative variability of the sample standard deviation \(S\) compared to the estimator \(\hat{\mu}\). Unlike the normal distribution, where \(\text{Var}(S) \approx \frac{\sigma^2}{2n}\), for beta distribution’s, the ratio \(R\) depends on \(\mu\), \(\theta\), and sample size \(m\). The conservative factor \(0.5k^2\) approximates this ratio for practical use.
+where \(k\) is unchanged. This adjustment accounts for the variance ratio \(R = \frac{\text{Var}(S)}{\text{Var}(\hat{\mu})}\), which quantifies the relative variability of the sample standard deviation \(S\) compared to the estimator \(\hat{\mu}\). Unlike the normal distribution, where \(\text{Var}(S) \approx \frac{\sigma^2}{2n}\), for beta distribution’s, the ratio \(R\) depends on \(\mu\), \(\theta\), and sample size \(m\). The conservative factor \(0.85k^2\) approximates this ratio for practical use (see Govindaraju and Kissling (2015) )
 
 \newpage
 
