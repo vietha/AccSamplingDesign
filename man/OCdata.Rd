@@ -6,8 +6,7 @@
 }
 \usage{
 OCdata(plan = NULL, pd = NULL,
-       distribution = c("binomial", "normal", "beta"),
-       PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
+       distribution = c("binomial", "poisson", "normal", "beta"),
        USL = NULL, LSL = NULL,
        n = NULL, c = NULL, k = NULL,
        sigma_type = c("known", "unknown"),
@@ -78,7 +77,7 @@ plan <- optVarPlan(
   distribution = "normal"
 )
 # Generate OC data
-oc_data <- OCdata(plan, pd = seq(0, 0.15, by = 0.001)
+oc_data <- OCdata(plan, pd = seq(0, 0.15, by = 0.001))
 # Plot the OC curve
 plot(oc_data)
 
