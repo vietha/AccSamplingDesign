@@ -93,7 +93,7 @@ norm_plan <- optVarPlan(
 summary(norm_plan)
 
 # Generate OC curve data
-oc_data_normal <- OCdata(norm_plan)
+oc_data_normal <- OCdata(norm_plan, pd = seq(0, 0.3, by = 0.001))
 # show data of Proportion Nonconforming (x_p) vs Probability Acceptance (y)
 #head(oc_data_normal, 15) 
 plot(norm_plan)
@@ -127,31 +127,6 @@ plan2 <- optVarPlan(
   sigma_type = "unknow")
 summary(plan2)
 plot(plan2)
-
-# Generate OC curve data
-oc_data1 <- OCdata(plan1)
-oc_data2 <- OCdata(plan2)
-
-# Plot the first OC curve (solid red line)
-plot(oc_data1@pd, oc_data1@paccept, type = "l", col = "red", lwd = 2,
-     main = "Operating Characteristic (OC) Curve", 
-     xlab = "Proportion Nonconforming", 
-     ylab = "P(accept)")
-
-# Add the second OC curve (dashed blue line)
-lines(oc_data2@pd, oc_data2@paccept, col = "blue", lwd = 2, lty = 2)
-
-abline(v = c(p1, p2), lty = 1, col = "gray")
-abline(h = c(1 - alpha, beta), lty = 1, col = "gray")
-
-legend1 = paste0("Known Sigma (n=", plan1$sample_size, ", k=", plan1$k, ")")
-legend2 = paste0("Unknown Sigma (n=", plan2$sample_size, ", k=", plan2$k, ")")
-# Add a legend to distinguish the two curves
-legend("topright", legend = c(legend1, legend2), 
-       col = c("red", "blue"), lwd = 2, lty = c(1, 2))
-
-# Add a grid
-grid()
 ```
 
 ## 4.2 Beta Distribution
@@ -209,6 +184,7 @@ beta_plan1 <- optVarPlan(
   USL = spec_limit
 )
 summary(beta_plan1)
+plot(beta_plan1)
 
 beta_plan2 <- optVarPlan(
   PRQ = p1,       # Target quality level (% nonconforming)
@@ -221,31 +197,7 @@ beta_plan2 <- optVarPlan(
   USL = spec_limit
 )
 summary(beta_plan2)
-
-# Generate OC curve data
-oc_beta_data1 <- OCdata(beta_plan1)
-oc_beta_data2 <- OCdata(beta_plan2)
-
-# Plot the first OC curve (solid red line)
-plot(oc_beta_data1@pd, oc_beta_data1@paccept, type = "l", col = "red", lwd = 2,
-     main = "Operating Characteristic (OC) Curve", 
-     xlab = "Proportion Nonconforming", 
-     ylab = "P(accept)")
-
-# Add the second OC curve (dashed blue line)
-lines(oc_beta_data2@pd, oc_beta_data2@paccept, col = "blue", lwd = 2, lty = 2)
-
-abline(v = c(p1, p2), lty = 1, col = "gray")
-abline(h = c(1 - alpha, beta), lty = 1, col = "gray")
-
-legend1 = paste0("Known Theta (n=", beta_plan1$sample_size, ", k=", beta_plan1$k, ")")
-legend2 = paste0("Unknown Theta (n=", beta_plan2$sample_size, ", k=", beta_plan2$k, ")")
-# Add a legend to distinguish the two curves
-legend("topright", legend = c(legend1, legend2), 
-       col = c("red", "blue"), lwd = 2, lty = c(1, 2))
-
-# Add a grid
-grid()
+plot(beta_plan2)
 ```
 
 ## 4.3 Variables Plan Acceptance Probability
