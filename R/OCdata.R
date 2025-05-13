@@ -26,12 +26,11 @@ setClass("OCdata",
 #' @export
 OCdata <- function(plan = NULL, pd = NULL,
                    distribution = c("binomial", "poisson", "normal", "beta"),
-                   PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
-                   USL = NULL, LSL = NULL, 
                    n = NULL, c = NULL, k = NULL,
+                   USL = NULL, LSL = NULL, sigma = NULL, theta = NULL, 
+                   PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
                    sigma_type = c("known", "unknown"),
-                   theta_type = c("known", "unknown"),
-                   sigma = NULL, theta = NULL) {
+                   theta_type = c("known", "unknown")) {
   
   # init default values
   PRQ = CRQ = alpha =  beta = NULL
