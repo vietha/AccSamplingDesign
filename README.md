@@ -28,15 +28,18 @@ R> devtools::install_github("vietha/AccSamplingDesign")
 R> library(AccSamplingDesign)
 ```
 
-# 3. Attributes Sampling Plans
 
-## 3.1 Create Attributes Plan
+# 3. Attributes Sampling Plans
+> Note that we could use method optPlan() or optAttrPlan(), both work the same.
+
+## 3.1 Create Attribute Plan
 ```{r}
-plan_attr <- optAttrPlan(
+plan_attr <- optPlan(
   PRQ = 0.01,   # Acceptable Quality Level (1% defects)
   CRQ = 0.05,   # Rejectable Quality Level (5% defects)
   alpha = 0.05, # Producer's risk
-  beta = 0.10   # Consumer's risk
+  beta = 0.10,   # Consumer's risk
+  distribution = "binomial"
 )
 ```
 
@@ -56,30 +59,122 @@ accProb(plan_attr, 0.03)
 plot(plan_attr)
 ```
 
+## 3.5 Compare Attributes Optimal Plan vs Custom Plan
+```{r}
+# Step1: Find an optimal Attributes Sampling plan
+optimal_plan <- optPlan(PRQ = 0.01, CRQ = 0.05, alpha = 0.02, beta = 0.15,
+                        distribution = "binomial") # could try "poisson" too
+# Summarize the plan
+summary(optimal_plan)
+
+# Step2: Compare the optimal plan with two alternative plans 
+pd <- seq(0, 0.15, by = 0.001)
+oc_opt <- OCdata(plan = optimal_plan, pd = pd)
+oc_alt1 <- OCdata(n = optimal_plan$n, c = optimal_plan$c - 1,
+                  distribution = "binomial", pd = pd)
+oc_alt2 <- OCdata(n = optimal_plan$n, c = optimal_plan$c + 1,
+                  distribution = "binomial", pd = pd)
+
+# Step3: Visualize results
+plot(pd, oc_opt@paccept, type = "l", col = "blue", lwd = 2,
+     xlab = "Proportion Defective", ylab = "Probability of Acceptance",
+     main = "Attributes Sampling - OC Curves Comparison",
+     xlim = c(0, 0.15), ylim = c(0, 1))
+lines(pd, oc_alt1@paccept, col = "red", lwd = 2, lty = 2)
+lines(pd, oc_alt2@paccept, col = "green", lwd = 2, lty = 3)
+abline(v = c(0.01, 0.05), col = "gray50", lty = 2)
+abline(h = c(1 - 0.02, 0.15), col = "gray50", lty = 2)
+legend("topright", legend = c(sprintf("Optimal Plan (n = %d, c = %d)", 
+       optimal_plan$n, optimal_plan$c),
+       sprintf("Alt 1 (c = %d)", optimal_plan$c - 1),
+       sprintf("Alt 2 (c = %d)", optimal_plan$c + 1)),
+       col = c("blue", "red", "green"),
+       lty = c(1, 2, 3), lwd = 2)
+```
+
 # 4. Variables Sampling Plans
+> Note that we could use method optPlan() or optVarPlan(), both work the same.
 
 ## 4.1 Normal Distribution 
 ### 4.1.1 Find an optimal plan and plot OC chart
 ```{r}
-norm_plan <- optVarPlan(
-  PRQ = 0.025,       # Acceptable quality level (% nonconforming)
-  CRQ = 0.1,         # Rejectable quality level (% nonconforming)
-  alpha = 0.05,      # Producer's risk
-  beta = 0.1,        # Consumer's risk
+# Predefine parameters
+PRQ <- 0.025
+CRQ <- 0.1        
+alpha <- 0.05 
+beta <- 0.1
+
+norm_plan <- optPlan(
+  PRQ = PRQ,       # Acceptable quality level (% nonconforming)
+  CRQ = CRQ,         # Rejectable quality level (% nonconforming)
+  alpha = alpha,      # Producer's risk
+  beta = beta,        # Consumer's risk
   distribution = "normal",
   sigma_type = "known"
 )
 
+# Summary plan
 summary(norm_plan)
 
-# Generate OC curve data
-oc_data_normal <- OCdata(norm_plan)
-# show data of Proportion Nonconforming (x_p) vs Probability Acceptance (y)
-#head(oc_data_normal, 15) 
+# Probability of accepting 10% defective
+accProb(norm_plan, 0.1)
+
+# plot OC 
 plot(norm_plan)
 ```
 
-### 4.1.2 Compare known vs unknown sigma plans
+### 4.1.2 Optimal Plan vs Custom Plan
+```{r}
+# Setup a pd range to make sure all plans have use same pd range
+pd <- seq(0, 0.2, by = 0.001)
+
+# Generate OC curve data for designed plan
+opt_pdata <- OCdata(norm_plan, pd = pd)
+
+# Evaluated Plan 1: n + 6
+eval1_pdata <- OCdata(n = norm_plan$n + 6, k = norm_plan$k,
+                      distribution = "normal", pd = pd)
+
+# Evaluated Plan 2: k + 0.1
+eval2_pdata <- OCdata(n = norm_plan$n, k = norm_plan$k + 0.1,
+                      distribution = "normal", pd = pd)
+
+# Plot base
+plot(100 *  opt_pdata@pd, 100 * opt_pdata@paccept,
+     type = "l", lwd = 2, col = "blue",
+     xlab = "Percentage Nonconforming (%)",
+     ylab = "Probability of Acceptance (%)",
+     main = "Normal Variables Sampling - Designed Plan with Evaluated Plans")
+
+# Add evaluated plan 1: n + 6
+lines(100 * eval1_pdata@pd, 100 * eval1_pdata@paccept,
+      col = "red", lty = "longdash", lwd = 2)
+
+# Add evaluated plan 2: k + 0.1
+lines(100 * eval2_pdata@pd, 100 * eval2_pdata@paccept,
+      col = "forestgreen", lty = "dashed", lwd = 2)
+
+# Add vertical dashed lines at PRQ and CRQ
+abline(v = 100 * PRQ, col = "gray60", lty = "dashed")
+abline(v = 100 * CRQ, col = "gray60", lty = "dashed")
+
+# Add horizontal dashed lines at 1 - alpha and beta
+abline(h = 100 * (1 - alpha), col = "gray60", lty = "dashed")
+abline(h = 100 * beta, col = "gray60", lty = "dashed")
+
+# Add legend
+legend("topright",
+       legend = c(paste0("Designed Plan: n = ", round(norm_plan$n, 2), ", k = ", round(norm_plan$k, 2)), 
+                  "Evaluated Plan: n + 6", 
+                  "Evaluated Plan: k + 0.1"),
+       col = c("blue", "red", "forestgreen"),
+       lty = c("solid", "longdash", "dashed"),
+       lwd = 2,
+       bty = "n")
+```
+
+
+### 4.1.3 Compare known vs unknown sigma plans
 ```{r}
 p1 = 0.005
 p2 = 0.03
@@ -87,7 +182,7 @@ alpha = 0.05
 beta = 0.1
 
 # known sigma plan
-plan1 <- optVarPlan(
+plan1 <- optPlan(
   PRQ = p1,        # Acceptable quality level (% nonconforming)
   CRQ = p2,         # Rejectable quality level (% nonconforming)
   alpha = alpha,      # Producer's risk
@@ -98,7 +193,7 @@ summary(plan1)
 plot(plan1)
 
 # unknown sigma plan
-plan2 <- optVarPlan(
+plan2 <- optPlan(
   PRQ = p1,        # Acceptable quality level (% nonconforming)
   CRQ = p2,         # Rejectable quality level (% nonconforming)
   alpha = alpha,      # Producer's risk
@@ -111,9 +206,9 @@ plot(plan2)
 
 ## 4.2 Beta Distribution
 
-### 4.2.1 Find an optimal plan and plot OC chart
+### 4.2.1 Find an Optimal Plan and Plot OC Chart
 ```{r}
-beta_plan <- optVarPlan(
+beta_plan <- optPlan(
   PRQ = 0.05,        # Target quality level (% nonconforming)
   CRQ = 0.2,         # Minimum quality level (% nonconforming)
   alpha = 0.05,      # Producer's risk
@@ -123,92 +218,25 @@ beta_plan <- optVarPlan(
   theta_type = "known",
   LSL = 0.00001
 )
+# Summary Beta plan
 summary(beta_plan)
+# Probability of accepting 5% defective
+accProb(beta_plan, 0.05)
+
 # Plot OC use plot function
 plot(beta_plan)
 ```
 
-### 4.2.2 Compare known vs unknown theta plans
+### 4.2.2 Plot OC by Defective Rate and by The Mean
 ```{r}
-p1 = 0.005
-p2 = 0.03
-alpha = 0.05
-beta = 0.1
-spec_limit = 0.05 # use for Beta distribution
-theta = 500
+# Generate OC data
+p_seq <- seq(0.005, 0.5, by = 0.005)
+oc_data <- OCdata(beta_plan, pd = p_seq)
 
-# My package for beta plan
-beta_plan1 <- optVarPlan(
-  PRQ = p1,       # Target quality level (% nonconforming)
-  CRQ = p2,       # Minimum quality level (% nonconforming)
-  alpha = alpha,      # Producer's risk
-  beta = beta,        # Consumer's risk
-  distribution = "beta",
-  theta = theta,
-  theta_type = "known",
-  USL = spec_limit
-)
-summary(beta_plan1)
-plot(beta_plan1)
-
-beta_plan2 <- optVarPlan(
-  PRQ = p1,       # Target quality level (% nonconforming)
-  CRQ = p2,       # Minimum quality level (% nonconforming)
-  alpha = alpha,      # Producer's risk
-  beta = beta,        # Consumer's risk
-  distribution = "beta",
-  theta = theta,
-  theta_type = "unknown",
-  USL = spec_limit
-)
-summary(beta_plan2)
-plot(beta_plan2)
-```
-
-## 4.3 Variable Plan Acceptance Probability
-```{r}
-# Probability of accepting 10% defective
-accProb(norm_plan, 0.1)
-
-# Probability of accepting 5% defective
-accProb(beta_plan, 0.05)
-```
-
-## 4.4 Custom Plan Generation & Comparison use OCdata() method
-```{r}
-# Step1: Find an optimal attribute sampling plan
-optimal_plan <- optPlan(PRQ = 0.01, CRQ = 0.05, alpha = 0.02, beta = 0.15,
-                        distribution = "binomial") 
-# Summarize the plan
-summary(optimal_plan)
-```
-
-```{r}
-# Step2: Compare the optimal plan with two alternative plans 
-pd <- seq(0, 0.15, by = 0.001)
-oc_opt <- OCdata(plan = optimal_plan, pd = pd)
-oc_alt1 <- OCdata(n = optimal_plan$n, c = optimal_plan$c - 1,
-                  distribution = "binomial", pd = pd)
-oc_alt2 <- OCdata(n = optimal_plan$n, c = optimal_plan$c + 1,
-                  distribution = "binomial", pd = pd)
-```
-
-```{r}
-# Step3: Visualize results
-plot(pd, oc_opt@paccept, type = "l", col = "blue", lwd = 2,
-     xlab = "Proportion Defective", ylab = "Probability of Acceptance",
-     main = "OC Curve Comparison (PRQ = 0.01, CRQ = 0.05, alpha = 0.02, belta = 0.15)",
-     xlim = c(0, 0.15), ylim = c(0, 1))
-lines(pd, oc_alt1@paccept, col = "red", lwd = 2, lty = 2)
-lines(pd, oc_alt2@paccept, col = "green", lwd = 2, lty = 3)
-abline(v = c(0.01, 0.05), col = "gray50", lty = 2)
-abline(h = c(1 - 0.02, 0.15), col = "gray50", lty = 2)
-legend("topright", legend = c(sprintf("Optimal Plan (n = %d, c = %d)", 
-       optimal_plan$n, optimal_plan$c),
-       sprintf("Alt 1 (c = %d)", optimal_plan$c - 1),
-       sprintf("Alt 2 (c = %d)", optimal_plan$c + 1)),
-       col = c("blue", "red", "green"),
-       lty = c(1, 2, 3), lwd = 2)
+# plot use S3 method by default (defective rate)
+plot(oc_data)
+# plot use S3 method by default by mean levels
+plot(oc_data, by = "mean")
 ```
 
 # 5. Technical Specifications
