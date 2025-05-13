@@ -21,14 +21,6 @@ OCdata(plan = NULL, pd = NULL,
 
   \item{distribution}{Distribution type used for the plan. Options are \code{"binomial"}, \code{"normal"}, or \code{"beta"}. Required if \code{plan} is not provided.}
 
-  \item{PRQ}{Producer's Risk Quality level (used to define OC curve range when \code{pd} is not provided).}
-
-  \item{CRQ}{Consumer's Risk Quality level (used to define OC curve range when \code{pd} is not provided).}
-
-  \item{alpha}{Producer’s risk (Type I error, numeric between 0 and 1).}
-
-  \item{beta}{Consumer’s risk (Type II error, numeric between 0 and 1).}
-
   \item{USL}{Upper Specification Limit (used for variable sampling plans). Only one of \code{USL} or \code{LSL} should be provided.}
 
   \item{LSL}{Lower Specification Limit (used for variable sampling plans). Only one of \code{USL} or \code{LSL} should be provided.}
@@ -85,16 +77,14 @@ plan <- optVarPlan(
   beta = 0.1,
   distribution = "normal"
 )
-
 # Generate OC data
-oc_data <- OCdata(plan)
-
+oc_data <- OCdata(plan, pd = seq(0, 0.15, by = 0.001)
 # Plot the OC curve
 plot(oc_data)
 
 # Example 2: Attribute plan using direct input
-oc_data2 <- OCdata(n = 132, c = 5, PRQ = 0.01, CRQ = 0.05, 
-                   distribution = "binomial")
+oc_data2 <- OCdata(n = 132, c = 5, distribution = "binomial", 
+                   pd = seq(0, 0.15, by = 0.001))
 oc_data2
 plot(oc_data2)
 
