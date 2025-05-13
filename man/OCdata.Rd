@@ -7,6 +7,7 @@
 \usage{
 OCdata(plan = NULL, pd = NULL,
        distribution = c("binomial", "poisson", "normal", "beta"),
+       PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
        USL = NULL, LSL = NULL,
        n = NULL, c = NULL, k = NULL,
        sigma_type = c("known", "unknown"),
@@ -19,7 +20,14 @@ OCdata(plan = NULL, pd = NULL,
   \item{pd}{An optional vector of proportions of nonconforming items. If \code{NULL}, the function generates a default sequence based on \code{CRQ}.}
 
   \item{distribution}{Distribution type used for the plan. Options are \code{"binomial"}, \code{"normal"}, or \code{"beta"}. Required if \code{plan} is not provided.}
+  
+  \item{PRQ}{Producer's Risk Quality level - optinal.}
 
+  \item{CRQ}{Consumer's Risk Quality level - optinal.}
+
+  \item{alpha}{Producer’s risk - optinal.}
+
+  \item{beta}{Consumer’s risk - optinal.}
   \item{USL}{Upper Specification Limit (used for variable sampling plans). Only one of \code{USL} or \code{LSL} should be provided.}
 
   \item{LSL}{Lower Specification Limit (used for variable sampling plans). Only one of \code{USL} or \code{LSL} should be provided.}
