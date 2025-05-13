@@ -24,8 +24,8 @@ OCdata(plan = NULL, pd = NULL,
   \item{pd}{An optional vector of proportions of nonconforming items. If 
   \code{NULL}, the function generates a default sequence based on \code{CRQ}.}
 
-  \item{distribution}{Distribution type used for the plan. Options are \
-  code{"binomial"}, code{"poisson"}, \code{"normal"}, or \code{"beta"}. 
+  \item{distribution}{Distribution type used for the plan. Options are 
+  \code{"binomial"}, \code{"poisson"}, \code{"normal"}, or \code{"beta"}. 
   Required if \code{plan} is not provided.}
   
   \item{n}{Sample size.}
