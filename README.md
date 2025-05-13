@@ -107,31 +107,6 @@ plan2 <- optVarPlan(
   sigma_type = "unknow")
 summary(plan2)
 plot(plan2)
-
-# Generate OC curve data
-oc_data1 <- OCdata(plan1)
-oc_data2 <- OCdata(plan2)
-
-# Plot the first OC curve (solid red line)
-plot(oc_data1@pd, oc_data1@paccept, type = "l", col = "red", lwd = 2,
-     main = "Operating Characteristic (OC) Curve", 
-     xlab = "Proportion Nonconforming", 
-     ylab = "P(accept)")
-
-# Add the second OC curve (dashed blue line)
-lines(oc_data2@pd, oc_data2@paccept, col = "blue", lwd = 2, lty = 2)
-
-abline(v = c(p1, p2), lty = 1, col = "gray")
-abline(h = c(1 - alpha, beta), lty = 1, col = "gray")
-
-legend1 = paste0("Known Sigma (n=", plan1$sample_size, ", k=", plan1$k, ")")
-legend2 = paste0("Unknown Sigma (n=", plan2$sample_size, ", k=", plan2$k, ")")
-# Add a legend to distinguish the two curves
-legend("topright", legend = c(legend1, legend2), 
-       col = c("red", "blue"), lwd = 2, lty = c(1, 2))
-
-# Add a grid
-grid()
 ```
 
 ## 4.2 Beta Distribution
@@ -149,23 +124,8 @@ beta_plan <- optVarPlan(
   LSL = 0.00001
 )
 summary(beta_plan)
-
 # Plot OC use plot function
 plot(beta_plan)
-
-# Generate OC data
-p_seq <- seq(0.005, 0.5, by = 0.005)
-oc_data <- OCdata(beta_plan, pd = p_seq)
-#head(oc_data)
-
-# plot use S3 method
-plot(oc_data)
-
-# Plot the OC curve with Mean Level (x_m) and Probability of Acceptance (y)
-plot(oc_data@pd, oc_data@paccept, type = "l", col = "blue", lwd = 2,
-     main = "OC Curve by the mean levels (plot by data)", xlab = "Mean Levels",
-     ylab = "P(accept)")
-grid()
 ```
 
 ### 4.2.2 Compare known vs unknown theta plans
@@ -189,6 +149,7 @@ beta_plan1 <- optVarPlan(
   USL = spec_limit
 )
 summary(beta_plan1)
+plot(beta_plan1)
 
 beta_plan2 <- optVarPlan(
   PRQ = p1,       # Target quality level (% nonconforming)
@@ -201,31 +162,7 @@ beta_plan2 <- optVarPlan(
   USL = spec_limit
 )
 summary(beta_plan2)
-
-# Generate OC curve data
-oc_beta_data1 <- OCdata(beta_plan1)
-oc_beta_data2 <- OCdata(beta_plan2)
-
-# Plot the first OC curve (solid red line)
-plot(oc_beta_data1@pd, oc_beta_data1@paccept, type = "l", col = "red", lwd = 2,
-     main = "Operating Characteristic (OC) Curve", 
-     xlab = "Proportion Nonconforming", 
-     ylab = "P(accept)")
-
-# Add the second OC curve (dashed blue line)
-lines(oc_beta_data2@pd, oc_beta_data2@paccept, col = "blue", lwd = 2, lty = 2)
-
-abline(v = c(p1, p2), lty = 1, col = "gray")
-abline(h = c(1 - alpha, beta), lty = 1, col = "gray")
-
-legend1 = paste0("Known Theta (n=", beta_plan1$sample_size, ", k=", beta_plan1$k, ")")
-legend2 = paste0("Unknown Theta (n=", beta_plan2$sample_size, ", k=", beta_plan2$k, ")")
-# Add a legend to distinguish the two curves
-legend("topright", legend = c(legend1, legend2), 
-       col = c("red", "blue"), lwd = 2, lty = c(1, 2))
-
-# Add a grid
-grid()
+plot(beta_plan2)
 ```
 
 ## 4.3 Variable Plan Acceptance Probability
@@ -237,9 +174,46 @@ accProb(norm_plan, 0.1)
 accProb(beta_plan, 0.05)
 ```
 
-# 6. Technical Specifications
+## 4.4 Custom Plan Generation & Comparison use OCdata() method
+```{r}
+# Step1: Find an optimal attribute sampling plan
+optimal_plan <- optPlan(PRQ = 0.01, CRQ = 0.05, alpha = 0.02, beta = 0.15,
+                        distribution = "binomial") 
+# Summarize the plan
+summary(optimal_plan)
+```
 
-## 6.1 Attributes Plan
+```{r}
+# Step2: Compare the optimal plan with two alternative plans 
+pd <- seq(0, 0.15, by = 0.001)
+oc_opt <- OCdata(plan = optimal_plan, pd = pd)
+oc_alt1 <- OCdata(n = optimal_plan$n, c = optimal_plan$c - 1,
+                  distribution = "binomial", pd = pd)
+oc_alt2 <- OCdata(n = optimal_plan$n, c = optimal_plan$c + 1,
+                  distribution = "binomial", pd = pd)
+```
+
+```{r}
+# Step3: Visualize results
+plot(pd, oc_opt@paccept, type = "l", col = "blue", lwd = 2,
+     xlab = "Proportion Defective", ylab = "Probability of Acceptance",
+     main = "OC Curve Comparison (PRQ = 0.01, CRQ = 0.05, alpha = 0.02, belta = 0.15)",
+     xlim = c(0, 0.15), ylim = c(0, 1))
+lines(pd, oc_alt1@paccept, col = "red", lwd = 2, lty = 2)
+lines(pd, oc_alt2@paccept, col = "green", lwd = 2, lty = 3)
+abline(v = c(0.01, 0.05), col = "gray50", lty = 2)
+abline(h = c(1 - 0.02, 0.15), col = "gray50", lty = 2)
+legend("topright", legend = c(sprintf("Optimal Plan (n = %d, c = %d)", 
+       optimal_plan$n, optimal_plan$c),
+       sprintf("Alt 1 (c = %d)", optimal_plan$c - 1),
+       sprintf("Alt 2 (c = %d)", optimal_plan$c + 1)),
+       col = c("blue", "red", "green"),
+       lty = c(1, 2, 3), lwd = 2)
+```
+
+# 5. Technical Specifications
+
+## 5.1 Attributes Plan
 The Probability of Acceptance (Pa) is:
 
 $$
@@ -251,7 +225,7 @@ where:
 - $c$ is acceptance number
 - $p$ is the quality level (non-conforming proportion)
 
-## 6.2 Normal Variable Plan (Case of Known $\sigma$)
+## 5.2 Normal Variable Plan (Case of Known $\sigma$)
 
 The Probability of Acceptance (Pa) is:
 
@@ -285,7 +259,7 @@ where:
 - $\alpha$ and $\beta$ are the producer's and consumer's risks, respectively.
 - $PRQ$ and $CRQ$ are the Producer's Risk Quality and Consumer's Risk Quality.
 
-## 6.3 Normal Variable Plan (Case of Unknown $\sigma$)
+## 5.3 Normal Variable Plan (Case of Unknown $\sigma$)
 
 The formula for the probability of acceptance (Pa) is:
 
@@ -303,7 +277,7 @@ $$
 
 (Reference: Wilrich, P.T. (2004))
 
-## 6.4 Beta Variable Plan (Case of Known $\theta$)
+## 5.4 Beta Variable Plan (Case of Known $\theta$)
 
 For Beta distributed data:
 
@@ -345,9 +319,9 @@ $$
 
 where $X \sim \text{Beta}(\theta \mu, \theta (1-\mu))$.
 
-> Problem is solved using Non-linear programming and Monte Carlo simulation.
+> Problem is solved using Non-linear programming.
 
-## 6.5 Beta Variable Plan (Case of Unknown $\theta$)
+## 5.5 Beta Variable Plan (Case of Unknown $\theta$)
 
 For unknown $\theta$, sample size is adjusted:
 
@@ -368,7 +342,7 @@ Unlike the normal distribution where $\text{Var}(S) \approx \frac{\sigma^2}{2n}$
 
 ---
 
-# 7. References
+# 6. References
 1. Schilling, E.G., & Neubauer, D.V. (2017). *Acceptance Sampling in Quality Control* (3rd ed.). [Link](https://doi.org/10.4324/9781315120744)
 2. Wilrich, P.T. (2004). *Frontiers in Statistical Quality Control 7*. [Link](https://doi.org/10.1007/978-3-7908-2674-6_4)
 3. Govindaraju, K., & Kissling, R. (2015). *Sampling plans for Beta-distributed compositional fractions*. [Link](https://doi.org/10.1016/j.chemolab.2015.12.009)
