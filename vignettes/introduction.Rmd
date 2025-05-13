@@ -208,10 +208,42 @@ accProb(norm_plan, 0.1)
 # Probability of accepting 5% defective
 accProb(beta_plan, 0.05)
 ```
+## 4.4 Custom Plan Generation & Comparison use OCdata() method
+```{r}
+# Step1: Find an optimal attribute sampling plan
+optimal_plan <- optPlan(PRQ = 0.01, CRQ = 0.05, alpha = 0.02, beta = 0.15,
+                        distribution = "binomial") # could try "poisson" too
+# Summarize the plan
+summary(optimal_plan)
 
-# 6. Technical Specifications
+# Step2: Compare the optimal plan with two alternative plans 
+pd <- seq(0, 0.15, by = 0.001)
+oc_opt <- OCdata(plan = optimal_plan, pd = pd)
+oc_alt1 <- OCdata(n = optimal_plan$n, c = optimal_plan$c - 1,
+                  distribution = "binomial", pd = pd)
+oc_alt2 <- OCdata(n = optimal_plan$n, c = optimal_plan$c + 1,
+                  distribution = "binomial", pd = pd)
 
-## 6.1 Attribute Plan:  
+# Step3: Visualize results
+plot(pd, oc_opt@paccept, type = "l", col = "blue", lwd = 2,
+     xlab = "Proportion Defective", ylab = "Probability of Acceptance",
+     main = "OC Curve Comparison (PRQ = 0.01, CRQ = 0.05, alpha = 0.02, belta = 0.15)",
+     xlim = c(0, 0.15), ylim = c(0, 1))
+lines(pd, oc_alt1@paccept, col = "red", lwd = 2, lty = 2)
+lines(pd, oc_alt2@paccept, col = "green", lwd = 2, lty = 3)
+abline(v = c(0.01, 0.05), col = "gray50", lty = 2)
+abline(h = c(1 - 0.02, 0.15), col = "gray50", lty = 2)
+legend("topright", legend = c(sprintf("Optimal Plan (n = %d, c = %d)", 
+       optimal_plan$n, optimal_plan$c),
+       sprintf("Alt 1 (c = %d)", optimal_plan$c - 1),
+       sprintf("Alt 2 (c = %d)", optimal_plan$c + 1)),
+       col = c("blue", "red", "green"),
+       lty = c(1, 2, 3), lwd = 2)
+```
+
+# 5. Technical Specifications
+
+## 5.1 Attribute Plan:  
 The Probability of Acceptance (\( Pa \)) is given by:
 $$Pa(p) = \sum_{i=0}^c \binom{n}{i}p^i(1-p)^{n-i}$$  
 where:
@@ -220,7 +252,7 @@ where:
 - c is acceptance number
 - \( p \) is the quality level (non-conforming proportion)
 
-## 6.2 Normal Variables Plan (Case of Known \( \sigma \)):
+## 5.2 Normal Variables Plan (Case of Known \( \sigma \)):
 The Probability of Acceptance (\( Pa \)) is given by:
 
 \[
@@ -255,7 +287,7 @@ where:
 - \( PRQ \) and \( CRQ \) are the Producer's Risk Quality and Consumer's Risk Quality, respectively.
 
 
-## 6.3 Normal Variables Plan (Case of Unknown \( \sigma \)):
+## 5.3 Normal Variables Plan (Case of Unknown \( \sigma \)):
 
 The formula for the probability of acceptance (\( Pa \)) is:
 
@@ -275,7 +307,7 @@ n_s = n_{\sigma} \times \left( 1 + \frac{k_s^2}{2} \right)
 
 (See Wilrich, PT. (2004) for more detail about calculation used in sessions 6.2 and 6.3)
 
-## 6.4 Beta Variables Plan (Case of Known \( \theta \)):
+## 5.4 Beta Variables Plan (Case of Known \( \theta \)):
 
 Traditional acceptance sampling using normal distributions can be inadequate for compositional data bounded within [0,1]. Govindaraju and Kissling (2015) proposed Beta-based plans, where component proportions (e.g., protein content) follow \( X \sim \text{Beta}(a, b) \), with density:
 
@@ -303,7 +335,7 @@ Pa(\mu_{PRQ}) = 1 - \alpha, \quad Pa(\mu_{CRQ}) = \beta,
 
 with \( \alpha \) (producer’s risk) and \( \beta \) (consumer’s risk) at specified quality levels (PRQ/CRQ).
 
-Note that: this problem is solved to find \( m \) and \( k \) used Non-linear programming and Monte Carlo simulation.
+Note that: this problem is solved to find \( m \) and \( k \) used Non-linear programming.
 
 ### Implementation Note:
 For a nonconforming proportion \( p \) (e.g.,PRQ or CRQ), the mean \( \mu \) at a quality level (PRQ/CRQ) is derived by solving:
@@ -315,7 +347,7 @@ P(X \leq L \mid \mu, \theta) = p,
 where \( X \sim \text{Beta}(\theta \mu, \theta (1 - \mu)) \). This links \( \mu \) to \( p \) via the Beta cumulative distribution function (CDF) at \( L \).
 
 
-## 6.5 Beta Variables Plans (Case of Unknown \( \theta \)):
+## 5.5 Beta Variables Plans (Case of Unknown \( \theta \)):
 For a beta distribution, the required sample size \(m_s\) (unknown \(\theta\)) is derived from the known-\(\theta\) sample size \(m_\theta\) using the formula:  
 \[
 m_s = \left(1 + 0.5k^2\right)m_\theta
@@ -324,7 +356,7 @@ where \(k\) is unchanged. This adjustment accounts for the variance ratio \(R = 
 
 \newpage
 
-# 7. References
+# 6. References
 1. Schilling, E.G., & Neubauer, D.V. (2017). Acceptance Sampling in Quality Control (3rd ed.). Chapman and Hall/CRC. https://doi.org/10.4324/9781315120744
 2. Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Frontiers in Statistical Quality Control, vol 7. Physica, Heidelberg. https://doi.org/10.1007/978-3-7908-2674-6_4
 3. K. Govindaraju and R. Kissling (2015). Sampling plans for Beta-distributed compositional fractions.
