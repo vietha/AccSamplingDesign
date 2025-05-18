@@ -6,10 +6,11 @@ This package is now available on [CRAN](https://cran.r-project.org/package=AccSa
 
 The AccSamplingDesign package provides tools for designing Acceptance Sampling plans for both attributes and variables data. Key features include:
 
-- **Attributes Sampling plans** (pass/fail inspection based on nonconforming proportion)
-- **Variables Sampling plans** for normal and beta distributions, focusing on the proportion of nonconforming units
-- **OC curve visualization** to evaluate sampling plan performance
-- **Risk-based optimization** to minimize producer's and consumer's risks while meeting specified quality levels of Producer’s Risk Quality (PRQ) and Consumer’s Risk Quality (CRQ)
+- **Attributes Sampling Plans** — pass/fail decisions based on the proportion of nonconforming units.
+- **Variables Sampling Plans** — support for normal and beta distributions, including compositional data.
+- **Operating Characteristic (OC) Curve Visualization** — assess and compare plan performance.
+- **Risk-Based Optimization** — minimize sample size while meeting Producer’s Risk (PR) and Consumer’s Risk (CR) conditions.
+- **Custom Plan Comparison** — compare user-defined plans against optimized designs.
 
 # 2. Installation
 

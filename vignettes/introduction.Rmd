@@ -28,7 +28,7 @@ The **AccSamplingDesign** package provides tools for designing and evaluating **
 - **Attributes Sampling Plans** — pass/fail decisions based on the proportion of nonconforming units.
 - **Variables Sampling Plans** — support for normal and beta distributions, including compositional data.
 - **Operating Characteristic (OC) Curve Visualization** — assess and compare plan performance.
-- **Risk-Based Optimization** — determine sampling plans that meet target Producer’s Risk (PR) and Consumer’s Risk (CR).
+- **Risk-Based Optimization** — minimize sample size while meeting Producer’s Risk (PR) and Consumer’s Risk (CR) conditions.
 - **Custom Plan Comparison** — compare user-defined plans against optimized designs.
 
 # 2. Installation
