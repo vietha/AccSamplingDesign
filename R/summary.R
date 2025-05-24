@@ -31,13 +31,13 @@ summary.VarPlan <- function(object, ...) {
   cat("Variables Acceptance Sampling Plan\n")
   cat("----------------------------------\n")
   cat("Distribution:", object$distribution, "\n")
-  if(object$distribution == "normal") {
-    sample_size <- round(object$n, 3)
-  }
-  else{
-    sample_size <- round(object$m, 3)
-  }
-  cat("Sample Size (n):", sample_size, "\n")
+  # if(object$distribution == "normal") {
+  #   sample_size <- round(object$n, 3)
+  # }
+  # else{
+  #   sample_size <- round(object$m, 3)
+  # }
+  cat("Sample Size (n):", object$sample_size, "\n")
   cat("Acceptability Constant (k):", round(object$k, 3), "\n")
   if(object$distribution == "normal") {
     cat("Population Standard Deviation:", object$sigma_type, "\n")

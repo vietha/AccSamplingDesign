@@ -281,7 +281,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
       sample_size = ceiling(sample_size), # round up the sample size for practical;
       n = n, # we keep the number before round up
       m = m, # we keep the number before round up
-      k = round(k, 3)
+      k = k
     ), 
     class = "VarPlan"
   ))
@@ -300,7 +300,7 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
     pa <- sapply(pd, function(p) accProb(x, p))
     plot(pd, pa, type = "l", col = "red", lwd = 2,
          main = paste0("Variables Sampling OC Curve by Pd",
-                       " | n=", round(x$n,3), ", k=", x$k, " | ", x$distribution),
+                       " | n=", x$sample_size, ", k=", round(x$k,3), " | ", x$distribution),
          xlab = "Proportion Nonconforming", ylab = "P(accept)", ...)
     abline(v = c(x$PRQ, x$CRQ), lty = 2, col = "gray")
     abline(h = c(1 - x$PR, x$CR), lty = 2, col = "gray")
@@ -330,7 +330,7 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
     pa <- sapply(pd, function(p) accProb(x, p))
     plot(mu_vals, pa, type = "l", col = "blue", lwd = 2,
          main = paste0("Variables Sampling OC Curve by Mean",
-                       " | n=", round(x$n,3), ", k=", x$k, " | ", x$distribution),
+                       " | n=", x$sample_size, ", k=", round(x$k,3), " | ", x$distribution),
          xlab = "Process Mean", ylab = "P(accept)", ...)
     abline(v = c(mu_PRQ, mu_CRQ), lty = 2, col = "gray")
     abline(h = c(1 - x$PR, x$CR), lty = 2, col = "gray")
