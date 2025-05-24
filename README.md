@@ -38,8 +38,8 @@ R> library(AccSamplingDesign)
 plan_attr <- optPlan(
   PRQ = 0.01,   # Acceptable Quality Level (1% defects)
   CRQ = 0.05,   # Rejectable Quality Level (5% defects)
-  alpha = 0.05, # Producer's risk
-  beta = 0.10,   # Consumer's risk
+  alpha = 0.02, # Producer's risk
+  beta = 0.15,  # Consumer's risk
   distribution = "binomial"
 )
 ```
