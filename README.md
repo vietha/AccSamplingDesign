@@ -165,7 +165,7 @@ abline(h = 100 * beta, col = "gray60", lty = "dashed")
 
 # Add legend
 legend("topright",
-       legend = c(paste0("Designed Plan: n = ", round(norm_plan$n, 2), ", k = ", round(norm_plan$k, 2)), 
+       legend = c(paste0("Designed Plan: n = ", norm_plan$sample_size, ", k = ", round(norm_plan$k, 2)), 
                   "Evaluated Plan: n + 6", 
                   "Evaluated Plan: k + 0.1"),
        col = c("blue", "red", "forestgreen"),
