@@ -4,7 +4,7 @@ This package is now available on [CRAN](https://cran.r-project.org/package=AccSa
 
 # 1. Introduction
 
-The AccSamplingDesign package provides tools for designing Acceptance Sampling plans for both attributes and variables data. Key features include:
+The **AccSamplingDesign** package provides tools for designing and evaluating **Acceptance Sampling plans** for quality control in manufacturing and inspection settings. It supports both attribute and variable sampling methods, applying nonlinear programming to minimize sample size while effectively controlling both producer’s and consumer’s risks.
 
 - **Attributes Sampling Plans** — pass/fail decisions based on the proportion of nonconforming units.
 - **Variables Sampling Plans** — support for normal and beta distributions, including compositional data.
