@@ -230,10 +230,6 @@ plot(beta_plan)
 
 ### 4.2.2 Plot OC by Defective Rate and by The Mean
 ```{r}
-# Generate OC data
-p_seq <- seq(0.005, 0.5, by = 0.005)
-oc_data <- OCdata(beta_plan, pd = p_seq)
-
 # plot use S3 method by default (defective rate)
 plot(oc_data)
 # plot use S3 method by default by mean levels
