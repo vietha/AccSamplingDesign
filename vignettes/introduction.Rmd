@@ -95,12 +95,12 @@ oc_alt2 <- OCdata(n = optimal_plan$n, c = optimal_plan$c + 1,
                   distribution = "binomial", pd = pd)
 
 # Step3: Visualize results
-plot(pd, oc_opt@paccept, type = "l", col = "blue", lwd = 2,
+plot(pd, paccept(oc_opt), type = "l", col = "blue", lwd = 2,
      xlab = "Proportion Defective", ylab = "Probability of Acceptance",
      main = "Attributes Sampling - OC Curves Comparison",
      xlim = c(0, 0.15), ylim = c(0, 1))
-lines(pd, oc_alt1@paccept, col = "red", lwd = 2, lty = 2)
-lines(pd, oc_alt2@paccept, col = "green", lwd = 2, lty = 3)
+lines(pd, paccept(oc_alt1), col = "red", lwd = 2, lty = 2)
+lines(pd, paccept(oc_alt2), col = "green", lwd = 2, lty = 3)
 abline(v = c(0.01, 0.05), col = "gray50", lty = 2)
 abline(h = c(1 - 0.02, 0.15), col = "gray50", lty = 2)
 legend("topright", legend = c(sprintf("Optimal Plan (n = %d, c = %d)", 
@@ -159,18 +159,18 @@ eval2_pdata <- OCdata(n = norm_plan$n, k = norm_plan$k + 0.1,
                       distribution = "normal", pd = pd)
 
 # Plot base
-plot(100 *  opt_pdata@pd, 100 * opt_pdata@paccept,
+plot(100 *  pd(opt_pdata), 100 * paccept(opt_pdata),
      type = "l", lwd = 2, col = "blue",
      xlab = "Percentage Nonconforming (%)",
      ylab = "Probability of Acceptance (%)",
      main = "Normal Variables Sampling - Designed Plan with Evaluated Plans")
 
 # Add evaluated plan 1: n + 6
-lines(100 * eval1_pdata@pd, 100 * eval1_pdata@paccept,
+lines(100 * pd(eval1_pdata), 100 * paccept(eval1_pdata),
       col = "red", lty = "longdash", lwd = 2)
 
 # Add evaluated plan 2: k + 0.1
-lines(100 * eval2_pdata@pd, 100 * eval2_pdata@paccept,
+lines(100 * pd(eval2_pdata), 100 * paccept(eval2_pdata),
       col = "forestgreen", lty = "dashed", lwd = 2)
 
 # Add vertical dashed lines at PRQ and CRQ
