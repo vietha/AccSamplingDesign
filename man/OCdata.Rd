@@ -7,6 +7,9 @@
   nonconforming items and the corresponding probability of acceptance, along 
   with plan-related metadata. This function supports both optimal plan objects 
   (e.g. found from \code{"optPlan()"} method) and custom plan parameter inputs.
+  
+  Accessor functions \code{paccept()}, \code{pd()}, and \code{process_means()} 
+  provide safe access to components of the \code{OCdata} object.
 }
 \usage{
 OCdata(plan = NULL, pd = NULL,
@@ -16,6 +19,10 @@ OCdata(plan = NULL, pd = NULL,
        PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
        sigma_type = c("known", "unknown"),
        theta_type = c("known", "unknown"))
+       
+paccept(x)
+pd(x)
+process_means(x)
 }
 \arguments{
   \item{plan}{An optional acceptance plan object of class \code{AttrPlan} or 
@@ -53,10 +60,13 @@ OCdata(plan = NULL, pd = NULL,
   \item{sigma_type}{Whether sigma is \code{"known"} or \code{"unknown"}.}
 
   \item{theta_type}{Whether theta is \code{"known"} or \code{"unknown"}.}
+  
+  \item{x}{An \code{OCdata} object for the accessor functions \code{paccept()}, \code{pd()}, and \code{process_means()}.}
+
 }
 \details{
   The function evaluates the Operating Characteristic (OC) curve by computing the 
-  probability of acceptance across a range of proportions nonconforming (\code{pd}). 
+  probability of acceptance across a range of proportions of nonconforming items (\code{pd}). 
   This can be either directly specified or derived based on the plan inputs.
 
   If a \code{plan} object is supplied, it overrides the other input parameters 
@@ -75,19 +85,24 @@ OCdata(plan = NULL, pd = NULL,
   The resulting OC curve data includes acceptance probabilities at various 
   quality levels and, for variable plans, optionally maps these probabilities 
   to corresponding mean levels.
+
+  The accessor functions provide safe access to the internal components of the 
+  \code{OCdata} list object without direct list indexing.
 }
 \value{
-  An S4 object of class \code{"OCdata"} with the following slots:
+  For \code{OCdata}: an object of class \code{"OCdata"} (a list) with components:
 
   \tabular{ll}{
-    \code{pd} \tab Vector of proportions nonconforming (defective). \cr
-    \code{paccept} \tab Probability of acceptance at each level of nonconformance. \cr
-    \code{process_means} \tab Estimated mean values (only for variable plans with specification limits). \cr
-    \code{type} \tab Distribution type (\code{"binomial"}, \code{"poisson"}, \code{"normal"}, or \code{"beta"}). \cr
+    \code{pd} \tab Numeric vector of proportions of nonconforming items (defective). \cr
+    \code{paccept} \tab Numeric vector of probabilities of acceptance at each level of nonconformance. \cr
+    \code{process_means} \tab Numeric vector of estimated mean values (only for variable plans with specification limits). \cr
+    \code{dist} \tab Distribution type (\code{"binomial"}, \code{"poisson"}, \code{"normal"}, or \code{"beta"}). \cr
     \code{n} \tab Sample size used in the plan. \cr
     \code{k} \tab Acceptability constant (if applicable). \cr
     \code{c} \tab Acceptance number (if applicable). \cr
   }
+
+  For accessor functions: the requested component vector extracted from the \code{OCdata} object.
 }
 \author{
   Ha Truong
@@ -104,6 +119,12 @@ plan <- optVarPlan(
 
 # Generate OC data from optimal plan
 oc_data <- OCdata(plan, pd = seq(0, 0.15, by = 0.001))
+
+# Use accessor functions
+paccept(oc_data)
+pd(oc_data)
+process_means(oc_data)
+
 # Plot the OC curve
 plot(oc_data)
 
@@ -111,7 +132,10 @@ plot(oc_data)
 # Generate OC data from custom plan
 oc_data2 <- OCdata(n = 132, c = 5, distribution = "binomial", 
                    pd = seq(0, 0.15, by = 0.001))
+
+# Use accessor
+paccept(oc_data2)
+
 # Plot the OC curve
 plot(oc_data2)
-
 }
