@@ -19,10 +19,6 @@ OCdata(plan = NULL, pd = NULL,
        PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
        sigma_type = c("known", "unknown"),
        theta_type = c("known", "unknown"))
-       
-paccept(x)
-pd(x)
-process_means(x)
 }
 \arguments{
   \item{plan}{An optional acceptance plan object of class \code{AttrPlan} or 
@@ -60,9 +56,6 @@ process_means(x)
   \item{sigma_type}{Whether sigma is \code{"known"} or \code{"unknown"}.}
 
   \item{theta_type}{Whether theta is \code{"known"} or \code{"unknown"}.}
-  
-  \item{x}{An \code{OCdata} object for the accessor functions \code{paccept()}, \code{pd()}, and \code{process_means()}.}
-
 }
 \details{
   The function evaluates the Operating Characteristic (OC) curve by computing the 
@@ -101,8 +94,6 @@ process_means(x)
     \code{k} \tab Acceptability constant (if applicable). \cr
     \code{c} \tab Acceptance number (if applicable). \cr
   }
-
-  For accessor functions: the requested component vector extracted from the \code{OCdata} object.
 }
 \author{
   Ha Truong
@@ -120,11 +111,6 @@ plan <- optVarPlan(
 # Generate OC data from optimal plan
 oc_data <- OCdata(plan, pd = seq(0, 0.15, by = 0.001))
 
-# Use accessor functions
-paccept(oc_data)
-pd(oc_data)
-process_means(oc_data)
-
 # Plot the OC curve
 plot(oc_data)
 
@@ -132,9 +118,6 @@ plot(oc_data)
 # Generate OC data from custom plan
 oc_data2 <- OCdata(n = 132, c = 5, distribution = "binomial", 
                    pd = seq(0, 0.15, by = 0.001))
-
-# Use accessor
-paccept(oc_data2)
 
 # Plot the OC curve
 plot(oc_data2)
