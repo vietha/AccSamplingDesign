@@ -78,9 +78,6 @@ OCdata(plan = NULL, pd = NULL,
   The resulting OC curve data includes acceptance probabilities at various 
   quality levels and, for variable plans, optionally maps these probabilities 
   to corresponding mean levels.
-
-  The accessor functions provide safe access to the internal components of the 
-  \code{OCdata} list object without direct list indexing.
 }
 \value{
   For \code{OCdata}: an object of class \code{"OCdata"} (a list) with components:

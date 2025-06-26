@@ -17,8 +17,7 @@ process_means(x)
 }
 \details{
 These functions provide a clean interface to access key components of \code{OCdata}
-objects. They are intended to replace direct use of the \code{@} operator and support
-users transitioning from the S4-style to the current S3-style implementation.
+objects. 
 
 \itemize{
   \item \code{paccept(x)} returns the vector of probabilities of acceptance.
@@ -31,14 +30,14 @@ users transitioning from the S4-style to the current S3-style implementation.
   A numeric vector corresponding to the requested OCdata component.
 }
 \examples{
-plan <- OCdata(n = 125, c = 4, distribution = "binomial", 
+pdata <- OCdata(n = 125, c = 4, distribution = "binomial", 
                pd = seq(0, 0.15, by = 0.005))
-paccept(plan)
-pd(plan)
+paccept(pdata)
+pd(pdata)
 
 # Variable plan with process means
-vplan <- OCdata(n = 50, k = 1.5, distribution = "normal", USL = 10,
-                sigma = 2, pd = seq(0, 0.1, by = 0.01))
-process_means(vplan)
+vpdata <- OCdata(n = 50, k = 1.5, distribution = "normal", USL = 10,
+                sigma = 2, pd = seq(0.01, 0.1, by = 0.01))
+process_means(vpdata)
 }
 \author{Ha Truong}
