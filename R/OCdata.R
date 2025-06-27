@@ -249,7 +249,6 @@ OCdata <- function(plan = NULL, pd = NULL,
 
 
 # S3 methods for OCdata
-
 #' @export
 print.OCdata <- function(x, ...) {
   cat("OCdata object:\n")
