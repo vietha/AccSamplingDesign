@@ -30,13 +30,13 @@ objects.
   A numeric vector corresponding to the requested OCdata component.
 }
 \examples{
-pdata <- OCdata(n = 125, c = 4, distribution = "binomial", 
+pdata <- create_OCdata(n = 125, c = 4, distribution = "binomial", 
                pd = seq(0, 0.15, by = 0.005))
 paccept(pdata)
 pd(pdata)
 
 # Variable plan with process means
-vpdata <- OCdata(n = 50, k = 1.5, distribution = "normal", USL = 10,
+vpdata <- create_OCdata(n = 50, k = 1.5, distribution = "normal", USL = 10,
                 sigma = 2, pd = seq(0.01, 0.1, by = 0.01))
 process_means(vpdata)
 }
