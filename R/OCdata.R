@@ -27,8 +27,8 @@ OCdata.AttrPlan <- function(plan, pd = NULL) {
     process_means = numeric(0),
     dist = plan$distribution,
     n = plan$sample_size,
-    c = plan$c,
-    k = numeric(0)
+    c = plan$c#,
+    #k = numeric(0)
   ), class = "OCdata")
 }
 
@@ -55,7 +55,7 @@ OCdata.VarPlan <- function(plan, pd = NULL) {
     process_means = mean_level,
     dist = plan$distribution,
     n = plan$sample_size,
-    c = numeric(0),
+    #c = numeric(0),
     k = plan$k
   ), class = "OCdata")
 }
