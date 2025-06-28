@@ -172,6 +172,53 @@
 # Helper for NULL fallback
 `%||%` <- function(x, y) if (!is.null(x)) x else y
 
+#' @export
+OCdata.AttrPlan <- function(plan, pd = NULL) {
+  if (is.null(pd)) {
+    pd <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
+  }
+  paccept <- sapply(pd, function(p) accProb(plan, p))
+  
+  structure(list(
+    pd = pd,
+    paccept = paccept,
+    process_means = numeric(0),
+    dist = plan$distribution,
+    n = plan$sample_size,
+    c = plan$c,
+    k = numeric(0)
+  ), class = "OCdata")
+}
+
+#' @export
+OCdata.VarPlan <- function(plan, pd = NULL) {
+  if (is.null(pd)) {
+    pd <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
+  }
+  paccept <- sapply(pd, function(p) accProb(plan, p))
+  
+  mean_level <- NULL
+  if (!is.null(plan$USL) || !is.null(plan$LSL)) {
+    mean_level <- sapply(pd, function(p) muEst(
+      p, USL = plan$USL, LSL = plan$LSL,
+      sigma = plan$sigma,
+      theta = plan$theta,
+      dist = plan$distribution
+    ))
+  }
+  
+  structure(list(
+    pd = pd,
+    paccept = paccept,
+    process_means = mean_level,
+    dist = plan$distribution,
+    n = plan$sample_size,
+    c = numeric(0),
+    k = plan$k
+  ), class = "OCdata")
+}
+
+
 #' Create an OCdata object
 #' @export
 OCdata <- function(plan = NULL, pd = NULL,
@@ -181,54 +228,29 @@ OCdata <- function(plan = NULL, pd = NULL,
                    PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
                    sigma_type = c("known", "unknown"),
                    theta_type = c("known", "unknown")) {
-  
-  PRQ = CRQ = alpha = beta = NULL
-  
-  if (!is.null(plan)) {
-    if (is.null(pd)) {
-      if (is.null(plan$CRQ)) {
-        pd <- seq(1e-10, 1, length.out = 200)
-      } else {
-        pd <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
-      }
-    }
-    paccept <- sapply(pd, function(p) accProb(plan, p))
-    
-    mean_level <- NULL
-    if (!is.null(plan$USL) || !is.null(plan$LSL)) {
-      mean_level <- sapply(pd, function(p) muEst(
-        p, USL = plan$USL, LSL = plan$LSL,
-        sigma = plan$sigma,
-        theta = plan$theta,
-        dist = plan$distribution
-      ))
-    }
-    
-    return(structure(list(
-      pd = pd,
-      paccept = paccept,
-      process_means = if (is.null(mean_level)) numeric(0) else mean_level,
-      dist = plan$distribution,
-      n = plan$sample_size,
-      c = plan$c %||% numeric(0),
-      k = plan$k %||% numeric(0)
-    ), class = "OCdata"))
-  }
-  
-  distribution <- match.arg(distribution)
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
+  distribution <- match.arg(distribution)
+  
+  if (!is.null(plan)) {
+    if (inherits(plan, "AttrPlan")) return(OCdata.AttrPlan(plan, pd))
+    if (inherits(plan, "VarPlan")) return(OCdata.VarPlan(plan, pd))
+    stop("Unsupported plan class.")
+  }
   
   if (distribution %in% c("binomial", "poisson")) {
-    if (is.null(n) || is.null(c)) stop("n and c must be provided for binomial distribution.")
+    if (is.null(n) || is.null(c)) stop("n and c must be provided.")
     plan <- structure(list(n = n, c = c, sample_size = n,
                            PRQ = PRQ, CRQ = CRQ, PR = alpha, CR = beta,
                            USL = USL, LSL = LSL,
                            distribution = distribution),
                       class = "AttrPlan")
-  } else if (distribution %in% c("normal", "beta")) {
-    if (is.null(n) || is.null(k)) stop("n and k must be provided for variable plans.")
-    if (distribution == "beta" && is.null(theta)) stop("theta must be provided for beta distribution.")
+    return(OCdata.AttrPlan(plan, pd))
+  }
+  
+  if (distribution %in% c("normal", "beta")) {
+    if (is.null(n) || is.null(k)) stop("n and k must be provided.")
+    if (distribution == "beta" && is.null(theta)) stop("theta must be provided.")
     if (distribution == "beta" && is.null(USL) && is.null(LSL)) stop("USL or LSL must be provided.")
     if (!is.null(USL) && !is.null(LSL)) stop("Specify only one limit (USL or LSL), not both.")
     
@@ -240,13 +262,11 @@ OCdata <- function(plan = NULL, pd = NULL,
                            sigma = sigma, theta = theta,
                            distribution = distribution),
                       class = "VarPlan")
-  } else {
-    stop("Unsupported distribution.")
+    return(OCdata.VarPlan(plan, pd))
   }
   
-  OCdata(plan, pd = pd)
+  stop("Unsupported distribution.")
 }
-
 
 # S3 methods for OCdata
 #' @export
