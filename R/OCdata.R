@@ -9,168 +9,10 @@
 ##
 ## Changelogs:
 ## -----------------------------------------------------------------------------
-#' @importFrom methods new
-
-#' #' @export
-#' setClass("OCdata",
-#'          slots = list(
-#'            pd = "numeric",
-#'            paccept = "numeric",
-#'            process_means = "numeric",
-#'            dist = "character",
-#'            n = "numeric", # sample size
-#'            c = "numeric", # acceptance number (sampling by attribute)
-#'            k = "numeric"  # acceptability constant
-#'          ))
-#' 
-#' #' @export
-#' OCdata <- function(plan = NULL, pd = NULL,
-#'                    distribution = c("binomial", "poisson", "normal", "beta"),
-#'                    n = NULL, c = NULL, k = NULL,
-#'                    USL = NULL, LSL = NULL, sigma = NULL, theta = NULL,
-#'                    PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
-#'                    sigma_type = c("known", "unknown"),
-#'                    theta_type = c("known", "unknown")) {
-#' 
-#'   # init default values
-#'   PRQ = CRQ = alpha =  beta = NULL
-#' 
-#'   if (!is.null(plan)) {
-#'     # Use plan directly
-#'     if (is.null(pd)) {
-#'       if (is.null(CRQ)) {
-#'         pd <- seq(1e-10, 1, length.out = 200)
-#'       }else {
-#'         pd <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
-#'       }
-#'     }
-#'     paccept <- sapply(pd, function(p) accProb(plan, p))
-#' 
-#'     mean_level <- NULL
-#'     if (!is.null(plan$USL) || !is.null(plan$LSL)) {
-#'       mean_level <- sapply(pd, function(p) muEst(
-#'         p, USL = plan$USL, LSL = plan$LSL,
-#'         sigma = plan$sigma,
-#'         theta = plan$theta,
-#'         dist = plan$distribution
-#'       ))
-#'     }
-#' 
-#'     return(new("OCdata",
-#'                pd = pd,
-#'                paccept = paccept,
-#'                process_means = if (is.null(mean_level)) numeric(0) else mean_level,
-#'                dist = if (!is.null(plan$distribution)) plan$distribution else NA_character_,
-#'                n = plan$sample_size,
-#'                c = if (!is.null(plan$c)) plan$c else numeric(0),
-#'                k = if (!is.null(plan$k)) plan$k else numeric(0)))
-#'   }
-#' 
-#'   # Argument matching
-#'   distribution <- match.arg(distribution)
-#'   #limit_type <- match.arg(limit_type)
-#'   sigma_type <- match.arg(sigma_type)
-#'   theta_type <- match.arg(theta_type)
-#' 
-#'   # Input validation
-#'   # TODO: do we need PRQ/CRQ for custom plan when already have n,k?
-#'   # if (is.null(PRQ) || is.null(CRQ)) {
-#'   #   stop("PRQ and CRQ must be provided when plan is not specified.")
-#'   # }
-#'   # if (CRQ <= PRQ) {
-#'   #   stop("CRQ must be greater than PRQ.")
-#'   # }
-#' 
-#'   if (distribution %in% c("binomial", "poisson")) {
-#'     if (is.null(n) || is.null(c)) stop("n and c must be provided for binomial distribution.")
-#'     plan <- structure(list(n = n, c = c, PRQ = PRQ, CRQ = CRQ,
-#'                            PR = alpha, CR = beta,
-#'                            USL = USL, LSL = LSL,
-#'                            sample_size = n,
-#'                            distribution = distribution),
-#'                       class = "AttrPlan")
-#' 
-#'   } else if (distribution %in% c("normal", "beta")) {
-#'     if (is.null(n) || is.null(k)) stop("n and k must be provided for variable plans.")
-#'     if (distribution == "beta" && is.null(theta)) {
-#'       stop("For beta distribution, theta parameter must be provided.")
-#'     }
-#'     if (distribution == "beta" && is.null(USL) && is.null(LSL)) {
-#'       stop("For beta distribution, a specification limit (USL/LSL) must be provided.")
-#'     }
-#'     if (!is.null(USL) && !is.null(LSL)) {
-#'       stop("Double specification limits (both USL and LSL) are not supported.
-#'          Please specify only one limit: either USL or LSL.")
-#'     }
-#'     plan <- structure(list(n = n, k = k, PRQ = PRQ, CRQ = CRQ,
-#'                            USL = USL, LSL = LSL,
-#'                            PR = alpha, CR = beta,
-#'                            sample_size = n,
-#'                            m = n,
-#'                            distribution = distribution,
-#'                            sigma_type = sigma_type,
-#'                            theta_type = theta_type,
-#'                            sigma = sigma,
-#'                            theta = theta),
-#'                       class = "VarPlan")
-#'   } else {
-#'     stop("Unsupported distribution.")
-#'   }
-#' 
-#'   # Recursively generate OCdata from created plan
-#'   OCdata(plan, pd = pd)
-#' }
-#' 
-#' 
-#' #' @export
-#' plot.OCdata <- function(x, by = c("pd", "mean"), ...) {
-#'   if (!inherits(x, "OCdata")) {
-#'     stop("Object is not of class 'OCdata'")
-#'   }
-#' 
-#'   by <- match.arg(by)
-#' 
-#'   if (by == "pd") {
-#'     plot(x@pd, x@paccept, type = "l", col = "red", lwd = 2,
-#'          main = "OC Curve by Proportion Nonconforming",
-#'          xlab = "Proportion Nonconforming", ylab = "P(accept)", ...)
-#'     grid()
-#' 
-#'   } else if (by == "mean") {
-#'     if (length(x@process_means) > 0) {
-#'       plot(x@process_means, x@paccept, type = "l", col = "blue", lwd = 2,
-#'            main = "OC Curve by Mean Levels", xlab = "Mean Level", ylab = "P(accept)", ...)
-#'       grid()
-#'     } else {
-#'       message("Mean-level plot not available for your plan!")
-#'     }
-#'   }
-#' }
-#' 
-#' 
-#' 
-#' #' @export
-#' setMethod("show", signature(object = "OCdata"), function(object) {
-#'   cat("OC Data for Acceptance Sampling Plan\n")
-#'   cat("--------------------------------------------------\n")
-#'   cat(sprintf("  Distribution: %s\n", object@dist))
-#'   cat(sprintf("  Sample size (n): %s\n", ifelse(length(object@n) > 0, object@n, "NA")))
-#'   if (length(object@k) > 0) {
-#'     cat(sprintf("  Acceptability constant (k): %s\n", object@k))
-#'   } else if (length(object@c) > 0) {
-#'     cat(sprintf("  Acceptance number (c): %s\n", object@c))
-#'   }
-#'   cat(sprintf("  # of pd values: %d\n", length(object@pd)))
-#'   cat(sprintf("  # of P(accept) values: %d\n", length(object@paccept)))
-#'   if (length(object@process_means) > 0) {
-#'     cat(sprintf("  Process means available (length: %d)\n", length(object@process_means)))
-#'   }
-#'   cat("--------------------------------------------------\n")
-#' })
-
-
-# Helper for NULL fallback
-`%||%` <- function(x, y) if (!is.null(x)) x else y
+#' @export
+OCdata <- function(plan, pd = NULL) {
+  UseMethod("OCdata")
+}
 
 #' @export
 OCdata.AttrPlan <- function(plan, pd = NULL) {
@@ -221,7 +63,7 @@ OCdata.VarPlan <- function(plan, pd = NULL) {
 
 #' Create an OCdata object
 #' @export
-OCdata <- function(plan = NULL, pd = NULL,
+create_OCdata <- function(plan = NULL, pd = NULL,
                    distribution = c("binomial", "poisson", "normal", "beta"),
                    n = NULL, c = NULL, k = NULL,
                    USL = NULL, LSL = NULL, sigma = NULL, theta = NULL, 
@@ -307,6 +149,29 @@ plot.OCdata <- function(x, by = c("pd", "mean"), ...) {
       message("Mean-level plot not available.")
     }
   }
+}
+
+#' @export
+as.list.OCdata <- function(x, ...) {
+  stopifnot(inherits(x, "OCdata"))
+  unclass(x)
+}
+
+#' @export
+as.data.frame.OCdata <- function(x, row.names = NULL, optional = FALSE, ...) {
+  stopifnot(inherits(x, "OCdata"))
+  
+  df <- data.frame(
+    pd = x$pd,
+    paccept = x$paccept,
+    stringsAsFactors = FALSE
+  )
+  
+  if (!is.null(x$process_means) && length(x$process_means) == length(x$pd)) {
+    df$process_means <- x$process_means
+  }
+  
+  df
 }
 
 # Accessor functions for OCdata
