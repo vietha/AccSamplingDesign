@@ -10,6 +10,16 @@
 ## Changelogs:
 ## -----------------------------------------------------------------------------
 
+
+# S3 methods for AttrPlan
+#' @export
+print.AttrPlan <- function(x, ...) {
+  cat("AttrPlan object:\n")
+  cat(" Distribution:", x$distribution, "\n")
+  cat(" Sample size (n):", x$n, "\n")
+  if (length(x$c) > 0) cat(" Acceptance number (c):", x$c, "\n")
+}
+
 #' @export
 summary.AttrPlan <- function(object, ...) {
   cat("Attributes Acceptance Sampling Plan\n")
@@ -24,6 +34,16 @@ summary.AttrPlan <- function(object, ...) {
   }
   cat("----------------------------------\n")
   invisible(object)
+}
+
+
+# S3 methods for VarPlan
+#' @export
+print.VarPlan <- function(x, ...) {
+  cat("VarPlan object:\n")
+  cat(" Distribution:", x$distribution, "\n")
+  cat(" Sample size (n):", x$sample_size, "\n")
+  if (length(x$k) > 0) cat(" Acceptability constant (k):", x$k, "\n")
 }
 
 #' @export
