@@ -70,10 +70,10 @@ summary(optimal_plan)
 
 # Step2: Compare the optimal plan with two alternative plans 
 pd <- seq(0, 0.15, by = 0.001)
-oc_opt <- OCdata(plan = optimal_plan, pd = pd)
-oc_alt1 <- OCdata(n = optimal_plan$n, c = optimal_plan$c - 1,
+oc_opt <- create_OCdata(plan = optimal_plan, pd = pd)
+oc_alt1 <- create_OCdata(n = optimal_plan$n, c = optimal_plan$c - 1,
                   distribution = "binomial", pd = pd)
-oc_alt2 <- OCdata(n = optimal_plan$n, c = optimal_plan$c + 1,
+oc_alt2 <- create_OCdata(n = optimal_plan$n, c = optimal_plan$c + 1,
                   distribution = "binomial", pd = pd)
 
 # Step3: Visualize results
@@ -130,14 +130,14 @@ plot(norm_plan)
 pd <- seq(0, 0.2, by = 0.001)
 
 # Generate OC curve data for designed plan
-opt_pdata <- OCdata(norm_plan, pd = pd)
+opt_pdata <- create_OCdata(norm_plan, pd = pd)
 
 # Evaluated Plan 1: n + 6
-eval1_pdata <- OCdata(n = norm_plan$n + 6, k = norm_plan$k,
+eval1_pdata <- create_OCdata(n = norm_plan$n + 6, k = norm_plan$k,
                       distribution = "normal", pd = pd)
 
 # Evaluated Plan 2: k + 0.1
-eval2_pdata <- OCdata(n = norm_plan$n, k = norm_plan$k + 0.1,
+eval2_pdata <- create_OCdata(n = norm_plan$n, k = norm_plan$k + 0.1,
                       distribution = "normal", pd = pd)
 
 # Plot base
