@@ -31,7 +31,7 @@ OCdata(plan, pd = NULL)
   }
 }
 \seealso{
-  \code{\link{OCdata.AttrPlan}}, \code{\link{OCdata.VarPlan}}, \code{\link{create_OCdata}}
+  \code{\link{optPlan}}, \code{\link{manualPlan}}}
 }
 \author{
   Ha Truong
