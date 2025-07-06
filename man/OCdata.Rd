@@ -31,7 +31,7 @@ OCdata(plan, pd = NULL)
   }
 }
 \seealso{
-  \code{\link{optPlan}}, \code{\link{manualPlan}}}
+  \code{\link{optPlan}}, \code{\link{manualPlan}}
 }
 \author{
   Ha Truong
