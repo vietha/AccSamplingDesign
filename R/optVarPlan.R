@@ -23,7 +23,7 @@ t_optimize_sampling_plan <- function(alpha, beta, p_alpha, p_beta, n_init, k_ini
     non_central_t <- pt(k * sqrt(n), df = n - 1, ncp = -qnorm(p) * sqrt(n))
     return(1 - non_central_t)
   }
-
+  
   # Objective function to minimize
   objective_function <- function(params) {
     n_s <- params[1]
@@ -58,7 +58,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
   distribution <- match.arg(distribution)
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
-
+  
   # Set default if not provided
   if (is.null(sigma_type)) sigma_type <- "known"
   if (is.null(theta_type)) theta_type <- "known"
@@ -133,7 +133,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     n <- ((u_alpha + u_beta) / (u_p1 - u_p2))^2
     # Compute acceptability constant k
     k <- (u_p1 * u_beta + u_p2 * u_alpha) / (u_alpha + u_beta)
-
+    
     if(sigma_type == "unknown") {
       # find n_s by approximate from n
       # n <- ceiling(n) * (1 + k^2/2)
@@ -148,7 +148,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     
     objPlan <- structure(list(n = n, k = k, sigma_type = sigma_type,
                               distribution = distribution), 
-                              class = "VarPlan")
+                         class = "VarPlan")
     
     r_alpha <- 1 - accProb(objPlan, PRQ)
     r_beta <- accProb(objPlan, CRQ)

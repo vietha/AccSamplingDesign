@@ -18,6 +18,7 @@ print.AttrPlan <- function(x, ...) {
   cat(" Distribution:", x$distribution, "\n")
   cat(" Sample size (n):", x$n, "\n")
   if (length(x$c) > 0) cat(" Acceptance number (c):", x$c, "\n")
+  cat("\nUse `OCdata(plan)` to generate data for evaluation and visualization.\n")
 }
 
 #' @export
@@ -44,6 +45,7 @@ print.VarPlan <- function(x, ...) {
   cat(" Distribution:", x$distribution, "\n")
   cat(" Sample size (n):", x$sample_size, "\n")
   if (length(x$k) > 0) cat(" Acceptability constant (k):", x$k, "\n")
+  cat("\nUse `OCdata(plan)` to generate data for evaluation and visualization.\n")
 }
 
 #' @export
