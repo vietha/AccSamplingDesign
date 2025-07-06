@@ -90,11 +90,11 @@ summary(optimal_plan)
 pd <- seq(0, 0.15, by = 0.001)
 # Generate OC data from the optimal plan
 oc_opt <- OCdata(plan = optimal_plan, pd = pd)
-# Create manual plan1
+# Create and generate OC data for manual plan1
 mplan1 <- manualPlan(n = optimal_plan$n, c = optimal_plan$c - 1,
                   distribution = "binomial")
 oc_alt1 <- OCdata(plan = mplan1, pd = pd)
-# Create manual plan2
+# Create and generate OC data for manual plan2
 mplan2 <- manualPlan(n = optimal_plan$n, c = optimal_plan$c + 1,
                   distribution = "binomial")
 oc_alt2 <- OCdata(plan = mplan2, pd = pd)
