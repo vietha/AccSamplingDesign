@@ -70,11 +70,16 @@ summary(optimal_plan)
 
 # Step2: Compare the optimal plan with two alternative plans 
 pd <- seq(0, 0.15, by = 0.001)
-oc_opt <- create_OCdata(plan = optimal_plan, pd = pd)
-oc_alt1 <- create_OCdata(n = optimal_plan$n, c = optimal_plan$c - 1,
-                  distribution = "binomial", pd = pd)
-oc_alt2 <- create_OCdata(n = optimal_plan$n, c = optimal_plan$c + 1,
-                  distribution = "binomial", pd = pd)
+# Generate OC data from the optimal plan
+oc_opt <- OCdata(plan = optimal_plan, pd = pd)
+# Create manual plan1
+mplan1 <- manualPlan(n = optimal_plan$n, c = optimal_plan$c - 1,
+                  distribution = "binomial")
+oc_alt1 <- OCdata(plan = mplan1, pd = pd)
+# Create manual plan2
+mplan2 <- manualPlan(n = optimal_plan$n, c = optimal_plan$c + 1,
+                  distribution = "binomial")
+oc_alt2 <- OCdata(plan = mplan2, pd = pd)
 
 # Step3: Visualize results
 plot(pd, paccept(oc_opt), type = "l", col = "blue", lwd = 2,
@@ -130,15 +135,17 @@ plot(norm_plan)
 pd <- seq(0, 0.2, by = 0.001)
 
 # Generate OC curve data for designed plan
-opt_pdata <- create_OCdata(norm_plan, pd = pd)
+opt_pdata <- OCdata(norm_plan, pd = pd)
 
 # Evaluated Plan 1: n + 6
-eval1_pdata <- create_OCdata(n = norm_plan$n + 6, k = norm_plan$k,
-                      distribution = "normal", pd = pd)
+eval1 <- manualPlan(n = norm_plan$sample_size + 10, k = norm_plan$k,
+                       distribution = "beta", LSL = 5.65e-6, theta = 6.6e8)
+eval1_pdata <- OCdata(eval1, pd = pd)
 
 # Evaluated Plan 2: k + 0.1
-eval2_pdata <- create_OCdata(n = norm_plan$n, k = norm_plan$k + 0.1,
-                      distribution = "normal", pd = pd)
+eval2 <- manualPlan(n = norm_plan$sample_size, k = norm_plan$k + 0.1,
+                       distribution = "beta", LSL = 5.65e-6, theta = 6.6e8)
+eval2_pdata <- OCdata(eval2, pd = pd)
 
 # Plot base
 plot(100 *  pd(opt_pdata), 100 * paccept(opt_pdata),
