@@ -18,7 +18,9 @@ print.AttrPlan <- function(x, ...) {
   cat(" Distribution:", x$distribution, "\n")
   cat(" Sample size (n):", x$n, "\n")
   if (length(x$c) > 0) cat(" Acceptance number (c):", x$c, "\n")
-  cat("\nUse `OCdata(plan)` to generate data for evaluation and visualization.\n")
+  cat("\nNOTE: summary(plan) for detail report,",
+      "\n      plot(plan) for quick OC visualization,",
+      "\n      OCdata(plan) to extract data for evaluation and custom plots.\n")
 }
 
 #' @export
@@ -43,9 +45,16 @@ summary.AttrPlan <- function(object, ...) {
 print.VarPlan <- function(x, ...) {
   cat("VarPlan object:\n")
   cat(" Distribution:", x$distribution, "\n")
+  if(x$distribution == "normal") {
+    cat(" Sigma type:", x$sigma_type, "\n")
+  } else {
+    cat(" Theta type:", x$theta_type, "\n")
+  }
   cat(" Sample size (n):", x$sample_size, "\n")
   if (length(x$k) > 0) cat(" Acceptability constant (k):", x$k, "\n")
-  cat("\nUse `OCdata(plan)` to generate data for evaluation and visualization.\n")
+  cat("\nNOTE: summary(plan) for detail report,",
+      "\n      plot(plan) for quick OC visualization,",
+      "\n      OCdata(plan) to extract data for evaluation and custom plots.\n")
 }
 
 #' @export
