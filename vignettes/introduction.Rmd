@@ -105,7 +105,7 @@ plan_var2 <- optPlan(
 summary(plan_var2)
 ```
 
-# Variables Sampling Example (Beta Distribution)
+# Variables Sampling Example (Beta Distribution, Known Theta)
 
 ```{r}
 # Create a variable plan using Beta distribution
@@ -117,7 +117,7 @@ plan_beta <- optPlan(
   distribution = "beta",
   theta = 44000000,
   theta_type = "known",
-  LSL = 0.00001
+  LSL = 0.00001          # Lower Specification Limit
 )
 
 # Summary
@@ -129,6 +129,24 @@ plot(plan_beta)
 plot(plan_beta, by = "mean")
 ```
 
+# Variables Sampling Example (Beta Distribution, Unknown Theta)
+
+```{r}
+# Create a variable plan using Beta distribution
+plan_beta2 <- optPlan(
+  PRQ = 0.05,
+  CRQ = 0.2,
+  alpha = 0.05,
+  beta = 0.10,
+  distribution = "beta",
+  theta = 44000000,
+  theta_type = "unknown",
+  LSL = 0.00001
+)
+
+# Summary
+summary(plan_beta2)
+```
 # Custom Plan Comparison
 
 ```{r}
@@ -145,7 +163,7 @@ oc_alt1 <- OCdata(plan = mplan1, pd = pd)
 # Plot comparison
 plot(pd, oc_opt$paccept, type = "l", col = "blue", lwd = 2,
      xlab = "Proportion Defective", ylab = "Probability of Acceptance",
-     main = "OC Curves Comparison")
+     main = "OC Curves Comparison for Attributes Sampling Plan")
 lines(pd, oc_alt1$paccept, col = "red", lwd = 2, lty = 2)
 legend("topright", legend = c("Optimal Plan", "Manual Plan c - 1"),
        col = c("blue", "red"), lty = c(1, 2), lwd = 2)

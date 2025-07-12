@@ -96,7 +96,7 @@ summary(plan_var2)
 
 ------------------------------------------------------------------------
 
-### 📌 Variable Sampling (Beta, Compositional Data)
+### 📌 Variable Sampling (Beta, Known Theta)
 
 ``` r
 plan_beta <- optPlan(
@@ -107,6 +107,27 @@ plan_beta <- optPlan(
   distribution = "beta",
   theta = 44000000,
   theta_type = "known",
+  LSL = 0.00001         # Lower Specification Limit
+)
+
+summary(plan_beta)
+plot(plan_beta)              # By defect level
+plot(plan_beta, by = "mean") # By mean value
+```
+
+------------------------------------------------------------------------
+
+### 📌 Variable Sampling (Beta, Unknown Theta)
+
+``` r
+plan_beta <- optPlan(
+  PRQ = 0.05,
+  CRQ = 0.2,
+  alpha = 0.05,
+  beta = 0.10,
+  distribution = "beta",
+  theta = 44000000,
+  theta_type = "unknown",
   LSL = 0.00001
 )
 
@@ -129,7 +150,7 @@ oc_alt1 <- OCdata(plan = mplan1, pd = pd)
 
 plot(pd, oc_opt$paccept, type = "l", col = "blue", lwd = 2,
      xlab = "Proportion Defective", ylab = "Probability of Acceptance",
-     main = "OC Curves Comparison")
+     main = "OC Curves Comparison for Attributes Sampling Plan")
 lines(pd, oc_alt1$paccept, col = "red", lwd = 2, lty = 2)
 legend("topright", legend = c("Optimal Plan", "Manual Plan (c - 1)"),
        col = c("blue", "red"), lty = c(1, 2), lwd = 2)
