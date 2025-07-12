@@ -120,7 +120,7 @@ legend("topright", legend = c("Optimal Plan", "Manual Plan (c - 1)"),
 
 ------------------------------------------------------------------------
 
-## Citation
+# Additional Notes
 
 This README provides a quick start for using the **AccSamplingDesign**
 package. For a full discussion of the statistical foundations, models,
