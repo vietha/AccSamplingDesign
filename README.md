@@ -1,31 +1,34 @@
----
-title: "AccSamplingDesign: Acceptance Sampling Plan Design"
-output: github_document
----
-
 # AccSamplingDesign <img src="https://cran.r-project.org/Rlogo.svg" align="right" height="100"/>
 
 An R package for designing and analyzing **acceptance sampling plans**  
-📦 Now available on [CRAN](https://cran.r-project.org/package=AccSamplingDesign)! 🎉
----
+📦 Now available on
+[CRAN](https://cran.r-project.org/package=AccSamplingDesign)! 🎉 —
 
 ## Overview
 
-The **AccSamplingDesign** package provides flexible tools to create and evaluate **acceptance sampling plans** in quality control, for both attributes (pass/fail) and variables (measurable) data. It supports optimization using nonlinear programming (NLP) to meet specified risks while minimizing the required sample size.
+The **AccSamplingDesign** package provides flexible tools to create and
+evaluate **acceptance sampling plans** in quality control, for both
+attributes (pass/fail) and variables (measurable) data. It supports
+optimization using nonlinear programming (NLP) to meet specified risks
+while minimizing the required sample size.
 
 ### Key Features
 
-- 🔍 **Attribute Sampling** (Binomial, Poisson): Decisions based on defect counts  
-- 📈 **Variable Sampling** (Normal, Beta): Including **compositional data**  
-- ⚙️ **Risk-Based Optimization**: Minimize sample size under `alpha` and `beta` constraints  
+- 🔍 **Attribute Sampling** (Binomial, Poisson): Decisions based on
+  defect counts  
+- 📈 **Variable Sampling** (Normal, Beta): Including **compositional
+  data**  
+- ⚙️ **Risk-Based Optimization**: Minimize sample size under `alpha` and
+  `beta` constraints  
 - 📊 **OC Curve Visualization**: Plot Operating Characteristic curves  
-- 🔄 **Custom Plan Comparison**: Evaluate user-defined vs. optimized plans  
+- 🔄 **Custom Plan Comparison**: Evaluate user-defined vs. optimized
+  plans
 
----
+------------------------------------------------------------------------
 
 ## Installation
 
-```r
+``` r
 # Install from CRAN
 install.packages("AccSamplingDesign")
 
@@ -36,13 +39,13 @@ devtools::install_github("vietha/AccSamplingDesign")
 library(AccSamplingDesign)
 ```
 
----
+------------------------------------------------------------------------
 
 ## Examples
 
 ### 📌 Attribute Sampling (Binomial)
 
-```r
+``` r
 plan_attr <- optPlan(
   PRQ = 0.01,   # Acceptable quality
   CRQ = 0.05,   # Rejectable quality
@@ -56,11 +59,11 @@ accProb(plan_attr, 0.03)  # P(accept) if 3% defective
 plot(plan_attr)           # OC curve
 ```
 
----
+------------------------------------------------------------------------
 
 ### 📌 Variable Sampling (Normal, Known Sigma)
 
-```r
+``` r
 plan_var <- optPlan(
   PRQ = 0.025,
   CRQ = 0.1,
@@ -74,11 +77,11 @@ summary(plan_var)
 plot(plan_var)
 ```
 
----
+------------------------------------------------------------------------
 
 ### 📌 Variable Sampling (Beta, Compositional Data)
 
-```r
+``` r
 plan_beta <- optPlan(
   PRQ = 0.05,
   CRQ = 0.2,
@@ -95,11 +98,11 @@ plot(plan_beta)              # By defect level
 plot(plan_beta, by = "mean") # By mean value
 ```
 
----
+------------------------------------------------------------------------
 
-### 📌 Compare Custom vs. Optimal Plans
+### 📌 Compare Custom vs. Optimal Plans
 
-```r
+``` r
 pd <- seq(0, 0.15, by = 0.001)
 
 oc_opt <- OCdata(plan = plan_attr, pd = pd)
@@ -115,21 +118,27 @@ legend("topright", legend = c("Optimal Plan", "Manual Plan (c - 1)"),
        col = c("blue", "red"), lty = c(1, 2), lwd = 2)
 ```
 
----
+------------------------------------------------------------------------
 
 ## Citation
 
-This README provides a quick start for using the **AccSamplingDesign** package. 
-For a full discussion of the statistical foundations, models, and optimization 
-methods used, please refer to the foundation sources such as:
+This README provides a quick start for using the **AccSamplingDesign**
+package. For a full discussion of the statistical foundations, models,
+and optimization methods used, please refer to the foundation sources
+such as:
 
-- Schilling, E.G., & Neubauer, D.V. (2017). *Acceptance Sampling in Quality Control* (3rd ed.). CRC Press.  
-- Wilrich, P.T. (2004). In *Frontiers in Statistical Quality Control 7*.  
-- Govindaraju, K., & Kissling, R. (2015). *Quality Engineering*, 27(1), 1–13.
+- Schilling, E.G., & Neubauer, D.V. (2017). *Acceptance Sampling in
+  Quality Control* (3rd ed.). CRC Press.  
+- Wilrich, P.T. (2004). In *Frontiers in Statistical Quality Control
+  7*.  
+- Govindaraju, K., & Kissling, R. (2015). *Quality Engineering*, 27(1),
+  1–13.
 
----
+------------------------------------------------------------------------
 
 ## Contributing
 
 Contributions, suggestions, and bug reports are welcome!  
-Please use [GitHub Issues](https://github.com/vietha/AccSamplingDesign/issues) or submit a pull request.
+Please use [GitHub
+Issues](https://github.com/vietha/AccSamplingDesign/issues) or submit a
+pull request.
