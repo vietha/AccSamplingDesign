@@ -79,7 +79,7 @@ plot(plan_var)
 
 ------------------------------------------------------------------------
 
-### 📌 Variable Sampling (Normal, Unnown Sigma)
+### 📌 Variable Sampling (Normal, Unknown Sigma)
 
 ``` r
 plan_var2 <- optPlan(
