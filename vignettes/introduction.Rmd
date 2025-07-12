@@ -68,7 +68,7 @@ accProb(plan_attr, 0.03)
 plot(plan_attr)
 ```
 
-# Variables Sampling Example (Normal Distribution)
+# Variables Sampling Example (Normal Distribution, Known Sigma)
 
 ```{r}
 # Create a variable plan assuming known sigma
@@ -86,6 +86,23 @@ summary(plan_var)
 
 # Plot OC curve
 plot(plan_var)
+```
+
+# Variables Sampling Example (Normal Distribution, Unknown Sigma)
+
+```{r}
+# Create a variable plan assuming known sigma
+plan_var2 <- optPlan(
+  PRQ = 0.025,
+  CRQ = 0.1,
+  alpha = 0.05,
+  beta = 0.10,
+  distribution = "normal",
+  sigma_type = "unknown"
+)
+
+# Summary
+summary(plan_var2)
 ```
 
 # Variables Sampling Example (Beta Distribution)

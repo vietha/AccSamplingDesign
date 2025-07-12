@@ -79,6 +79,23 @@ plot(plan_var)
 
 ------------------------------------------------------------------------
 
+### 📌 Variable Sampling (Normal, Unnown Sigma)
+
+``` r
+plan_var2 <- optPlan(
+  PRQ = 0.025,
+  CRQ = 0.1,
+  alpha = 0.05,
+  beta = 0.10,
+  distribution = "normal",
+  sigma_type = "unknown"
+)
+
+summary(plan_var2)
+```
+
+------------------------------------------------------------------------
+
 ### 📌 Variable Sampling (Beta, Compositional Data)
 
 ``` r
