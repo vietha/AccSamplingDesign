@@ -8,7 +8,6 @@
 manualPlan(distribution = c("binomial", "poisson", "normal", "beta"),
            n = NULL, c = NULL, k = NULL,
            USL = NULL, LSL = NULL, sigma = NULL, theta = NULL,
-           PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
            sigma_type = c("known", "unknown"),
            theta_type = c("known", "unknown"))
 }
@@ -28,14 +27,6 @@ manualPlan(distribution = c("binomial", "poisson", "normal", "beta"),
   \item{sigma}{Standard deviation (for normal plans).}
 
   \item{theta}{Precision parameter (for beta plans).}
-
-  \item{PRQ}{Producer’s risk quality level.}
-
-  \item{CRQ}{Consumer’s risk quality level.}
-
-  \item{alpha}{Producer’s risk.}
-
-  \item{beta}{Consumer’s risk.}
 
   \item{sigma_type}{Either \code{"known"} or \code{"unknown"} (for normal).}
 

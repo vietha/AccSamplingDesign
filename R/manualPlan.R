@@ -16,13 +16,18 @@
 manualPlan <- function(distribution = c("binomial", "poisson", "normal", "beta"),
                        n = NULL, c = NULL, k = NULL,
                        USL = NULL, LSL = NULL, sigma = NULL, theta = NULL, 
-                       PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
+#                       PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
                        sigma_type = c("known", "unknown"),
                        theta_type = c("known", "unknown")) {
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
   distribution <- match.arg(distribution)
   
+  # Use for placeholder only
+  PRQ = NULL 
+  CRQ = NULL 
+  alpha = NULL
+  beta = NULL
   
   if (!(distribution %in% c("binomial", "poisson", "normal", "beta"))) {
     stop("Unsupported distribution.")
