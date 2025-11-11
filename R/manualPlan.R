@@ -50,7 +50,7 @@ manualPlan <- function(distribution = c("binomial", "poisson", "normal", "beta")
     if (distribution == "beta" && is.null(USL) && is.null(LSL)) stop("USL or LSL must be provided.")
     if (!is.null(USL) && !is.null(LSL)) stop("Specify only one limit (USL or LSL), not both.")
     
-    plan <- structure(list(n = n, k = k, sample_size = ceiling(n, 0),
+    plan <- structure(list(n = n, k = k, sample_size = ceiling(n),
                            PRQ = PRQ, CRQ = CRQ, PR = alpha, CR = beta,
                            USL = USL, LSL = LSL,
                            sigma_type = sigma_type,
