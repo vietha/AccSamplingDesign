@@ -3,7 +3,7 @@
 \title{Optimal Acceptance Sampling Plan}
 \description{
 Design optimal variable acceptance sampling plans based on specified parameters. 
-Supports different distributions (binomial, normal, beta) and accommodates known 
+Supports different distributions (binomial, poisson, normal, beta) and accommodates known 
 or unknown standard deviation and process parameters.
 }
 \usage{
@@ -35,6 +35,11 @@ cases with unknown standard deviation or distributional parameters.
 \value{
 Returns a list or data frame with optimal sample size(s) and critical value(s) 
 based on the specified parameters and distribution.
+  \item{distribution}{Selected distribution}
+  \item{sample_size}{Final sample size after rounding up to the next integer, for practical application.}
+  \item{n}{Sample size (unrounded for Variables Acceptance Sampling).}
+  \item{k}{Acceptability constant - For Variables Acceptance Sampling.}
+  \item{c}{Acceptance number - For Attributes Acceptance Sampling.}
 }
 \author{
 Ha Truong

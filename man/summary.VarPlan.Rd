@@ -1,8 +1,8 @@
 \name{summary.VarPlan}
 \alias{summary.VarPlan}
-\title{Summarize Variable Acceptance Plan}
+\title{Summarize Variables Acceptance Plan}
 \description{
-Detailed summaries for variable acceptance plans.
+Detailed summaries for Variables Acceptance Sampling plans.
 }
 \usage{
 \method{summary}{VarPlan}(object, ...)

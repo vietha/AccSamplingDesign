@@ -1,8 +1,8 @@
 \name{optAttrPlan}
 \alias{optAttrPlan}
-\title{Attribute Acceptance Sampling Plan}
+\title{Attributes Acceptance Sampling Plan}
 \description{
-Designs binomial-based acceptance sampling plans using producer/consumer risk criteria.
+Designs Attributes Acceptance Sampling plans using producer/consumer risk criteria.
 }
 \usage{
 optAttrPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, 

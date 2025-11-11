@@ -1,8 +1,8 @@
 \name{optVarPlan}
 \alias{optVarPlan}
-\title{Variable Acceptance Sampling Plan}
+\title{Variables Acceptance Sampling Plan}
 \description{
-  Creates variable sampling plans for normal or beta distributed measurements.
+  Creates Variable Acceptance Sampling plans for normal or beta distributed measurements.
 }
 \usage{
 optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
@@ -42,7 +42,7 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
 \value{
   A \code{VarPlan} object containing:
   \item{distribution}{Distribution used ("normal" or "beta").}
-  \item{sample_size}{Final sample size after rounding (integer).}
+  \item{sample_size}{Final sample size after rounding up to the next integer, for practical application.}
   \item{k}{Acceptability constant.}
   \item{n}{Unrounded sample size.}
 }
