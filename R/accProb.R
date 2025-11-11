@@ -43,6 +43,7 @@ accProb.VarPlan <- function(plan, p) {
     return(round(Pa, 4))
   } else { # for Beta distribution
     m = plan$m
+    if (!is.null(plan$m)) { m = plan$m } else {m = plan$n}
     k = plan$k
     if(plan$theta_type == "unknown") {
       m = m/(1 + 0.85*k^2) # follow R&K 2015 simulations
