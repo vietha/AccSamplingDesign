@@ -37,7 +37,7 @@ manualPlan <- function(distribution = c("binomial", "poisson", "normal", "beta")
   
   if (distribution %in% c("binomial", "poisson")) {
     if (is.null(n) || is.null(c)) stop("n and c must be provided.")
-    plan <- structure(list(n = n, c = c, sample_size = ceiling(n, 0),
+    plan <- structure(list(n = n, c = c, sample_size = ceiling(n),
                            PRQ = PRQ, CRQ = CRQ, PR = alpha, CR = beta,
                            USL = USL, LSL = LSL,
                            distribution = distribution),
