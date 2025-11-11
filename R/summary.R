@@ -72,7 +72,7 @@ summary.VarPlan <- function(object, ...) {
     cat(" Lower Specification Limit (LSL):", object$LSL, "\n")
   }
   if (!is.null(object$USL)) {
-    cat(" Uper Specification Limit (USL):", object$USL, "\n")
+    cat(" Upper Specification Limit (USL):", object$USL, "\n")
   }
   if(!is.null(object$measurement_error)) {
     cat(" Measurement Error:", object$measurement_error, "\n")
