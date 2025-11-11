@@ -296,6 +296,10 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
     pd <- seq(max(x$PRQ * 0.5, 1e-10), min(x$CRQ * 1.5, 1), length.out = 100)
   }
   
+  if (is.null(x$sigma_type)) {
+    stop("sigma_type must be provided to plot a VarPlan")
+  }
+  
   if (by == "pd") {
     pa <- sapply(pd, function(p) accProb(x, p))
     plot(pd, pa, type = "l", col = "red", lwd = 2,
