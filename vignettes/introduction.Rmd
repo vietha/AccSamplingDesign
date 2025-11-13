@@ -163,6 +163,36 @@ plan_beta2$sample_size  # integer sample size used in plan
 plan_beta2$n            # raw computed (non-rounded) value
 ```
 
+## Estimating θ for Beta-Based Plans
+For Beta-distributed quality characteristics, the precision parameter **θ** 
+reflects the concentration of the distribution around the mean.
+If θ is unknown, it can be estimated from historical process data.
+
+A practical approach is to use the `VGAM` package, which provides the `betaff` function for fitting a Beta distribution and obtaining θ:
+  
+```{r}
+library(VGAM)
+
+# Example data
+y <- c(0.75, 0.68, 0.72, 0.70, 0.76)
+
+# Fit Beta model
+fit <- vglm(y ~ 1, betaff, data = data.frame(y = y))
+
+# Extract estimated parameters
+coef(fit, matrix = TRUE)
+```
+
+The output provides estimates of the mean (μ) and the precision parameter (θ).
+Use the estimated θ directly in `optPlan()`, e.g.:
+
+```{r}
+theta_est <- exp(coef(fit, matrix = TRUE)[1, "loglink(phi)"])
+theta_est
+optPlan(PRQ = 0.05, CRQ = 0.20, alpha = 0.05, beta = 0.10,
+           USL = 0.5, distribution = "beta", theta_type = "unknown",
+           theta = theta_est)
+```
 
 # Custom Plan Comparison
 
