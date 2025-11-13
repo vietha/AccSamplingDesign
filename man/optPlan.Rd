@@ -20,7 +20,7 @@ optPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   \item{beta}{Consumer's risk (Type II error), default is 0.10.}
   \item{USL}{Upper Specification Limit. Required for variable sampling plans.}
   \item{LSL}{Lower Specification Limit. Required for variable sampling plans.}
-  \item{distribution}{Distribution type used in the plan. Can be \code{"binomial"}, \code{"normal"}, or \code{"beta"}.}
+  \item{distribution}{Distribution type used in the plan. Can be \code{"binomial"}, \code{"poisson"}, \code{"normal"}, or \code{"beta"}.}
   \item{sigma_type}{Indicates if the standard deviation (\code{sigma}) is known or unknown.}
   \item{theta_type}{Indicates if the process parameter (\code{theta}) is known or unknown.}
   \item{sigma}{Known standard deviation of the process, if applicable.}
