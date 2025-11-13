@@ -147,6 +147,23 @@ plan_beta2 <- optPlan(
 # Summary
 summary(plan_beta2)
 ```
+
+## A Note on Variable Sampling Plan Output
+
+When designing a variables acceptance sampling plan using `optPlan()` or `optVarPlan()`,  
+the returned object includes two related quantities for the sample size:
+
+- **`sample_size`** — for practical application, the final plan uses the smallest integer greater than or equal to the theoretical value (`ceiling(n)`).
+- **`n`** — the raw (non-rounded) computed sample size based on the optimization model.
+
+Example:
+
+```{r}
+plan_beta2$sample_size  # integer sample size used in plan
+plan_beta2$n            # raw computed (non-rounded) value
+```
+
+
 # Custom Plan Comparison
 
 ```{r}
@@ -169,7 +186,8 @@ legend("topright", legend = c("Optimal Plan", "Manual Plan c - 1"),
        col = c("blue", "red"), lty = c(1, 2), lwd = 2)
 ```
 
-# Additional Notes
+
+# References
 This vignette provides a quick start for using the **AccSamplingDesign** package. 
 For a full discussion of the statistical foundations, models, and optimization 
 methods used, please refer to the foundation sources such as:
