@@ -30,15 +30,33 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   
   \item{sigma}{Known standard deviation (used for normal distribution). Required if \code{sigma_type = "known"}.}
   
-  \item{theta}{Dispersion parameter (used for beta distribution). Required if \code{theta_type = "known"}.}
+  \item{theta}{Precision (dispersion) parameter for the beta distribution.
+  If unknown, it can be estimated from historical data using functions such as \code{\link[VGAM]{betaff}}.}
 }
 \details{
   The function generates variable acceptance sampling plans based on specified producer and consumer risks and either a normal or beta distribution model.
 
   The specification limit must be defined via either \code{USL} (upper specification limit) or \code{LSL} (lower specification limit), depending on whether the one-sided quality criterion concerns the upper or lower tail. Only one limit should be provided.
 
-  The plan design accounts for known or unknown standard deviation in the normal case, and known or unknown dispersion parameter (\code{theta}) in the beta case. Measurement error, if any, can be incorporated via the \code{measurement_error} argument.
+  For the \code{"normal"} model, the plan can be computed assuming the standard deviation (\code{sigma}) is either known or estimated from data.  
+  For the \code{"beta"} model, the dispersion (precision) parameter \code{theta} determines how concentrated the distribution is around the mean.  
+  Users must either:
+  \itemize{
+    \item provide a known value for \code{theta}, typically obtained from prior process studies or historical data; or
+    \item estimate it from sample data using a fitting function such as \code{\link[VGAM]{betaff}} in the \pkg{VGAM} package.
+  }
+
+  For example:
+  \preformatted{
+    library(VGAM)
+    fit <- vglm(y ~ 1, betaff, data = mydata)
+    coef(fit, matrix = TRUE)
+  }
+  The output gives the estimated mean (\eqn{\mu}) and precision (\eqn{\theta}) parameters for the fitted Beta distribution. The estimated \eqn{\theta} can then be supplied to \code{optVarPlan(theta = ...)}.
+
+  The plan design accounts for known or unknown standard deviation in the normal case, and known or unknown precision parameter (\code{theta}) in the beta case.
 }
+
 \value{
   A \code{VarPlan} object containing:
   \item{distribution}{Distribution used ("normal" or "beta").}
