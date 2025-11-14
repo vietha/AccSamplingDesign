@@ -63,11 +63,15 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   \item{n}{Unrounded sample size.}
 }
 \references{
-  ISO 3951-1:2013 - Sampling procedures for inspection by variables.
+  * ISO 3951-1:2013 - Sampling procedures for inspection by variables.
   
-  Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Physica, Heidelberg. \doi{10.1007/978-3-7908-2674-6_4}
+  * Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Physica, Heidelberg.
   
-  K. Govindaraju and R. Kissling (2015). Sampling plans for Beta-distributed compositional fractions.
+  * K. Govindaraju and R. Kissling (2015). Sampling plans for Beta-distributed compositional fractions.
+  
+  * J. A. Nelder and R. Mead. A simplex method for function minimization. The Computer Journal, 7(4): 308–313, 1965. DOI 10.1093/comjnl/7.4.308.
+  
+  * R. H. Byrd, P. Lu, J. Nocedal and C. Zhu. A limited memory algorithm for bound constrained optimization. SIAM Journal on Scientific Computing, 16(5): 1190–1208, 1995. DOI 10.1137/0916069.
 }
 \author{
 Ha Truong
