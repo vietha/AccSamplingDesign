@@ -38,23 +38,21 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
 
   The specification limit must be defined via either \code{USL} (upper specification limit) or \code{LSL} (lower specification limit), depending on whether the one-sided quality criterion concerns the upper or lower tail. Only one limit should be provided.
 
-  For the \code{"normal"} model, the plan can be computed assuming the standard deviation (\code{sigma}) is either known or estimated from data.  
-  For the \code{"beta"} model, the dispersion (precision) parameter \code{theta} determines how concentrated the distribution is around the mean.  
-  Users must either:
+  For the \code{"normal"} model, the plan can be computed assuming the standard deviation 
+  (\code{sigma}) is either known or estimated from data. Optimization for unknown \code{sigma} 
+  is performed using the derivative-free Nelder-Mead method (Nelder and Mead, 1965) via 
+  \code{\link[base]{optim}} in base R.
+  
+  For the \code{"beta"} model, the dispersion (precision) parameter \code{theta} determines 
+  how concentrated the distribution is around the mean. Users must either:
   \itemize{
     \item provide a known value for \code{theta}, typically obtained from prior process studies or historical data; or
     \item estimate it from sample data using a fitting function such as \code{\link[VGAM]{betaff}} in the \pkg{VGAM} package.
   }
-
-  For example:
-  \preformatted{
-    library(VGAM)
-    fit <- vglm(y ~ 1, betaff, data = mydata)
-    coef(fit, matrix = TRUE)
-  }
-  The output gives the estimated mean (\eqn{\mu}) and precision (\eqn{\theta}) parameters for the fitted Beta distribution. The estimated \eqn{\theta} can then be supplied to \code{optVarPlan(theta = ...)}.
-
-  The plan design accounts for known or unknown standard deviation in the normal case, and known or unknown precision parameter (\code{theta}) in the beta case.
+  Optimization for Beta plans is performed using \code{\link[base]{optim}} with the \code{"L-BFGS-B"} method 
+  (Byrd et al., 1995) to handle bounds on sample size and acceptance numbers.
+  
+  This approach ensures stable and efficient plan calculation while relying solely on base R functionality.
 }
 
 \value{

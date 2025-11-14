@@ -33,23 +33,23 @@ and consumer's risks under specified quality levels. It supports plans for
 attributes (binomial) and variables (normal or beta distributions), including 
 cases with unknown standard deviation or distributional parameters.
 
-  For the \code{"normal"} model, the plan can be computed assuming the standard deviation (\code{sigma}) is either known or estimated from data.  
-  For the \code{"beta"} model, the dispersion (precision) parameter \code{theta} determines how concentrated the distribution is around the mean.  
-  Users must either:
-  \itemize{
-    \item provide a known value for \code{theta}, typically obtained from prior process studies or historical data; or
-    \item estimate it from sample data using a fitting function such as \code{\link[VGAM]{betaff}} in the \pkg{VGAM} package.
-  }
+For the \code{"normal"} model, the plan can be computed assuming the standard deviation 
+(\code{sigma}) is either known or estimated from data. Optimization for unknown \code{sigma} 
+is performed using the derivative-free Nelder-Mead method (Nelder and Mead, 1965) via 
+\code{\link[base]{optim}} in base R.
 
-  For example:
-  \preformatted{
-    library(VGAM)
-    fit <- vglm(y ~ 1, betaff, data = mydata)
-    coef(fit, matrix = TRUE)
-  }
-  The output gives the estimated mean (\eqn{\mu}) and precision (\eqn{\theta}) parameters for the fitted Beta distribution. The estimated \eqn{\theta} can then be supplied to \code{optPlan(theta = ...)}.
+For the \code{"beta"} model, the dispersion (precision) parameter \code{theta} determines 
+how concentrated the distribution is around the mean. Users must either:
+\itemize{
+  \item provide a known value for \code{theta}, typically obtained from prior process studies or historical data; or
+  \item estimate it from sample data using a fitting function such as \code{\link[VGAM]{betaff}} in the \pkg{VGAM} package.
+}
+Optimization for Beta plans is performed using \code{\link[base]{optim}} with the \code{"L-BFGS-B"} method 
+(Byrd et al., 1995) to handle bounds on sample size and acceptance numbers.
 
-  The plan design accounts for known or unknown standard deviation in the normal case, and known or unknown precision parameter (\code{theta}) in the beta case.
+This approach ensures stable and efficient plan calculation while relying solely on base R functionality.
+}
+
 }
 \value{
 Returns a list or data frame with optimal sample size(s) and critical value(s) 
