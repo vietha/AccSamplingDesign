@@ -190,9 +190,20 @@ Use the estimated θ directly in `optPlan()`, e.g.:
 theta_est <- exp(coef(fit, matrix = TRUE)[1, "loglink(phi)"])
 theta_est
 optPlan(PRQ = 0.05, CRQ = 0.20, alpha = 0.05, beta = 0.10,
-           USL = 0.5, distribution = "beta", theta_type = "unknown",
+           USL = 0.8, distribution = "beta", theta_type = "unknown",
            theta = theta_est)
 ```
+
+## Optimization Approach for Sampling Plans
+
+The **AccSamplingDesign** package determines optimal sample sizes and acceptance criteria for variable sampling plans via numerical optimization.
+
+- **Normal Plans (σ unknown):** Optimization is performed using the derivative-free method of Nelder and Mead (1965) via the `optim()` function in R. This method is robust for the non-linear objective functions that arise when σ is unknown.
+
+- **Beta Plans:** Optimization is performed using the `optim()` function in R with the `"L-BFGS-B"` method (Byrd et al., 1995), which efficiently handles bound constraints on sample size and acceptance numbers.
+
+This approach ensures stable and efficient plan calculations while relying solely on base R functionality, avoiding additional package dependencies.
+
 
 # Custom Plan Comparison
 
@@ -227,3 +238,7 @@ methods used, please refer to the foundation sources such as:
 * Wilrich, P.T. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In Frontiers in Statistical Quality Control 7.
 
 * Govindaraju, K., & Kissling, R. (2015). Sampling plans for Beta-distributed compositional fractions. Quality Engineering, 27(1), 1–13.
+
+* J. A. Nelder and R. Mead. A simplex method for function minimization. The Computer Journal, 7(4): 308–313, 1965. DOI 10.1093/comjnl/7.4.308.
+
+* R. H. Byrd, P. Lu, J. Nocedal and C. Zhu. A limited memory algorithm for bound constrained optimization. SIAM Journal on Scientific Computing, 16(5): 1190–1208, 1995. DOI 10.1137/0916069.
