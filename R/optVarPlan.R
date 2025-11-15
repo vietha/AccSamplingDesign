@@ -44,7 +44,19 @@ t_optimize_sampling_plan <- function(alpha, beta, p_alpha, p_beta, n_init, k_ini
   
   # Solve the optimization problem
   result <- optim(init_params, objective_function)
-  return(result$par)  # Return optimized n_s and k_s
+  
+  # Handle cases where the optimization fails to find an optimal solution
+  if (result$convergence != 0) {
+    return(list(
+      success = FALSE,
+      code    = result$convergence,
+      message = result$message
+    ))
+  }
+  
+  # Optimal plan found!
+  return(list(success = TRUE, n = result$par[1], k = result$par[2]))
+  #return(result$par)  # Return optimized n_s and k_s
 }
 
 #' Variable Acceptance Sampling Plan
@@ -143,12 +155,29 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
       # init value of n, k for optimization process
       n_init <- max(2, n)
       k_init <- k
-      # Get optimal n_s and k_s set n,k as init value for optimize function
-      optimal_params <- t_optimize_sampling_plan(alpha, beta, PRQ, CRQ, 
-                                                 n_init, k_init) 
-      # final plan (n,k) after optimized
-      n = optimal_params[1]
-      k = optimal_params[2]
+      
+      # # Get optimal n_s and k_s set n,k as init value for optimize function
+      # optimal_params <- t_optimize_sampling_plan(alpha, beta, PRQ, CRQ, 
+      #                                            n_init, k_init) 
+      # # final plan (n,k) after optimized
+      # n = optimal_params[1]
+      # k = optimal_params[2]
+      
+      # Get optimal n_s and k_s by optimizing
+      opt <- t_optimize_sampling_plan(alpha, beta, PRQ, CRQ, n_init, k_init)
+      
+      # Check if optimization was successful
+      if (!opt$success) {
+        stop(
+          paste("Optimization failed:",
+                opt$message,
+                "Please check inputs: alpha/beta, PRQ/CRQ or try different initial values.")
+        )
+      }
+      
+      # If success, set final plan
+      n <- opt$n
+      k <- opt$k
     }
     
     sample_size <- n
