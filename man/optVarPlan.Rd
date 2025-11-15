@@ -41,7 +41,7 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   For the \code{"normal"} model, the plan can be computed assuming the standard deviation 
   (\code{sigma}) is either known or estimated from data. Optimization for unknown \code{sigma} 
   is performed using the derivative-free Nelder-Mead method (Nelder and Mead, 1965) via 
-  \code{\link[base]{optim}} in base R.
+  \code{\link[stats]{optim}} in base R.
   
   For the \code{"beta"} model, the dispersion (precision) parameter \code{theta} determines 
   how concentrated the distribution is around the mean. Users must either:
@@ -49,7 +49,7 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
     \item provide a known value for \code{theta}, typically obtained from prior process studies or historical data; or
     \item estimate it from sample data using a fitting function such as \code{\link[VGAM]{betaff}} in the \pkg{VGAM} package.
   }
-  Optimization for Beta plans is performed using \code{\link[base]{optim}} with the \code{"L-BFGS-B"} method 
+  Optimization for Beta plans is performed using \code{\link[stats]{optim}} with the \code{"L-BFGS-B"} method 
   (Byrd et al., 1995) to handle bounds on sample size and acceptance numbers.
   
   This approach ensures stable and efficient plan calculation while relying solely on base R functionality.
