@@ -191,11 +191,6 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     #m <- NA  # Not applicable for normal
   } else {
     
-    # Objective function: minimize n 
-    # objective_function <- function(params) {
-    #   return(params[1])  # Minimizing sample size n
-    # }
-    
     # Constraint function: Ensure PR <= alpha and CR <= beta
     constraint_function <- function(params) {
       n <- params[1]
