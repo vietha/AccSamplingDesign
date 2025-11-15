@@ -190,10 +190,11 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     r_beta <- accProb(objPlan, CRQ)
     #m <- NA  # Not applicable for normal
   } else {
-    # Objective function: minimize m
-    objective_function <- function(params) {
-      return(params[1])  # Minimizing m
-    }
+    
+    # Objective function: minimize n 
+    # objective_function <- function(params) {
+    #   return(params[1])  # Minimizing sample size n
+    # }
     
     # Constraint function: Ensure PR <= alpha and CR <= beta
     constraint_function <- function(params) {
@@ -209,8 +210,8 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
       CR <- accProb(planObj, CRQ)
       
       # Apply large penalty if constraints are violated
-      penalty <- sum(pmax(PR - alpha, 0)) + sum(pmax(CR - beta, 0))
-      return(params[1] + 1000 * penalty) 
+      penalty <- (pmax(PR - alpha, 0))^2 + (pmax(CR - beta, 0))^2 # smoother penalty 
+      return(n + 1e4 * penalty)   # (objective + penalty combined)
     }
     
     # Get initial estimates using normal distribution
@@ -223,7 +224,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     # Initial guess 
     initial_guess <- c(normal_plan$n, normal_plan$k)
     
-    # Run optimization using optim (L-BFGS-B supports bounds)
+    #Run optimization using optim (L-BFGS-B supports bounds)
     result <- optim(
       par = initial_guess,
       fn = constraint_function,
@@ -232,19 +233,36 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
       upper = c(n_range[2], k_range[2])
     )
     
-    # # Acceptable convergence codes
-    # acceptable_codes <- c(0, 1, 51, 52)
-    # 
-    # if (!(result$convergence %in% acceptable_codes)) {
-    #   stop(
-    #     paste("Optimization failed:", result$message,
-    #           "\nTry different initial values or adjust PRQ/CRQ.\n")
-    #   )
-    # }
+    if (result$convergence == 0) {
+      # full success
+      n_opt <- result$par[1]
+      k_opt <- result$par[2]
+      
+    } else if (result$convergence == 51) {
+      # warning but solution likely usable
+      warning("Optimization returned a warning (code 51): ", result$message)
+      n_opt <- result$par[1]
+      k_opt <- result$par[2]
+      
+    } else if (result$convergence == 52) {
+      # error — check if par is still valid
+      if (all(is.finite(result$par))) {
+        warning("Optimization returned a warning (code 52): ", result$message)
+        n_opt <- result$par[1]
+        k_opt <- result$par[2]
+      } else {
+        stop("Optimization failed with convergence code 52: ", result$message)
+      }
+      
+    } else {
+      stop("Optimization failed with convergence code:", result$convergence)
+    }
     
     # Extract optimal values
-    n <- result$par[1]
-    k <- result$par[2]
+    # n <- result$par[1]
+    # k <- result$par[2]
+    n <- n_opt
+    k <- k_opt
     
     if(theta_type == "unknown") {
       ## This R ratio from paper of Govindaraju and Kissling (2015)
