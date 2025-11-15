@@ -20,6 +20,7 @@ Imports:
     stats,
     methods
 Suggests:
+    VGAM,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
