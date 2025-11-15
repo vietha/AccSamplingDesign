@@ -2,7 +2,9 @@
 title: "AccSamplingDesign: Acceptance Sampling Plan Design - R Package"
 author: "Ha Truong"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    number_sections: true
 vignette: >
   %\VignetteIndexEntry{AccSamplingDesign: Acceptance Sampling Plan Design - R Package}
   %\VignetteEngine{knitr::rmarkdown}
@@ -28,11 +30,9 @@ minimizing required sample sizes.
 
 The package supports:
 
-* Attribute sampling plans (e.g., pass/fail outcomes)
-* Variable sampling plans under Normal and Beta distributions
+* Attributes sampling plans (e.g., pass/fail outcomes)
+* Variables sampling plans under Normal and Beta distributions
 * Easy-to-use functions for computing acceptance probability and visualizing OC curves
-
-# Installation
 
 Install from CRAN:
 
@@ -46,7 +46,7 @@ Or from GitHub:
 devtools::install_github("vietha/AccSamplingDesign")
 ```
 
-# Attributes Sampling Example
+# Attributes Sampling Examples
 
 ```{r}
 # Create an attribute plan with binomial assumption
@@ -68,7 +68,9 @@ accProb(plan_attr, 0.03)
 plot(plan_attr)
 ```
 
-# Variables Sampling Example (Normal Distribution, Known Sigma)
+# Variables Sampling Examples 
+
+## Normal Distribution, Known Sigma
 
 ```{r}
 # Create a variable plan assuming known sigma
@@ -88,7 +90,7 @@ summary(plan_var)
 plot(plan_var)
 ```
 
-# Variables Sampling Example (Normal Distribution, Unknown Sigma)
+## Normal Distribution, Unknown Sigma
 
 ```{r}
 # Create a variable plan assuming known sigma
@@ -105,7 +107,7 @@ plan_var2 <- optPlan(
 summary(plan_var2)
 ```
 
-# Variables Sampling Example (Beta Distribution, Known Theta)
+## Beta Distribution, Known Theta
 
 ```{r}
 # Create a variable plan using Beta distribution
@@ -129,7 +131,7 @@ plot(plan_beta)
 plot(plan_beta, by = "mean")
 ```
 
-# Variables Sampling Example (Beta Distribution, Unknown Theta)
+## Beta Distribution, Unknown Theta
 
 ```{r}
 # Create a variable plan using Beta distribution
@@ -148,7 +150,7 @@ plan_beta2 <- optPlan(
 summary(plan_beta2)
 ```
 
-## A Note on Variable Sampling Plan Output
+## Variables Sampling Plan Output Note
 
 When designing a variables acceptance sampling plan using `optPlan()` or `optVarPlan()`,  
 the returned object includes two related quantities for the sample size:
