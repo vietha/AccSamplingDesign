@@ -50,7 +50,6 @@ Optimization for Beta plans is performed using \code{\link[base]{optim}} with th
 This approach ensures stable and efficient plan calculation while relying solely on base R functionality.
 }
 
-}
 \value{
 Returns a list or data frame with optimal sample size(s) and critical value(s) 
 based on the specified parameters and distribution.
