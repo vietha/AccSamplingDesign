@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
   fig.height = 5
 )
 library(AccSamplingDesign)
+library(VGAM)
 ```
 
 # Introduction
@@ -173,8 +174,6 @@ If θ is unknown, it can be estimated from historical process data.
 A practical approach is to use the `VGAM` package, which provides the `betaff` function for fitting a Beta distribution and obtaining θ:
   
 ```{r}
-library(VGAM)
-
 # Example data
 y <- c(0.75, 0.68, 0.72, 0.70, 0.76)
 
