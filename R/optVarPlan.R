@@ -19,6 +19,8 @@ t_optimize_sampling_plan <- function(alpha, beta, p_alpha, p_beta, n_init, k_ini
 {
   # Define function to calculate Pa based on the non-central t-distribution
   Pa_tdist <- function(n, k, p) {
+    # enforce n >= 2 to have valid df = n - 1
+    n <- max(2, n)
     # Calculate the acceptance probability using non-central t-distribution
     non_central_t <- pt(k * sqrt(n), df = n - 1, ncp = -qnorm(p) * sqrt(n))
     return(1 - non_central_t)
@@ -138,8 +140,13 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
       # find n_s by approximate from n
       # n <- ceiling(n) * (1 + k^2/2)
       
+      # init value of n, k for optimization process
+      n_init <- max(2, n)
+      k_init <- k
       # Get optimal n_s and k_s set n,k as init value for optimize function
-      optimal_params <- t_optimize_sampling_plan(alpha, beta, PRQ, CRQ, n, k) 
+      optimal_params <- t_optimize_sampling_plan(alpha, beta, PRQ, CRQ, 
+                                                 n_init, k_init) 
+      # final plan (n,k) after optimized
       n = optimal_params[1]
       k = optimal_params[2]
     }
