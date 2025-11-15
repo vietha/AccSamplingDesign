@@ -188,56 +188,8 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     
     r_alpha <- 1 - accProb(objPlan, PRQ)
     r_beta <- accProb(objPlan, CRQ)
-    m <- NA  # Not applicable for normal
+    #m <- NA  # Not applicable for normal
   } else {
-    # nsim = 5000 
-    # grid_step = c(0.5, 0.02)
-    # p1 <- PRQ
-    # p2 <- CRQ
-    # # Get normal plan for initial estimates
-    # normal_plan <- optVarPlan(PRQ = p1, CRQ = p2, 
-    #                           spec_limit = spec_limit, 
-    #                           distribution = "normal",
-    #                           limit_type = limit_type)
-    # # Set search ranges if not provided
-    # m_range <- c(floor(0.5 * normal_plan$n), ceiling(2 * normal_plan$n))
-    # k_range <- c(max(0.5 * normal_plan$k, 0.1), 2 * normal_plan$k)
-    # 
-    # # Create parameter grid
-    # m_values <- seq(m_range[1], m_range[2], by = grid_step[1])
-    # k_values <- seq(k_range[1], k_range[2], by = grid_step[2])
-    # search_grid <- expand.grid(m = m_values, k = k_values)
-    # 
-    # # Risk calculation function
-    # calculate_risks <- function(m, k) {
-    #   planObj <- structure(list(m = m, k = k, spec_limit = spec_limit, theta = theta,
-    #                             distribution = distribution, limtype = limit_type), 
-    #                        class = "VarPlan")
-    #   PR <- 1 - accProb(planObj, p1)
-    #   CR <- accProb(planObj, p2)
-    #   return(c(CR = CR, PR = PR))
-    # }
-    # 
-    # # Evaluate all grid points
-    # risks <- mapply(calculate_risks, search_grid$m, search_grid$k)
-    # search_grid$CR <- risks[1, ]
-    # search_grid$PR <- risks[2, ]
-    # 
-    # # Filter valid plans
-    # valid_plans <- subset(search_grid, CR <= beta & PR <= alpha)
-    # valid_plans <- valid_plans[order(valid_plans$m, valid_plans$k), ]
-    # 
-    # # Not found any optimal plan
-    # if (nrow(valid_plans) == 0)   return(NULL) #stop("No valid plan found in search range")
-    # 
-    # # Return optimal plan
-    # # Now we found the optimal beta plan here
-    # opt_plan <- as.list(valid_plans[1, ])
-    # k = opt_plan$k
-    # m = opt_plan$m 
-    # r_beta = opt_plan$CR 
-    # r_alpha = opt_plan$PR 
-    
     # Objective function: minimize m
     objective_function <- function(params) {
       return(params[1])  # Minimizing m
@@ -245,10 +197,10 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     
     # Constraint function: Ensure PR <= alpha and CR <= beta
     constraint_function <- function(params) {
-      m <- params[1]
+      n <- params[1]
       k <- params[2]
       
-      planObj <- structure(list(m = m, k = k, USL = USL, LSL = LSL,
+      planObj <- structure(list(n = n, k = k, USL = USL, LSL = LSL,
                                 theta = theta, theta_type = "known",
                                 distribution = distribution), 
                            class = "VarPlan")
@@ -265,7 +217,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     normal_plan <- optVarPlan(PRQ = PRQ, CRQ = CRQ, distribution = "normal")
     
     # Define search ranges
-    m_range <- c(floor(0.5 * normal_plan$n), ceiling(2 * normal_plan$n))
+    n_range <- c(floor(0.5 * normal_plan$n), ceiling(2 * normal_plan$n))
     k_range <- c(max(0.5 * normal_plan$k, 0.1), 2 * normal_plan$k)
     
     # Initial guess 
@@ -276,34 +228,39 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
       par = initial_guess,
       fn = constraint_function,
       method = "L-BFGS-B",
-      lower = c(m_range[1], k_range[1]),
-      upper = c(m_range[2], k_range[2])
+      lower = c(n_range[1], k_range[1]),
+      upper = c(n_range[2], k_range[2])
     )
+    
+    # # Acceptable convergence codes
+    # acceptable_codes <- c(0, 1, 51, 52)
+    # 
+    # if (!(result$convergence %in% acceptable_codes)) {
+    #   stop(
+    #     paste("Optimization failed:", result$message,
+    #           "\nTry different initial values or adjust PRQ/CRQ.\n")
+    #   )
+    # }
+    
     # Extract optimal values
-    m <- result$par[1]
+    n <- result$par[1]
     k <- result$par[2]
     
     if(theta_type == "unknown") {
-      
       ## This R ratio from paper of Govindaraju and Kissling (2015)
       R_ratio = (1 + 0.85*k^2)
-      ## This R ration from my simulation
-      #R_ratio = (1 + 0.5*k^2)
-      # By theoretically motivated adjustment 
-      #R_ratio <- (1 + k^2)/2
-      
-      m <- ceiling(m)*R_ratio
+      n <- ceiling(n)*R_ratio
     }
     
-    objPlan <- structure(list(m = m, k = k, USL = USL, LSL = LSL,
+    objPlan <- structure(list(n = n, k = k, USL = USL, LSL = LSL,
                               theta = theta, theta_type = theta_type,
                               distribution = distribution), 
                          class = "VarPlan")
     
     r_alpha <- 1 - accProb(objPlan, PRQ)
     r_beta <- accProb(objPlan, CRQ)
-    sample_size <- m
-    n <- m  # Not applicable for beta
+    sample_size <- n
+    #n <- m  # Not applicable for beta
   }
   
   return(structure(
@@ -316,7 +273,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
       #spec_limit = spec_limit, limtype = limit_type,
       sample_size = ceiling(sample_size), # round up the sample size for practical;
       n = n, # we keep the number before round up
-      m = m, # we keep the number before round up
+      #m = m, # we keep the number before round up
       k = k
     ), 
     class = "VarPlan"
