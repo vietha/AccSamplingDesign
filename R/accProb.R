@@ -46,7 +46,7 @@ accProb.VarPlan <- function(plan, p) {
     if (!is.null(plan$m)) { m = plan$m } else {m = plan$n}
     k = plan$k
     if(plan$theta_type == "unknown") {
-      m = m/(1 + 0.85*k^2) # follow R&K 2015 simulations
+      #m = m/(1 + 0.85*k^2) # follow R&K 2015 simulations
       m = m/(1 + 0.4*k^2) # revise
     }
     
