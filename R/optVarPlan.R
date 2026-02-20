@@ -268,9 +268,9 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     
     if(theta_type == "unknown") {
       ## This R ratio from paper of Govindaraju and Kissling (2015)
-      #R_ratio = (1 + 0.85*k^2)
+      R_ratio = (1 + 0.85*k^2)
       ## This edited ratio
-      R_ratio = (1 + 0.4*k^2)
+      #R_ratio = (1 + 0.4*k^2)
       n <- ceiling(n)*R_ratio
     }
     
