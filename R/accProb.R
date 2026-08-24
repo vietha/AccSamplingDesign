@@ -41,15 +41,11 @@ accProb.VarPlan <- function(plan, p) {
       Pa <- 1 - pnorm(sqrt(n) * (qnorm(p) + k))
     }
     return(round(Pa, 4))
-  } else { # for Beta distribution
-    #m = plan$m
-    if (!is.null(plan$m)) { m = plan$m } else {m = plan$n}
-    k = plan$k
-    if(plan$theta_type == "unknown") {
-      m = m/(1 + 0.85*k^2) # follow R&K 2015 simulations
-      #m = m/(1 + 0.4*k^2) # revise
-    }
-    
+  } else if (plan$distribution == "beta") {
+    # Older objects may use m; current plan objects consistently use n.
+    if (!is.null(plan[["m"]])) { m <- plan[["m"]] } else { m <- plan$n }
+    k <- plan$k
+
     # This upper limit case
     if (!is.null(plan$USL)) {
       limtype <- "upper"
@@ -64,6 +60,30 @@ accProb.VarPlan <- function(plan, p) {
     theta <- plan$theta
     mu <- muEst(p, USL = plan$USL, LSL = plan$LSL,
                 theta = theta, dist = plan$distribution)
+
+    if (identical(plan$theta_type, "unknown")) {
+      # Missing metadata is interpreted as the new default so manually-created
+      # and serialized plan objects follow the documented 0.0.9 behavior.
+      method <- if (is.null(plan$method)) "delta_mle" else plan$method
+      method <- match.arg(method, .beta_theta_methods)
+
+      if (method != "gk_adjustment") {
+        return(.beta_delta_acceptance_probability(
+          mu = mu,
+          theta = theta,
+          n = m,
+          k = k,
+          limit = limit,
+          limit_type = limtype,
+          method = method
+        ))
+      }
+
+      # Govindaraju--Kissling/package-style approximation: convert the supplied
+      # unknown-theta sample size to its known-theta effective sample size.
+      m <- m / (1 + 0.85 * k^2)
+    }
+
     # Generate beta-distributed measurements
     a <- m * mu * theta
     b <- m * (1 - mu) * theta
@@ -110,5 +130,7 @@ accProb.VarPlan <- function(plan, p) {
       }
       return(pa)
     }
+  } else {
+    stop("Unknown distribution type: ", plan$distribution)
   }
 }
