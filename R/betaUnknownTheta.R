@@ -113,9 +113,23 @@
 }
 
 .beta_mle_covariance <- function(mu, theta) {
-  information <- .beta_mle_information(mu, theta)
-  covariance <- tryCatch(
-    solve(information),
+  .validate_beta_parameters(mu, theta)
+  alpha <- mu * theta
+  beta_shape <- (1 - mu) * theta
+
+  # Inverting in the conventional (alpha, beta) parameterization avoids the
+  # severe scale imbalance of direct (mu, theta) information when theta is
+  # large. The Jacobian then maps the covariance back to (mu, theta).
+  shape_information <- matrix(
+    c(
+      trigamma(alpha) - trigamma(theta), -trigamma(theta),
+      -trigamma(theta), trigamma(beta_shape) - trigamma(theta)
+    ),
+    nrow = 2L,
+    byrow = TRUE
+  )
+  shape_covariance <- tryCatch(
+    solve(shape_information),
     error = function(error) {
       stop(
         "Beta MLE Fisher information is singular: ", conditionMessage(error),
@@ -123,6 +137,12 @@
       )
     }
   )
+  transformation <- matrix(
+    c((1 - mu) / theta, -mu / theta, 1, 1),
+    nrow = 2L,
+    byrow = TRUE
+  )
+  covariance <- transformation %*% shape_covariance %*% t(transformation)
 
   if (any(!is.finite(covariance))) {
     stop("Beta MLE covariance is not finite.", call. = FALSE)
