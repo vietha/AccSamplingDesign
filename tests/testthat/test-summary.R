@@ -29,6 +29,8 @@ test_that("known-theta plan output does not report an unknown-theta method", {
     theta = 100, theta_type = "known", USL = 0.1
   )
 
-  expect_output(print(plan), "Unknown-theta method", fixed = TRUE, invert = TRUE)
-  expect_output(summary(plan), "Unknown-theta method", fixed = TRUE, invert = TRUE)
+  print_output <- capture.output(print(plan))
+  summary_output <- capture.output(summary(plan))
+  expect_false(any(grepl("Unknown-theta method", print_output, fixed = TRUE)))
+  expect_false(any(grepl("Unknown-theta method", summary_output, fixed = TRUE)))
 })
