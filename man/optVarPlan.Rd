@@ -73,6 +73,11 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   \item{n}{Unrounded sample size.}
 }
 \references{
+  * H. Truong, V. Miranda and R. Kissling (2026).
+  AccSamplingDesign: An R Package for Optimizing Acceptance Sampling Plans.
+  \emph{The R Journal}, 18(1), 368--381.
+  \doi{10.32614/RJ-2026-007}.
+  
   * ISO 3951-1:2013 - Sampling procedures for inspection by variables.
   
   * Wilrich, PT. (2004). Single Sampling Plans for Inspection by Variables under a Variance Component Situation. In: Lenz, HJ., Wilrich, PT. (eds) Frontiers in Statistical Quality Control 7. Physica, Heidelberg.
