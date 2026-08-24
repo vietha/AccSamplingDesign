@@ -4,6 +4,8 @@ An R package for designing and analyzing **acceptance sampling plans**
 📦 Now available on
 [CRAN](https://cran.r-project.org/package=AccSamplingDesign)! 🎉 —
 
+See [NEWS.md](NEWS.md) for release notes and user-visible changes.
+
 ## Overview
 
 The **AccSamplingDesign** package provides flexible tools to create and
