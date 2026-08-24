@@ -18,10 +18,18 @@ manualPlan <- function(distribution = c("binomial", "poisson", "normal", "beta")
                        USL = NULL, LSL = NULL, sigma = NULL, theta = NULL, 
 #                       PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
                        sigma_type = c("known", "unknown"),
-                       theta_type = c("known", "unknown")) {
+                       theta_type = c("known", "unknown"),
+                       method = c("delta_mle", "delta_mom", "gk_adjustment")) {
+  method_missing <- missing(method)
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
   distribution <- match.arg(distribution)
+  method <- .normalize_beta_theta_method(
+    method = if (method_missing) NULL else method,
+    distribution = distribution,
+    theta_type = theta_type,
+    method_missing = method_missing
+  )
   
   # Use for placeholder only
   PRQ = NULL 
@@ -55,6 +63,7 @@ manualPlan <- function(distribution = c("binomial", "poisson", "normal", "beta")
                            USL = USL, LSL = LSL,
                            sigma_type = sigma_type,
                            theta_type = theta_type,
+                           method = method,
                            sigma = sigma, theta = theta,
                            distribution = distribution),
                       class = "VarPlan")
