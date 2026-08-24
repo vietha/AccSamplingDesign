@@ -27,3 +27,60 @@
 
   match.arg(method, .beta_theta_methods)
 }
+
+.validate_beta_parameters <- function(mu, theta) {
+  if (length(mu) != 1L || !is.finite(mu) || mu <= 0 || mu >= 1) {
+    stop("mu must be one finite value strictly between 0 and 1.", call. = FALSE)
+  }
+  if (length(theta) != 1L || !is.finite(theta) || theta <= 0) {
+    stop("theta must be one finite positive value.", call. = FALSE)
+  }
+}
+
+.beta_raw_moments <- function(mu, theta, max_order = 4L) {
+  .validate_beta_parameters(mu, theta)
+  if (length(max_order) != 1L || max_order < 1L || max_order != as.integer(max_order)) {
+    stop("max_order must be a positive integer.", call. = FALSE)
+  }
+
+  alpha <- mu * theta
+  vapply(seq_len(max_order), function(order) {
+    offsets <- seq.int(0, order - 1L)
+    prod((alpha + offsets) / (theta + offsets))
+  }, numeric(1L))
+}
+
+.beta_mom_covariance <- function(mu, theta) {
+  # Return the per-observation asymptotic covariance Sigma for (mu_hat,
+  # theta_hat). The covariance for a sample of size n is Sigma / n.
+  moments <- .beta_raw_moments(mu, theta, max_order = 4L)
+  m1 <- moments[[1L]]
+  m2 <- moments[[2L]]
+  variance <- m2 - m1^2
+
+  moment_covariance <- matrix(
+    c(
+      variance,
+      moments[[3L]] - m1 * m2,
+      moments[[3L]] - m1 * m2,
+      moments[[4L]] - m2^2
+    ),
+    nrow = 2L,
+    byrow = TRUE
+  )
+
+  # Jacobian of (mu_hat, theta_hat) with respect to the first two raw
+  # moments. Keeping the off-diagonal covariance is important near the
+  # boundaries of the Beta distribution.
+  dtheta_dm1 <- ((1 - 2 * m1) * variance +
+    2 * m1^2 * (1 - m1)) / variance^2
+  dtheta_dm2 <- -m1 * (1 - m1) / variance^2
+  jacobian <- matrix(
+    c(1, 0, dtheta_dm1, dtheta_dm2),
+    nrow = 2L,
+    byrow = TRUE
+  )
+
+  covariance <- jacobian %*% moment_covariance %*% t(jacobian)
+  (covariance + t(covariance)) / 2
+}
