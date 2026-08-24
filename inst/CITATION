@@ -1,0 +1,21 @@
+bibentry(
+  bibtype = "Article",
+  title = "AccSamplingDesign: An R Package for Optimizing Acceptance Sampling Plans",
+  author = c(
+    person("Ha", "Truong"),
+    person("Victor", "Miranda"),
+    person("Roger", "Kissling")
+  ),
+  journal = "The R Journal",
+  year = "2026",
+  volume = "18",
+  number = "1",
+  pages = "368--381",
+  doi = "10.32614/RJ-2026-007",
+  textVersion = paste(
+    "Truong H, Miranda V, Kissling R (2026).",
+    "\"AccSamplingDesign: An R Package for Optimizing Acceptance Sampling Plans.\"",
+    "The R Journal, 18(1), 368--381.",
+    "doi:10.32614/RJ-2026-007"
+  )
+)

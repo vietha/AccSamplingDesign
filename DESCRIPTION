@@ -24,6 +24,7 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-URL: https://github.com/vietha/AccSamplingDesign
+URL: https://github.com/vietha/AccSamplingDesign,
+    https://doi.org/10.32614/RJ-2026-007
 BugReports: https://github.com/vietha/AccSamplingDesign/issues
 RoxygenNote: 7.3.2
