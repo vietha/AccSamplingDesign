@@ -47,6 +47,10 @@ print.VarPlan <- function(x, ...) {
     cat(" Sigma type:", x$sigma_type, "\n")
   } else {
     cat(" Theta type:", x$theta_type, "\n")
+    if (identical(x$theta_type, "unknown")) {
+      method <- if (is.null(x$method)) "delta_mle" else x$method
+      cat(" Unknown-theta method:", .beta_theta_method_label(method), "\n")
+    }
   }
   cat(" Sample size (n):", x$sample_size, "\n")
   if (length(x$k) > 0) cat(" Acceptability constant (k):", x$k, "\n")
@@ -74,6 +78,10 @@ summary.VarPlan <- function(object, ...) {
     cat(" Population Standard Deviation:", object$sigma_type, "\n")
   } else {
     cat(" Population Precision Parameter (theta):", object$theta_type, "\n")
+    if (identical(object$theta_type, "unknown")) {
+      method <- if (is.null(object$method)) "delta_mle" else object$method
+      cat(" Unknown-theta method:", .beta_theta_method_label(method), "\n")
+    }
   }
   cat(" Producer's Risk (PR =", object$PR, ") at PRQ =", object$PRQ, "\n")
   cat(" Consumer's Risk (CR =", object$CR, ") at CRQ =", object$CRQ, "\n")

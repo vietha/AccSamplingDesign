@@ -5,6 +5,16 @@
 
 .beta_theta_methods <- c("delta_mle", "delta_mom", "gk_adjustment")
 
+.beta_theta_method_label <- function(method) {
+  labels <- c(
+    delta_mle = "Delta-MLE",
+    delta_mom = "Delta-MoM",
+    gk_adjustment = "Govindaraju-Kissling adjustment"
+  )
+  method <- match.arg(method, names(labels))
+  unname(labels[[method]])
+}
+
 .normalize_beta_theta_method <- function(method, distribution, theta_type,
                                          method_missing = FALSE) {
   applicable <- identical(distribution, "beta") &&
