@@ -22,7 +22,9 @@ Imports:
 Suggests:
     VGAM,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://github.com/vietha/AccSamplingDesign,
     https://doi.org/10.32614/RJ-2026-007
