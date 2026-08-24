@@ -84,3 +84,49 @@
   covariance <- jacobian %*% moment_covariance %*% t(jacobian)
   (covariance + t(covariance)) / 2
 }
+
+.beta_mle_information <- function(mu, theta) {
+  .validate_beta_parameters(mu, theta)
+
+  alpha_trigamma <- trigamma(mu * theta)
+  beta_trigamma <- trigamma((1 - mu) * theta)
+  theta_trigamma <- trigamma(theta)
+
+  # Expected information for one observation, parameterized directly by
+  # (mu, theta). This ordering must agree with the decision-rule gradient.
+  information <- matrix(
+    c(
+      theta^2 * (alpha_trigamma + beta_trigamma),
+      theta * (mu * alpha_trigamma - (1 - mu) * beta_trigamma),
+      theta * (mu * alpha_trigamma - (1 - mu) * beta_trigamma),
+      mu^2 * alpha_trigamma +
+        (1 - mu)^2 * beta_trigamma - theta_trigamma
+    ),
+    nrow = 2L,
+    byrow = TRUE
+  )
+
+  if (any(!is.finite(information))) {
+    stop("Beta MLE Fisher information is not finite.", call. = FALSE)
+  }
+  information
+}
+
+.beta_mle_covariance <- function(mu, theta) {
+  information <- .beta_mle_information(mu, theta)
+  covariance <- tryCatch(
+    solve(information),
+    error = function(error) {
+      stop(
+        "Beta MLE Fisher information is singular: ", conditionMessage(error),
+        call. = FALSE
+      )
+    }
+  )
+
+  if (any(!is.finite(covariance))) {
+    stop("Beta MLE covariance is not finite.", call. = FALSE)
+  }
+  # Return per-observation covariance; callers divide by sample size.
+  (covariance + t(covariance)) / 2
+}

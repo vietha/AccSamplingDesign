@@ -71,3 +71,35 @@ test_that("Beta moment helpers reject invalid parameters", {
   expect_error(raw_moments(0.5, 20, 0), "max_order")
   expect_error(mom_covariance(1, 20), "mu")
 })
+
+test_that("analytical MLE covariance inverts Beta Fisher information", {
+  information <- AccSamplingDesign:::.beta_mle_information(0.25, 20)
+  covariance <- AccSamplingDesign:::.beta_mle_covariance(0.25, 20)
+
+  expect_equal(information, t(information), tolerance = 1e-14)
+  expect_equal(covariance, t(covariance), tolerance = 1e-14)
+  expect_equal(information %*% covariance, diag(2), tolerance = 1e-10)
+  expect_true(all(eigen(covariance, symmetric = TRUE)$values > 0))
+})
+
+test_that("analytical MLE covariance matches a frozen reference", {
+  covariance <- AccSamplingDesign:::.beta_mle_covariance(0.25, 20)
+
+  # Inverse of the expected (mu, theta) Fisher information for Beta(5, 15).
+  expected <- matrix(
+    c(0.00891453953147548, -0.482730372568412,
+      -0.482730372568412, 772.623438103779),
+    nrow = 2,
+    byrow = TRUE
+  )
+  expect_equal(covariance, expected, tolerance = 1e-6)
+})
+
+test_that("Beta MLE covariance rejects invalid parameters", {
+  mle_information <- AccSamplingDesign:::.beta_mle_information
+  mle_covariance <- AccSamplingDesign:::.beta_mle_covariance
+
+  expect_error(mle_information(NA_real_, 20), "mu")
+  expect_error(mle_information(0.5, 0), "theta")
+  expect_error(mle_covariance(1, 20), "mu")
+})
