@@ -66,12 +66,20 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
                        distribution = c("normal", "beta"),
                        sigma_type = c("known", "unknown"),
                        theta_type = c("known", "unknown"),
-                       sigma = NULL, theta = NULL) {
+                       sigma = NULL, theta = NULL,
+                       method = c("delta_mle", "delta_mom", "gk_adjustment")) {
+  method_missing <- missing(method)
   
   # Match arguments to ensure valid input
   distribution <- match.arg(distribution)
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
+  method <- .normalize_beta_theta_method(
+    method = if (method_missing) NULL else method,
+    distribution = distribution,
+    theta_type = theta_type,
+    method_missing = method_missing
+  )
   
   # Set default if not provided
   if (is.null(sigma_type)) sigma_type <- "known"
@@ -196,8 +204,13 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
       n <- params[1]
       k <- params[2]
       
+      evaluation_theta_type <- if (
+        theta_type == "unknown" && method != "gk_adjustment"
+      ) "unknown" else "known"
       planObj <- structure(list(n = n, k = k, USL = USL, LSL = LSL,
-                                theta = theta, theta_type = "known",
+                                theta = theta,
+                                theta_type = evaluation_theta_type,
+                                method = method,
                                 distribution = distribution), 
                            class = "VarPlan")
       
@@ -265,17 +278,50 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     # k <- result$par[2]
     n <- n_opt
     k <- k_opt
+
+    if (theta_type == "unknown" && method != "gk_adjustment") {
+      # For Delta methods both risk equations are smooth. Refine the generic
+      # constrained search by solving for the two binding risk points in
+      # log(n), k coordinates, which keeps n positive and improves numerical
+      # accuracy for very large precision parameters.
+      delta_risk_error <- function(transformed) {
+        candidate <- structure(
+          list(
+            n = exp(transformed[[1L]]), k = exp(transformed[[2L]]),
+            USL = USL, LSL = LSL, theta = theta,
+            theta_type = "unknown", method = method,
+            distribution = "beta"
+          ),
+          class = "VarPlan"
+        )
+        producer_risk <- 1 - accProb(candidate, PRQ)
+        consumer_risk <- accProb(candidate, CRQ)
+        ((producer_risk - alpha) / alpha)^2 +
+          ((consumer_risk - beta) / beta)^2
+      }
+      refined <- optim(
+        par = log(c(max(n, 2), k)),
+        fn = delta_risk_error,
+        method = "Nelder-Mead",
+        control = list(maxit = 1000, reltol = 1e-12)
+      )
+      if (refined$convergence != 0 || any(!is.finite(refined$par))) {
+        stop("Delta-method risk refinement failed: ", refined$message)
+      }
+      n <- exp(refined$par[[1L]])
+      k <- exp(refined$par[[2L]])
+    }
     
-    if(theta_type == "unknown") {
-      ## This R ratio from paper of Govindaraju and Kissling (2015)
-      R_ratio = (1 + 0.85*k^2)
-      ## This edited ratio
-      #R_ratio = (1 + 0.4*k^2)
-      n <- ceiling(n)*R_ratio
+    if(theta_type == "unknown" && method == "gk_adjustment") {
+      # Preserve the package-style adjustment from version 0.0.8. Delta
+      # methods instead incorporate estimation uncertainty directly in Pa.
+      R_ratio <- 1 + 0.85 * k^2
+      n <- ceiling(n) * R_ratio
     }
     
     objPlan <- structure(list(n = n, k = k, USL = USL, LSL = LSL,
                               theta = theta, theta_type = theta_type,
+                              method = method,
                               distribution = distribution), 
                          class = "VarPlan")
     
@@ -289,7 +335,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     list(
       distribution = distribution,
       sigma = sigma, theta = theta,
-      sigma_type = sigma_type, theta_type = theta_type,
+      sigma_type = sigma_type, theta_type = theta_type, method = method,
       PRQ = PRQ, CRQ = CRQ, PR = r_alpha, CR = r_beta,
       USL = USL, LSL = LSL,
       #spec_limit = spec_limit, limtype = limit_type,
