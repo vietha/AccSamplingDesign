@@ -89,6 +89,40 @@ test_that("optPlan delegates to optVarPlan for normal", {
   expect_equal(plan1, plan2)
 })
 
+test_that("optPlan forwards the unknown-theta method", {
+  arguments <- list(
+    PRQ = 0.01, CRQ = 0.05, distribution = "beta",
+    theta_type = "unknown", theta = 300, USL = 0.05,
+    method = "delta_mom"
+  )
+  expect_equal(do.call(optPlan, arguments), do.call(optVarPlan, arguments))
+  expect_identical(do.call(optPlan, arguments)$method, "delta_mom")
+})
+
+test_that("optPlan defaults unknown-theta Beta plans to Delta-MLE", {
+  plan <- optPlan(
+    PRQ = 0.01, CRQ = 0.05, distribution = "beta",
+    theta_type = "unknown", theta = 300, USL = 0.05
+  )
+  expect_identical(plan$method, "delta_mle")
+})
+
+test_that("optPlan rejects method when it is not applicable", {
+  expect_error(
+    optPlan(0.01, 0.05, distribution = "normal", method = "delta_mle"),
+    "only applicable"
+  )
+  expect_error(
+    optPlan(0.01, 0.05, distribution = "binomial", method = "delta_mle"),
+    "only applicable"
+  )
+  expect_error(
+    optPlan(0.01, 0.05, distribution = "beta", theta = 300, USL = 0.05,
+            method = "delta_mle"),
+    "only applicable"
+  )
+})
+
 # Edge cases
 # -----------------------------------------------------------------------------
 
@@ -96,4 +130,3 @@ test_that("optPlan sets default limit_type to upper when no limits provided", {
   plan <- optPlan(PRQ = 0.01, CRQ = 0.05, distribution = "normal")
   expect_true("n" %in% names(plan))
 })
-

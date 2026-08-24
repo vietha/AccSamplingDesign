@@ -16,12 +16,20 @@ optPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
                     distribution = c("binomial", "poisson", "normal", "beta"),
                     sigma_type = c("known", "unknown"),
                     theta_type = c("known", "unknown"),
-                    sigma = NULL, theta = NULL) {
+                    sigma = NULL, theta = NULL,
+                    method = c("delta_mle", "delta_mom", "gk_adjustment")) {
+  method_missing <- missing(method)
   
   # Match arguments to ensure valid input
   distribution <- match.arg(distribution)
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
+  method <- .normalize_beta_theta_method(
+    method = if (method_missing) NULL else method,
+    distribution = distribution,
+    theta_type = theta_type,
+    method_missing = method_missing
+  )
   
   # Ensure PRQ, CRQ, alpha, and beta are within valid ranges based on distribution
   check_quality <- function(q, distribution) {
@@ -98,11 +106,28 @@ optPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
                             distribution = distribution)
   }
   # ------------Normal/Beta ------------
-  if (distribution == "normal" || distribution == "beta") {
+  if (distribution == "normal") {
     opt_plan <- optVarPlan(PRQ = PRQ, CRQ = CRQ, alpha = alpha, beta = beta, 
                            USL = USL, LSL = LSL, distribution = distribution,
                            sigma_type = sigma_type, theta_type = theta_type,
                            sigma = sigma, theta = theta)
+  }
+  if (distribution == "beta") {
+    if (theta_type == "unknown") {
+      opt_plan <- optVarPlan(
+        PRQ = PRQ, CRQ = CRQ, alpha = alpha, beta = beta,
+        USL = USL, LSL = LSL, distribution = distribution,
+        sigma_type = sigma_type, theta_type = theta_type,
+        sigma = sigma, theta = theta, method = method
+      )
+    } else {
+      opt_plan <- optVarPlan(
+        PRQ = PRQ, CRQ = CRQ, alpha = alpha, beta = beta,
+        USL = USL, LSL = LSL, distribution = distribution,
+        sigma_type = sigma_type, theta_type = theta_type,
+        sigma = sigma, theta = theta
+      )
+    }
   }
   return(opt_plan)
 }
