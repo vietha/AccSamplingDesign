@@ -11,7 +11,8 @@ optPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
         distribution = c("binomial", "poisson", "normal", "beta"),
         sigma_type = c("known", "unknown"),
         theta_type = c("known", "unknown"),
-        sigma = NULL, theta = NULL)
+        sigma = NULL, theta = NULL,
+        method = c("delta_mle", "delta_mom", "gk_adjustment"))
 }
 \arguments{
   \item{PRQ}{Producer's risk quality level (e.g., acceptable quality level).}
@@ -26,6 +27,9 @@ optPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   \item{sigma}{Known standard deviation of the process, if applicable.}
   \item{theta}{Precision (dispersion) parameter for the beta distribution.
   If unknown, it can be estimated from historical data using functions such as \code{\link[VGAM]{betaff}}.}
+  \item{method}{Method for a Beta plan with \code{theta_type = "unknown"}:
+  \code{"delta_mle"} (default), \code{"delta_mom"}, or
+  \code{"gk_adjustment"}. It must not be supplied in other cases.}
 }
 \details{
 This function designs optimal acceptance sampling plans by balancing producer's 
@@ -46,6 +50,12 @@ how concentrated the distribution is around the mean. Users must either:
 }
 Optimization for Beta plans is performed using \code{\link[stats]{optim}} with the \code{"L-BFGS-B"} method 
 (Byrd et al., 1995) to handle bounds on sample size and acceptance numbers.
+
+For unknown \code{theta}, the Delta methods approximate the joint uncertainty
+of the estimated Beta mean and precision. Delta--MLE uses inverse expected
+Fisher information; Delta--MoM propagates the first four Beta raw moments.
+The \code{"gk_adjustment"} option preserves the earlier
+Govindaraju--Kissling/package-style sample-size adjustment.
 
 This approach ensures stable and efficient plan calculation while relying solely on base R functionality.
 }
@@ -83,5 +93,5 @@ optPlan(PRQ = 0.005, CRQ = 0.03, alpha = 0.05, beta = 0.10,
 # Example usage (beta distribution, unknown theta):
 optPlan(PRQ = 0.025, CRQ = 0.10, alpha = 0.05, beta = 0.10, 
         distribution = "beta", theta = 6.6e8, 
-        theta_type = "unknown", LSL = 5.65e-6)
+        theta_type = "unknown", method = "delta_mle", LSL = 5.65e-6)
 }

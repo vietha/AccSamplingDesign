@@ -9,7 +9,8 @@ manualPlan(distribution = c("binomial", "poisson", "normal", "beta"),
            n = NULL, c = NULL, k = NULL,
            USL = NULL, LSL = NULL, sigma = NULL, theta = NULL,
            sigma_type = c("known", "unknown"),
-           theta_type = c("known", "unknown"))
+           theta_type = c("known", "unknown"),
+           method = c("delta_mle", "delta_mom", "gk_adjustment"))
 }
 \arguments{
   \item{distribution}{One of \code{"binomial"}, \code{"poisson"}, \code{"normal"}, or \code{"beta"}.}
@@ -31,6 +32,9 @@ manualPlan(distribution = c("binomial", "poisson", "normal", "beta"),
   \item{sigma_type}{Either \code{"known"} or \code{"unknown"} (for normal).}
 
   \item{theta_type}{Either \code{"known"} or \code{"unknown"} (for beta).}
+
+  \item{method}{Method used by an unknown-theta Beta plan. Delta--MLE is the
+  default; alternatives are \code{"delta_mom"} and \code{"gk_adjustment"}.}
 }
 \details{
   This function provides a user-friendly wrapper to construct AS plan directly
@@ -50,6 +54,11 @@ plan1 <- manualPlan(n = 100, c = 2, distribution = "binomial")
 
 # Variable sampling (normal)
 plan2 <- manualPlan(n = 30, k = 1.5, distribution = "normal", USL = 10, sigma = 1)
+
+# Unknown-theta Beta plan using analytical Delta--MoM
+plan3 <- manualPlan(n = 45, k = 2.2, distribution = "beta",
+                    theta = 300, theta_type = "unknown", method = "delta_mom",
+                    USL = 0.05)
 
 }
 \author{

@@ -6,6 +6,10 @@ An R package for designing and analyzing **acceptance sampling plans**
 
 See [NEWS.md](NEWS.md) for release notes and user-visible changes.
 
+The package is described in Truong, Miranda, and Kissling (2026),
+[*AccSamplingDesign: An R Package for Optimizing Acceptance Sampling
+Plans*](https://doi.org/10.32614/RJ-2026-007), published in *The R Journal*.
+
 ## Overview
 
 The **AccSamplingDesign** package provides flexible tools to create and
@@ -121,6 +125,10 @@ plot(plan_beta, by = "mean") # By mean value
 
 ### 📌 Variable Sampling (Beta, Unknown Theta)
 
+Unknown-theta plans support analytical Delta--MLE (`"delta_mle"`), analytical
+Delta--MoM (`"delta_mom"`), and the earlier Govindaraju--Kissling sample-size
+adjustment (`"gk_adjustment"`). Delta--MLE is used when `method` is omitted.
+
 ``` r
 plan_beta <- optPlan(
   PRQ = 0.05,
@@ -130,6 +138,7 @@ plan_beta <- optPlan(
   distribution = "beta",
   theta = 44000000,
   theta_type = "unknown",
+  method = "delta_mle", # Default; may be omitted
   LSL = 0.00001
 )
 

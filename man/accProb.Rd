@@ -14,6 +14,11 @@ accProb(plan, p)
 \value{
   Numeric probability between 0 and 1.
 }
+\details{
+For Beta plans with unknown theta, the calculation follows the \code{method}
+stored in the plan: analytical Delta--MLE, analytical Delta--MoM, or the
+Govindaraju--Kissling sample-size adjustment.
+}
 
 \author{
 Ha Truong
