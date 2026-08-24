@@ -103,3 +103,49 @@ test_that("Beta MLE covariance rejects invalid parameters", {
   expect_error(mle_information(0.5, 0), "theta")
   expect_error(mle_covariance(1, 20), "mu")
 })
+
+test_that("Delta decision gradients agree with finite differences", {
+  statistic <- AccSamplingDesign:::.beta_delta_statistic
+  gradient <- AccSamplingDesign:::.beta_delta_gradient
+  mu <- 0.25
+  theta <- 20
+  k <- 1.4
+  step <- 1e-6
+
+  for (limit_type in c("upper", "lower")) {
+    analytical <- gradient(mu, theta, k, limit_type)
+    numerical_mu <- (statistic(mu + step, theta, k, limit_type) -
+      statistic(mu - step, theta, k, limit_type)) / (2 * step)
+    numerical_theta <- (statistic(mu, theta + step, k, limit_type) -
+      statistic(mu, theta - step, k, limit_type)) / (2 * step)
+
+    expect_equal(unname(analytical[["mu"]]), numerical_mu, tolerance = 1e-7)
+    expect_equal(
+      unname(analytical[["theta"]]), numerical_theta, tolerance = 1e-7
+    )
+  }
+})
+
+test_that("Delta acceptance probabilities match frozen references", {
+  delta_pa <- AccSamplingDesign:::.beta_delta_acceptance_probability
+
+  expect_equal(
+    delta_pa(0.03, 300, 45, 2.2, 0.05, "upper", "delta_mle"),
+    0.312756442044726,
+    tolerance = 1e-6
+  )
+  expect_equal(
+    delta_pa(0.08, 100, 30, 1.5, 0.05, "lower", "delta_mom"),
+    0.0404806618576654,
+    tolerance = 1e-6
+  )
+})
+
+test_that("Delta acceptance probability validates numerical inputs", {
+  delta_pa <- AccSamplingDesign:::.beta_delta_acceptance_probability
+
+  expect_error(delta_pa(0.3, 20, 0, 1, 0.5, "upper", "delta_mle"), "n")
+  expect_error(delta_pa(0.3, 20, 10, -1, 0.5, "upper", "delta_mle"), "k")
+  expect_error(delta_pa(0.3, 20, 10, 1, 1, "upper", "delta_mle"), "limit")
+  expect_error(delta_pa(0.3, 20, 10, 1, 0.5, "upper", "bad"), "arg")
+})

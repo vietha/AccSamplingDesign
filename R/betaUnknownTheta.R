@@ -130,3 +130,75 @@
   # Return per-observation covariance; callers divide by sample size.
   (covariance + t(covariance)) / 2
 }
+
+.beta_delta_statistic <- function(mu, theta, k, limit_type) {
+  .validate_beta_parameters(mu, theta)
+  limit_type <- match.arg(limit_type, c("upper", "lower"))
+  if (length(k) != 1L || !is.finite(k) || k < 0) {
+    stop("k must be one finite non-negative value.", call. = FALSE)
+  }
+
+  direction <- if (limit_type == "upper") 1 else -1
+  standard_deviation <- sqrt(mu * (1 - mu) / (theta + 1))
+  mu + direction * k * standard_deviation
+}
+
+.beta_delta_gradient <- function(mu, theta, k, limit_type) {
+  .validate_beta_parameters(mu, theta)
+  limit_type <- match.arg(limit_type, c("upper", "lower"))
+  if (length(k) != 1L || !is.finite(k) || k < 0) {
+    stop("k must be one finite non-negative value.", call. = FALSE)
+  }
+
+  # The sign changes both k-dependent derivatives for a lower limit. The
+  # parameter order is (mu, theta), matching both covariance implementations.
+  direction <- if (limit_type == "upper") 1 else -1
+  c(
+    mu = 1 + direction * k * (1 - 2 * mu) /
+      (2 * sqrt((theta + 1) * mu * (1 - mu))),
+    theta = -direction * k * sqrt(mu * (1 - mu)) /
+      (2 * (theta + 1)^(3 / 2))
+  )
+}
+
+.beta_delta_acceptance_probability <- function(mu, theta, n, k, limit,
+                                               limit_type, method) {
+  .validate_beta_parameters(mu, theta)
+  limit_type <- match.arg(limit_type, c("upper", "lower"))
+  method <- match.arg(method, c("delta_mle", "delta_mom"))
+  if (length(n) != 1L || !is.finite(n) || n <= 0) {
+    stop("n must be one finite positive value.", call. = FALSE)
+  }
+  if (length(limit) != 1L || !is.finite(limit) || limit <= 0 || limit >= 1) {
+    stop("The Beta specification limit must be strictly between 0 and 1.",
+         call. = FALSE)
+  }
+
+  covariance <- if (method == "delta_mle") {
+    .beta_mle_covariance(mu, theta)
+  } else {
+    .beta_mom_covariance(mu, theta)
+  }
+  gradient <- .beta_delta_gradient(mu, theta, k, limit_type)
+  statistic <- .beta_delta_statistic(mu, theta, k, limit_type)
+
+  # Covariance helpers return per-observation Sigma. Divide the quadratic form
+  # by n exactly once to obtain the finite-sample Delta variance.
+  delta_variance <- drop(t(gradient) %*% covariance %*% gradient) / n
+  if (!is.finite(delta_variance) || delta_variance <= 0) {
+    stop("Delta-method variance must be finite and positive.", call. = FALSE)
+  }
+
+  z_value <- if (limit_type == "upper") {
+    (limit - statistic) / sqrt(delta_variance)
+  } else {
+    (statistic - limit) / sqrt(delta_variance)
+  }
+  probability <- pnorm(z_value)
+  if (length(probability) != 1L || !is.finite(probability) ||
+      probability < 0 || probability > 1) {
+    stop("Delta acceptance probability is not finite or is outside [0, 1].",
+         call. = FALSE)
+  }
+  probability
+}
