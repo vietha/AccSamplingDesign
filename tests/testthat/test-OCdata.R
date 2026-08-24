@@ -87,6 +87,25 @@ test_that("OCdata.VarPlan works for beta, upper and lower limits", {
   expect_s3_class(oc_lower, "OCdata")
 })
 
+test_that("OCdata uses each unknown-theta method stored in a Beta plan", {
+  pd <- c(0.01, 0.03, 0.05)
+  for (method in c("delta_mle", "delta_mom", "gk_adjustment")) {
+    for (limit_name in c("USL", "LSL")) {
+      arguments <- list(
+        distribution = "beta", n = 45, k = 2.2,
+        theta = 300, theta_type = "unknown", method = method
+      )
+      arguments[[limit_name]] <- 0.05
+      plan <- do.call(manualPlan, arguments)
+      oc <- OCdata(plan, pd = pd)
+
+      expect_s3_class(oc, "OCdata")
+      expect_equal(oc$paccept, vapply(pd, function(p) accProb(plan, p), numeric(1)))
+      expect_true(all(is.finite(oc$paccept)))
+    }
+  }
+})
+
 # S3 methods
 ## -----------------------------------------------------------------------------
 
@@ -110,4 +129,3 @@ test_that("plot.OCdata works", {
   oc_attr <- OCdata.AttrPlan(plan_attr)
   expect_message(plot(oc_attr, by = "mean"), "not available")
 })
-

@@ -116,3 +116,21 @@ test_that("plot.VarPlan errors for invalid by argument", {
   
   expect_error(plot(plan, by="xyz"), "should be one of")
 })
+
+test_that("plot.VarPlan supports every unknown-theta Beta method", {
+  pd <- seq(0.005, 0.08, length.out = 12)
+  for (method in c("delta_mle", "delta_mom", "gk_adjustment")) {
+    plan <- manualPlan(
+      distribution = "beta", n = 45, k = 2.2,
+      theta = 300, theta_type = "unknown", method = method,
+      USL = 0.05
+    )
+    plan$PRQ <- 0.01
+    plan$CRQ <- 0.05
+    plan$PR <- 0.05
+    plan$CR <- 0.10
+
+    expect_silent(plot(plan, pd = pd, by = "pd"))
+    expect_silent(plot(plan, pd = pd, by = "mean"))
+  }
+})
