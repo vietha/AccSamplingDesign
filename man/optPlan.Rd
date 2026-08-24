@@ -74,7 +74,7 @@ based on the specified parameters and distribution.
   AccSamplingDesign: An R Package for Optimizing Acceptance Sampling Plans.
   \emph{The R Journal}, 18(1), 368--381.
   \doi{10.32614/RJ-2026-007}.
-  
+
   * ISO 2859-1:1999 - Sampling procedures for inspection by attributes 
   
   * ISO 3951-1:2013 - Sampling procedures for inspection by variables.
