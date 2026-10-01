@@ -167,11 +167,16 @@ summary(plan_beta2)
 
 ## Variables Sampling Plan Output Note
 
-When designing a variables acceptance sampling plan using `optPlan()` or `optVarPlan()`,  
+When designing a variables acceptance sampling plan using `optPlan()` or `optVarPlan()`,
 the returned object includes two related quantities for the sample size:
 
 - **`sample_size`** — for practical application, the final plan uses the smallest integer greater than or equal to the theoretical value (`ceiling(n)`).
-- **`n`** — the raw (non-rounded) computed sample size based on the optimization model.
+- **`n`** — the sample size the plan is evaluated at. For known-theta Beta plans this is the delivered integer size (equal to `sample_size`); for other plans it is the raw (non-rounded) value from the optimization model.
+
+For known-theta Beta plans, the search is refined so that both risks are met at the
+delivered (rounded-up) sample size: the sample size is rounded up from the solution of
+the two binding risk equations, and the producer and consumer risks are verified at that
+integer size. The reported `PR` and `CR` therefore describe the plan as applied.
 
 Example:
 
@@ -215,7 +220,7 @@ The **AccSamplingDesign** package determines optimal sample sizes and acceptance
 
 - **Normal Plans (σ unknown):** Optimization is performed using the derivative-free method of Nelder and Mead (1965) via the `optim()` function in R. This method is robust for the non-linear objective functions that arise when σ is unknown.
 
-- **Beta Plans:** Optimization is performed using the `optim()` function in R with the `"L-BFGS-B"` method (Byrd et al., 1995), which efficiently handles bound constraints on sample size and acceptance numbers.
+- **Beta Plans:** Optimization is performed using the `optim()` function in R with the `"L-BFGS-B"` method (Byrd et al., 1995), which efficiently handles bound constraints on sample size and acceptance numbers. The constrained search is refined with the Nelder-Mead method to the solution of the two binding risk equations. For known-theta plans, the sample size is rounded up from that solution and both risks are verified at the delivered integer size, so the plan meets the producer and consumer risk constraints as applied.
 
 This approach ensures stable and efficient plan calculations while relying solely on base R functionality, avoiding additional package dependencies.
 

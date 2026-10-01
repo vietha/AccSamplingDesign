@@ -279,17 +279,23 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     n <- n_opt
     k <- k_opt
 
-    if (theta_type == "unknown" && method != "gk_adjustment") {
-      # For Delta methods both risk equations are smooth. Refine the generic
-      # constrained search by solving for the two binding risk points in
-      # log(n), k coordinates, which keeps n positive and improves numerical
-      # accuracy for very large precision parameters.
-      delta_risk_error <- function(transformed) {
+    # Refine the constrained search by solving for the two binding risk
+    # points (PR = alpha and CR = beta) in log(n), log(k) coordinates, which
+    # keeps n positive and improves numerical accuracy. The binding solution
+    # is the continuous two-point optimum; rounding n up from it strictly
+    # improves both risks. Delta methods evaluate their own acceptance
+    # probability; known theta evaluates the closed form.
+    if (theta_type == "known" ||
+        (theta_type == "unknown" && method != "gk_adjustment")) {
+      evaluation_theta_type <- if (
+        theta_type == "unknown" && method != "gk_adjustment"
+      ) "unknown" else "known"
+      risk_error <- function(transformed) {
         candidate <- structure(
           list(
             n = exp(transformed[[1L]]), k = exp(transformed[[2L]]),
             USL = USL, LSL = LSL, theta = theta,
-            theta_type = "unknown", method = method,
+            theta_type = evaluation_theta_type, method = method,
             distribution = "beta"
           ),
           class = "VarPlan"
@@ -301,17 +307,60 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
       }
       refined <- optim(
         par = log(c(max(n, 2), k)),
-        fn = delta_risk_error,
+        fn = risk_error,
         method = "Nelder-Mead",
         control = list(maxit = 1000, reltol = 1e-12)
       )
       if (refined$convergence != 0 || any(!is.finite(refined$par))) {
-        stop("Delta-method risk refinement failed: ", refined$message)
+        if (theta_type == "known") {
+          # With extreme precision parameters the two binding equations can
+          # be too ill-conditioned for the simplex refinement while the
+          # constrained-search solution already meets both risks. Keep it;
+          # the verification below still guarantees the delivered plan, and
+          # only the minimality of the sample size is at stake.
+          warning("Beta plan risk refinement did not converge; using the ",
+                  "constrained search solution (the sample size may not ",
+                  "be minimal).")
+        } else {
+          stop("Beta plan risk refinement failed: ", refined$message)
+        }
+      } else {
+        n <- exp(refined$par[[1L]])
+        k <- exp(refined$par[[2L]])
       }
-      n <- exp(refined$par[[1L]])
-      k <- exp(refined$par[[2L]])
     }
-    
+
+    if (theta_type == "known") {
+      # Round the refined sample size up and verify both risk constraints at
+      # the delivered (integer) size: Pa(p1) increases and Pa(p2) decreases
+      # in n at fixed k, so rounding up strictly improves both risks. The
+      # extra iterations absorb any refinement precision residual; if the
+      # constraints still fail, stop rather than deliver an infeasible plan.
+      n_int <- max(2, ceiling(n))
+      nudge <- 0
+      repeat {
+        delivered <- structure(
+          list(n = n_int, k = k, USL = USL, LSL = LSL, theta = theta,
+               theta_type = "known", method = method,
+               distribution = distribution),
+          class = "VarPlan"
+        )
+        r_alpha_del <- 1 - accProb(delivered, PRQ)
+        r_beta_del <- accProb(delivered, CRQ)
+        if (r_alpha_del <= alpha && r_beta_del <= beta) break
+        nudge <- nudge + 1
+        if (nudge > 100) {
+          stop("Beta known-theta plan does not meet both risk constraints at the rounded sample size (PR = ",
+               r_alpha_del, ", CR = ", r_beta_del,
+               "). Please report this configuration.")
+        }
+        n_int <- n_int + 1
+      }
+      # Store the delivered size as the plan's sample size so the reported
+      # risks, OC curve and plots all describe the plan that is applied.
+      n <- n_int
+    }
+
     if(theta_type == "unknown" && method == "gk_adjustment") {
       # Preserve the package-style adjustment from version 0.0.8. Delta
       # methods instead incorporate estimation uncertainty directly in Pa.

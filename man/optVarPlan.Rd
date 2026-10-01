@@ -54,8 +54,12 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
     \item provide a known value for \code{theta}, typically obtained from prior process studies or historical data; or
     \item estimate it from sample data using a fitting function such as \code{\link[VGAM]{betaff}} in the \pkg{VGAM} package.
   }
-  Optimization for Beta plans is performed using \code{\link[stats]{optim}} with the \code{"L-BFGS-B"} method 
-  (Byrd et al., 1995) to handle bounds on sample size and acceptance numbers.
+  Optimization for Beta plans is performed using \code{\link[stats]{optim}} with the \code{"L-BFGS-B"} method
+  (Byrd et al., 1995) to handle bounds on sample size and acceptance numbers, followed by a
+  Nelder-Mead refinement that solves the two binding risk equations. For known-theta plans,
+  the sample size is then rounded up from the binding solution and both risks are verified
+  at the delivered (integer) size, so the plan meets \code{PR <= alpha} and \code{CR <= beta}
+  as applied.
 
   For unknown precision, Delta--MLE uses inverse expected Fisher information
   and Delta--MoM uses analytical covariance propagated from the first four Beta
@@ -70,7 +74,9 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   \item{distribution}{Distribution used ("normal" or "beta").}
   \item{sample_size}{Final sample size after rounding up to the next integer, for practical application.}
   \item{k}{Acceptability constant.}
-  \item{n}{Unrounded sample size.}
+  \item{n}{The sample size the plan is evaluated at. For known-theta Beta
+  plans this is the delivered integer size (equal to \code{sample_size});
+  for other plans it is the unrounded value from the optimization.}
 }
 \references{
   * H. Truong, V. Miranda and R. Kissling (2026).

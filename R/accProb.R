@@ -110,8 +110,11 @@ accProb.VarPlan <- function(plan, p) {
       B <- -(2 * theta * limit + k^2)
       C <- theta * limit^2
       
-      # Calculate discriminant
-      discriminant <- (2 * theta * limit + k^2)^2 - 4 * A * C
+      # Calculate discriminant. Mathematically it is
+      # k^2 * (k^2 + 4 * theta * limit * (1 - limit)) >= 0, but the
+      # expression below cancels O(theta^2 * limit^2) terms, so near
+      # k = 0 it can land a few ulps below zero; clamp before the root.
+      discriminant <- pmax((2 * theta * limit + k^2)^2 - 4 * A * C, 0)
       sqrt_disc <- sqrt(discriminant)
       
       # Compute roots
