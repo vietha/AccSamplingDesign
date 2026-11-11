@@ -16,8 +16,13 @@ accProb(plan, p)
 }
 \details{
 For Beta plans with unknown theta, the calculation follows the \code{method}
-stored in the plan: analytical Delta--MLE, analytical Delta--MoM, or the
-Govindaraju--Kissling sample-size adjustment.
+stored in the plan: analytical Delta--MLE, analytical Delta--MoM, the
+Govindaraju--Kissling sample-size adjustment, or experimental Saddlepoint MLE OC.
+The latter numerically integrates a normalized joint MLE density and returns
+an approximate probability. It is more expensive than Delta evaluation, caches
+the distribution for repeated constants, and raises an error if integration
+does not converge. Integration error and finite-sample approximation error are
+distinct. The endpoints \code{p=0} and \code{p=1} use their limiting probabilities.
 }
 
 \author{

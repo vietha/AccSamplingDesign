@@ -12,7 +12,7 @@ optPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
         sigma_type = c("known", "unknown"),
         theta_type = c("known", "unknown"),
         sigma = NULL, theta = NULL,
-        method = c("delta_mle", "delta_mom", "gk_adjustment"))
+        method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle"))
 }
 \arguments{
   \item{PRQ}{Producer's risk quality level (e.g., acceptable quality level).}
@@ -29,9 +29,18 @@ optPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   If unknown, it can be estimated from historical data using functions such as \code{\link[VGAM]{betaff}}.}
   \item{method}{Method for a Beta plan with \code{theta_type = "unknown"}:
   \code{"delta_mle"} (default), \code{"delta_mom"}, or
-  \code{"gk_adjustment"}. It must not be supplied in other cases.}
+  \code{"gk_adjustment"}, or experimental \code{"saddlepoint_mle"}.
+  It must not be supplied in other cases.}
 }
 \details{
+The experimental \code{"saddlepoint_mle"} method integrates a normalized joint
+MLE saddlepoint density. It uses deterministic numerical integration, not
+simulation, and retains the MLE inspection rule. Its initial cost is larger
+than the Delta methods. Returned risks are numerical approximations at the
+delivered integer size, not guarantees of finite-sample risk control.
+Nonconvergent integration raises an error; no alternative OC is substituted.
+See \code{\link{optVarPlan}} for details.
+
 This function designs optimal acceptance sampling plans by balancing producer's 
 and consumer's risks under specified quality levels. It supports plans for 
 attributes (binomial) and variables (normal or beta distributions), including 

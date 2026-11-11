@@ -1,3 +1,25 @@
+# AccSamplingDesign 0.1.1
+
+## Experimental method
+
+- Added opt-in `method = "saddlepoint_mle"` for unknown-precision Beta
+  variables plans. It numerically integrates a normalized joint saddlepoint
+  approximation to the same MLE inspection rule. `delta_mle` remains the default.
+- New saddlepoint plans use integer sample sizes, verify their own numerical
+  analytical risk constraints, and expose integration diagnostics. They do not
+  provide a guarantee of finite-sample risk control or global size minimality.
+- Numerical integration uses no simulation, has an initial setup cost, and caches
+  a distribution for repeated acceptance-constant calculations. Unsupported or
+  nonconvergent calculations raise errors; no Delta fallback is used.
+
+## MLE safety fixes
+
+- Delta-MLE construction and evaluation reject invalid sample sizes below two,
+  nonfinite parameters, and negative acceptability constants. MLE refinement now
+  respects the size bound and rejects analytically infeasible results.
+- The Delta formulas and existing Delta/Govindaraju-Kissling reporting conventions
+  are unchanged. The MOM implementation is unchanged.
+
 # AccSamplingDesign 0.0.9.9000
 
 ## Bug fixes

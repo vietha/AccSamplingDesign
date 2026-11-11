@@ -127,7 +127,34 @@ plot(plan_beta, by = "mean") # By mean value
 
 Unknown-theta plans support analytical Delta--MLE (`"delta_mle"`), analytical
 Delta--MoM (`"delta_mom"`), and the earlier Govindaraju--Kissling sample-size
-adjustment (`"gk_adjustment"`). Delta--MLE is used when `method` is omitted.
+adjustment (`"gk_adjustment"`). Version 0.1.1 also provides the experimental
+Saddlepoint MLE OC (`"saddlepoint_mle"`). Delta--MLE is used when `method` is omitted.
+
+`saddlepoint_mle` retains the MLE inspection rule and numerically integrates a
+normalized joint saddlepoint density. It uses no simulation during optimization.
+It has a substantially larger initial computation cost than the Delta methods;
+repeated calculations over `k` reuse the joint distribution. Its probabilities
+are bounded and monotone in `k`, but its finite-sample risk accuracy must still
+be assessed. Nonconvergent integrations raise an error, without a Delta fallback.
+New saddlepoint plans store their delivered integer size in both `n` and
+`sample_size`, and expose numerical diagnostics in `integration`. Existing Delta
+reporting conventions are preserved.
+
+```r
+plan_sp <- optPlan(
+  PRQ = 0.01, CRQ = 0.03, alpha = 0.05, beta = 0.10,
+  distribution = "beta", theta_type = "unknown", theta = 500,
+  USL = 0.05, method = "saddlepoint_mle"
+)
+summary(plan_sp)
+accProb(plan_sp, 0.03)
+```
+
+The construction uses the saddlepoint framework in
+[McCullagh, *Tensor Methods in Statistics*, Chapter 6](https://www.stat.uchicago.edu/~pmcc/tensorbook/edition2.pdf).
+It does not establish universal finite-sample risk control or a global
+sample-size optimum. Numerical convergence diagnostics measure integration
+error, not statistical approximation error.
 
 ``` r
 plan_beta <- optPlan(

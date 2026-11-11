@@ -10,7 +10,7 @@ manualPlan(distribution = c("binomial", "poisson", "normal", "beta"),
            USL = NULL, LSL = NULL, sigma = NULL, theta = NULL,
            sigma_type = c("known", "unknown"),
            theta_type = c("known", "unknown"),
-           method = c("delta_mle", "delta_mom", "gk_adjustment"))
+           method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle"))
 }
 \arguments{
   \item{distribution}{One of \code{"binomial"}, \code{"poisson"}, \code{"normal"}, or \code{"beta"}.}
@@ -34,13 +34,18 @@ manualPlan(distribution = c("binomial", "poisson", "normal", "beta"),
   \item{theta_type}{Either \code{"known"} or \code{"unknown"} (for beta).}
 
   \item{method}{Method used by an unknown-theta Beta plan. Delta--MLE is the
-  default; alternatives are \code{"delta_mom"} and \code{"gk_adjustment"}.}
+  default; alternatives are \code{"delta_mom"}, \code{"gk_adjustment"},
+  and experimental \code{"saddlepoint_mle"}.}
 }
 \details{
   This function provides a user-friendly wrapper to construct AS plan directly
   from parameters.
   Internally, it constructs the appropriate \code{AttrPlan} or \code{VarPlan},
   from given paramenters.
+  Delta--MLE requires finite \code{n >= 2} and finite nonnegative \code{k}.
+  Saddlepoint MLE additionally requires an integer inspection size. Supply
+  explicit quality points \code{pd} when using \code{OCdata()} for a manual
+  saddlepoint plan.
 }
 \value{
   An object of class \code{"AttrPlan"} or \code{VarPlan}.

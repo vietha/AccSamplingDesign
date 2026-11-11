@@ -24,6 +24,7 @@ S3method(plot, OCdata)
 # Importing necessary functions from other packages
 importFrom("stats", "optim", "pbeta", "pbinom", "pnorm", "qnorm", "rbeta", "uniroot")
 importFrom("stats", "pt")
+importFrom("stats", "optimize", "plogis", "qlogis")
 importFrom("stats", "qbinom")
 importFrom("stats", "ppois", "qpois")
 importFrom("methods", "new")

@@ -19,7 +19,7 @@ manualPlan <- function(distribution = c("binomial", "poisson", "normal", "beta")
 #                       PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
                        sigma_type = c("known", "unknown"),
                        theta_type = c("known", "unknown"),
-                       method = c("delta_mle", "delta_mom", "gk_adjustment")) {
+                       method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle")) {
   method_missing <- missing(method)
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
@@ -57,6 +57,14 @@ manualPlan <- function(distribution = c("binomial", "poisson", "normal", "beta")
     if (distribution == "beta" && is.null(theta)) stop("theta must be provided.")
     if (distribution == "beta" && is.null(USL) && is.null(LSL)) stop("USL or LSL must be provided.")
     if (!is.null(USL) && !is.null(LSL)) stop("Specify only one limit (USL or LSL), not both.")
+
+    if (distribution == "beta" && theta_type == "unknown" &&
+        identical(method, "delta_mle")) {
+      .validate_beta_mle_plan(n, k)
+    }
+    if (identical(method, "saddlepoint_mle")) {
+      .validate_beta_saddlepoint_plan(n, k)
+    }
     
     plan <- structure(list(n = n, k = k, sample_size = ceiling(n),
                            PRQ = PRQ, CRQ = CRQ, PR = alpha, CR = beta,

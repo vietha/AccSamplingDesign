@@ -35,13 +35,23 @@ OCdata.AttrPlan <- function(plan, pd = NULL) {
 #' @export
 OCdata.VarPlan <- function(plan, pd = NULL) {
   if (is.null(pd)) {
-    pd <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
+    if (identical(plan$method, "saddlepoint_mle")) {
+      if (is.null(plan$PRQ) || is.null(plan$CRQ)) {
+        stop("Supply pd for a manual saddlepoint plan without quality points.", call. = FALSE)
+      }
+      pd <- seq(max(plan$PRQ*.5, 1e-6), min(plan$CRQ*1.5, 1-1e-6), length.out = 100)
+    } else pd <- seq(1e-10, min(plan$CRQ * 2, 1), length.out = 100)
   }
   paccept <- sapply(pd, function(p) accProb(plan, p))
   
   mean_level <- NULL
   if (!is.null(plan$USL) || !is.null(plan$LSL)) {
-    mean_level <- sapply(pd, function(p) muEst(
+    if (identical(plan$method, "saddlepoint_mle")) {
+      type <- if (!is.null(plan$USL)) "upper" else "lower"
+      limit <- if (type == "upper") plan$USL else plan$LSL
+      mean_level <- vapply(pd, .beta_saddlepoint_mean, 0,
+                          theta = plan$theta, limit = limit, limit_type = type)
+    } else mean_level <- sapply(pd, function(p) muEst(
       p, USL = plan$USL, LSL = plan$LSL,
       sigma = plan$sigma,
       theta = plan$theta,

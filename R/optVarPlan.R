@@ -67,7 +67,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
                        sigma_type = c("known", "unknown"),
                        theta_type = c("known", "unknown"),
                        sigma = NULL, theta = NULL,
-                       method = c("delta_mle", "delta_mom", "gk_adjustment")) {
+                       method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle")) {
   method_missing <- missing(method)
   
   # Match arguments to ensure valid input
@@ -80,6 +80,8 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     theta_type = theta_type,
     method_missing = method_missing
   )
+  mle_unknown <- distribution == "beta" && theta_type == "unknown" &&
+    identical(method, "delta_mle")
   
   # Set default if not provided
   if (is.null(sigma_type)) sigma_type <- "known"
@@ -199,6 +201,11 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     #m <- NA  # Not applicable for normal
   } else {
     
+    if (identical(method, "saddlepoint_mle")) {
+      return(.beta_saddlepoint_plan(PRQ, CRQ, alpha, beta, USL, LSL,
+                                    theta, sigma_type, sigma))
+    }
+
     # Constraint function: Ensure PR <= alpha and CR <= beta
     constraint_function <- function(params) {
       n <- params[1]
@@ -238,6 +245,11 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     
     # Initial guess 
     initial_guess <- c(normal_plan$n, normal_plan$k)
+    if (mle_unknown) {
+      n_range <- pmax(n_range, 2)
+      initial_guess[1L] <- max(initial_guess[1L], 2)
+      .validate_beta_mle_plan(initial_guess[1L], initial_guess[2L])
+    }
     
     #Run optimization using optim (L-BFGS-B supports bounds)
     result <- optim(
@@ -247,6 +259,10 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
       lower = c(n_range[1], k_range[1]),
       upper = c(n_range[2], k_range[2])
     )
+
+    if (mle_unknown) {
+      .validate_beta_mle_plan(result$par[1L], result$par[2L])
+    }
     
     if (result$convergence == 0) {
       # full success
@@ -281,19 +297,28 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
 
     # Refine the constrained search by solving for the two binding risk
     # points (PR = alpha and CR = beta) in log(n), log(k) coordinates, which
-    # keeps n positive and improves numerical accuracy. The binding solution
-    # is the continuous two-point optimum; rounding n up from it strictly
-    # improves both risks. Delta methods evaluate their own acceptance
+    # keeps n positive and improves numerical accuracy. For Delta-MLE use
+    # n = 2 + exp(eta), so every refinement evaluation respects n >= 2.
+    # Delta methods evaluate their own acceptance
     # probability; known theta evaluates the closed form.
     if (theta_type == "known" ||
         (theta_type == "unknown" && method != "gk_adjustment")) {
       evaluation_theta_type <- if (
         theta_type == "unknown" && method != "gk_adjustment"
       ) "unknown" else "known"
+      refinement_n <- function(value) {
+        if (mle_unknown) 2 + exp(value) else exp(value)
+      }
       risk_error <- function(transformed) {
+        candidate_n <- refinement_n(transformed[[1L]])
+        candidate_k <- exp(transformed[[2L]])
+        if (mle_unknown && (!is.finite(candidate_n) ||
+                            !is.finite(candidate_k))) {
+          return(1e100)
+        }
         candidate <- structure(
           list(
-            n = exp(transformed[[1L]]), k = exp(transformed[[2L]]),
+            n = candidate_n, k = candidate_k,
             USL = USL, LSL = LSL, theta = theta,
             theta_type = evaluation_theta_type, method = method,
             distribution = "beta"
@@ -305,8 +330,12 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
         ((producer_risk - alpha) / alpha)^2 +
           ((consumer_risk - beta) / beta)^2
       }
+      refinement_start <- log(c(max(n, 2), k))
+      if (mle_unknown) {
+        refinement_start[1L] <- log(max(n - 2, 1))
+      }
       refined <- optim(
-        par = log(c(max(n, 2), k)),
+        par = refinement_start,
         fn = risk_error,
         method = "Nelder-Mead",
         control = list(maxit = 1000, reltol = 1e-12)
@@ -325,9 +354,13 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
           stop("Beta plan risk refinement failed: ", refined$message)
         }
       } else {
-        n <- exp(refined$par[[1L]])
+        n <- refinement_n(refined$par[[1L]])
         k <- exp(refined$par[[2L]])
       }
+    }
+
+    if (mle_unknown) {
+      .validate_beta_mle_plan(n, k)
     }
 
     if (theta_type == "known") {
@@ -376,6 +409,17 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     
     r_alpha <- 1 - accProb(objPlan, PRQ)
     r_beta <- accProb(objPlan, CRQ)
+    # Verify the current continuous-size analytical plan. Integer-size
+    # reporting and empirical risk calibration are separate changes.
+    if (mle_unknown && (!is.finite(r_alpha) || !is.finite(r_beta) ||
+                        r_alpha > alpha + 1e-6 || r_beta > beta + 1e-6)) {
+      stop("Delta-MLE optimization did not produce an analytically feasible plan ",
+           "(PR = ", format(r_alpha, digits = 8),
+           ", CR = ", format(r_beta, digits = 8),
+           "; targets = ", alpha, ", ", beta,
+           "; numerical tolerance = 1e-6). No plan was returned.",
+           call. = FALSE)
+    }
     sample_size <- n
     #n <- m  # Not applicable for beta
   }
@@ -426,16 +470,18 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
       stop("Mean-level plot requires 'USL' or 'LSL' in the plan.")
     }
     # estimate mu from PRQ/CRQ
-    mu_PRQ <- muEst(x$PRQ, USL = x$USL, LSL = x$LSL, sigma = x$sigma, 
-                    theta = x$theta, dist = x$distribution)
-    mu_CRQ <- muEst(x$CRQ, USL = x$USL, LSL = x$LSL, sigma = x$sigma, 
-                    theta = x$theta, dist = x$distribution)      
+    mean_from_p <- function(p) {
+      if (identical(x$method, "saddlepoint_mle")) {
+        type <- if (!is.null(x$USL)) "upper" else "lower"
+        limit <- if (type == "upper") x$USL else x$LSL
+        .beta_saddlepoint_mean(p, x$theta, limit, type)
+      } else muEst(p, USL = x$USL, LSL = x$LSL, sigma = x$sigma,
+                   theta = x$theta, dist = x$distribution)
+    }
+    mu_PRQ <- mean_from_p(x$PRQ)
+    mu_CRQ <- mean_from_p(x$CRQ)
     # Estimate mean levels based on pd
-    mu_vals <- sapply(pd, function(p) muEst(
-      p, USL = x$USL, LSL = x$LSL,
-      sigma = x$sigma, theta = x$theta, 
-      dist = x$distribution
-    ))
+    mu_vals <- sapply(pd, mean_from_p)
     
     if (any(is.na(mu_vals))) {
       stop("Some mean estimates could not be computed. Check the pd or spec limits.")

@@ -3,13 +3,14 @@
 ## These helpers are package-native implementations of the analytical methods.
 ## They intentionally have no dependency on research scripts, reports, or data.
 
-.beta_theta_methods <- c("delta_mle", "delta_mom", "gk_adjustment")
+.beta_theta_methods <- c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle")
 
 .beta_theta_method_label <- function(method) {
   labels <- c(
     delta_mle = "Delta-MLE",
     delta_mom = "Delta-MoM",
-    gk_adjustment = "Govindaraju-Kissling adjustment"
+    gk_adjustment = "Govindaraju-Kissling adjustment",
+    saddlepoint_mle = "Saddlepoint MLE OC (experimental)"
   )
   method <- match.arg(method, names(labels))
   unname(labels[[method]])
@@ -44,6 +45,20 @@
   }
   if (length(theta) != 1L || !is.finite(theta) || theta <= 0) {
     stop("theta must be one finite positive value.", call. = FALSE)
+  }
+}
+
+.validate_beta_mle_plan <- function(n, k) {
+  # A joint mean/precision MLE cannot be computed from a single observation.
+  # Continuous design sizes >= 2 remain allowed in this validation step.
+  if (!is.numeric(n) || is.complex(n) || length(n) != 1L ||
+      !is.finite(n) || n < 2) {
+    stop("Delta-MLE requires one finite sample size n >= 2.", call. = FALSE)
+  }
+  if (!is.numeric(k) || is.complex(k) || length(k) != 1L ||
+      !is.finite(k) || k < 0) {
+    stop("Delta-MLE requires one finite non-negative acceptability constant k.",
+         call. = FALSE)
   }
 }
 
@@ -196,7 +211,9 @@
   .validate_beta_parameters(mu, theta)
   limit_type <- match.arg(limit_type, c("upper", "lower"))
   method <- match.arg(method, c("delta_mle", "delta_mom"))
-  if (length(n) != 1L || !is.finite(n) || n <= 0) {
+  if (method == "delta_mle") {
+    .validate_beta_mle_plan(n, k)
+  } else if (length(n) != 1L || !is.finite(n) || n <= 0) {
     stop("n must be one finite positive value.", call. = FALSE)
   }
   if (length(limit) != 1L || !is.finite(limit) || limit <= 0 || limit >= 1) {

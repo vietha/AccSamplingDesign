@@ -138,11 +138,16 @@ plot(plan_beta, by = "mean")
 
 ## Beta Distribution, Unknown Theta
 
-Three methods are available when theta is estimated during inspection:
+Four methods are available when theta is estimated during inspection:
 
 * `"delta_mle"` uses analytical Fisher-information covariance and is the default;
 * `"delta_mom"` uses analytical covariance propagated from Beta raw moments;
-* `"gk_adjustment"` retains the earlier Govindaraju--Kissling sample-size adjustment.
+* `"gk_adjustment"` retains the earlier Govindaraju--Kissling sample-size adjustment;
+* `"saddlepoint_mle"` is an experimental numerical OC based on a normalized joint
+  MLE saddlepoint distribution. It keeps the inspection rule unchanged, uses
+  integer sample sizes, and is slower than the Delta methods. It raises an error
+  if numerical integration does not converge. Integration convergence does not
+  guarantee finite-sample risk accuracy.
 
 The supplied `theta` is the planning/reference precision used to construct the
 OC curve; `theta_type = "unknown"` means the inspection statistic estimates it.
