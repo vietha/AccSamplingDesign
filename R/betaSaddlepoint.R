@@ -258,11 +258,43 @@
   root
 }
 
+.beta_saddlepoint_normal_initial <- function(PRQ,CRQ,alpha,beta) {
+  z1<-qnorm(1-PRQ);z2<-qnorm(1-CRQ);za<-qnorm(1-alpha);zb<-qnorm(1-beta)
+  k0<-(z1*zb+z2*za)/(za+zb)
+  list(n=max(10,((za+zb)/(z1-z2))^2*(1+k0^2/2)),k=2,
+       source="normal",fallback_reason=NULL)
+}
+
+.beta_saddlepoint_initial <- function(PRQ,CRQ,alpha,beta,USL,LSL,theta,
+                                      delta_plan_function=optPlan) {
+  fallback<-.beta_saddlepoint_normal_initial(PRQ,CRQ,alpha,beta)
+  attempt<-tryCatch(
+    delta_plan_function(PRQ=PRQ,CRQ=CRQ,alpha=alpha,beta=beta,
+      USL=USL,LSL=LSL,distribution="beta",theta_type="unknown",
+      theta=theta,method="delta_mle"),
+    error=function(e)e)
+  if(inherits(attempt,"error")) {
+    fallback$fallback_reason<-conditionMessage(attempt)
+    return(fallback)
+  }
+  n<-attempt$sample_size
+  k<-attempt$k
+  valid_n<-is.numeric(n)&&length(n)==1L&&is.finite(n)&&n>=2&&n==floor(n)
+  valid_k<-is.numeric(k)&&length(k)==1L&&is.finite(k)&&k>0
+  if(!valid_n||!valid_k) {
+    fallback$fallback_reason<-"Delta MLE returned an invalid starting plan."
+    return(fallback)
+  }
+  list(n=as.integer(n),k=k,source="delta_mle",fallback_reason=NULL)
+}
+
 .beta_saddlepoint_plan <- function(PRQ,CRQ,alpha,beta,USL,LSL,theta,sigma_type,sigma) {
   limit_type<-if(!is.null(USL))"upper" else "lower"
   limit<-if(limit_type=="upper")USL else LSL
   .validate_beta_parameters(.5,theta)
   mus<-vapply(c(PRQ,CRQ),.beta_saddlepoint_mean,0,theta=theta,limit=limit,limit_type=limit_type)
+  initializer<-.beta_saddlepoint_initial(PRQ,CRQ,alpha,beta,USL,LSL,theta)
+  k_bracket<-initializer$k
   cache<-new.env(parent=emptyenv())
   at_size<-function(n) {
     key<-format(n,digits=17)
@@ -272,7 +304,7 @@
     if(pa(0,1)<1-alpha) {
       result<-list(feasible=FALSE,excess=1,n=n)
     } else {
-      hi<-2
+      hi<-k_bracket
       while(pa(hi,1)>1-alpha&&hi<1e6)hi<-hi*2
       if(hi>=1e6)stop("Saddlepoint MLE acceptance constant could not be bracketed.",call.=FALSE)
       k<-uniroot(function(k)pa(k,1)-(1-alpha),c(0,hi),tol=2e-8)$root
@@ -281,11 +313,10 @@
     }
     assign(key,result,cache);result
   }
-  # The Normal approximation supplies a starting size, never the returned OC.
-  z1<-qnorm(1-PRQ);z2<-qnorm(1-CRQ);za<-qnorm(1-alpha);zb<-qnorm(1-beta)
-  k0<-(z1*zb+z2*za)/(za+zb)
-  initial<-max(10,((za+zb)/(z1-z2))^2*(1+k0^2/2))
-  hi<-initial
+  # Delta MLE supplies search starting values only. If it is unavailable, the
+  # previous Normal starting values are used. Every returned OC remains the
+  # saddlepoint calculation below.
+  hi<-initializer$n
   while(!at_size(hi)$feasible&&hi<1e5)hi<-hi*2
   if(hi>=1e5)stop("Saddlepoint MLE could not find a supported feasible size below 100000.",call.=FALSE)
   lo<-max(2,hi/2)
@@ -321,6 +352,10 @@
     PR=risks[1],CR=risks[2],USL=USL,LSL=LSL,sample_size=n,n=n,k=k,
     n_continuous=continuous,
     integration=list(numerical_error_estimate=vapply(cores,`[[`,0,"numerical_error"),
-      quadrature_order=vapply(cores,`[[`,0L,"order"),experimental=TRUE)),
+      quadrature_order=vapply(cores,`[[`,0L,"order"),experimental=TRUE,
+      search_initializer=initializer$source,
+      initializer_fallback_reason=initializer$fallback_reason,
+      evaluated_sample_sizes=length(ls(cache,all.names=TRUE)),
+      distribution_constructions=2L*length(ls(cache,all.names=TRUE)))),
     class="VarPlan")
 }

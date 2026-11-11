@@ -18,6 +18,11 @@ test_that("saddlepoint MLE construction and probability dispatch agree", {
   expect_equal(1-accProb(plan,.01),plan$PR,tolerance=1e-10)
   expect_equal(accProb(plan,.03),plan$CR,tolerance=1e-10)
   expect_true(plan$integration$experimental)
+  expect_identical(plan$integration$search_initializer,"delta_mle")
+  expect_null(plan$integration$initializer_fallback_reason)
+  expect_gte(plan$integration$evaluated_sample_sizes,1)
+  expect_equal(plan$integration$distribution_constructions,
+               2L*plan$integration$evaluated_sample_sizes)
   expect_true(all(plan$integration$numerical_error_estimate<2e-5))
   expect_output(print(plan),"Saddlepoint MLE OC (experimental)",fixed=TRUE)
   expect_output(summary(plan),"Saddlepoint MLE OC (experimental)",fixed=TRUE)
@@ -31,4 +36,28 @@ test_that("saddlepoint MLE construction and probability dispatch agree", {
   expect_error(OCdata(manual),"Supply pd")
   expect_silent(plot(plan,pd=pd))
   expect_silent(plot(plan,pd=pd,by="mean"))
+})
+
+test_that("saddlepoint MLE initializer validates Delta output and falls back", {
+  initial<-AccSamplingDesign:::.beta_saddlepoint_initial(
+    .01,.03,.05,.10,.05,NULL,500,
+    delta_plan_function=function(...)list(sample_size=21,k=1.25))
+  expect_identical(initial$source,"delta_mle")
+  expect_identical(initial$n,21L)
+  expect_equal(initial$k,1.25)
+  expect_null(initial$fallback_reason)
+
+  invalid<-AccSamplingDesign:::.beta_saddlepoint_initial(
+    .01,.03,.05,.10,.05,NULL,500,
+    delta_plan_function=function(...)list(sample_size=1,k=Inf))
+  expect_identical(invalid$source,"normal")
+  expect_match(invalid$fallback_reason,"invalid starting plan")
+  expect_true(is.finite(invalid$n)&&invalid$n>=10)
+  expect_identical(invalid$k,2)
+
+  failed<-AccSamplingDesign:::.beta_saddlepoint_initial(
+    .01,.03,.05,.10,.05,NULL,500,
+    delta_plan_function=function(...)stop("forced Delta failure"))
+  expect_identical(failed$source,"normal")
+  expect_match(failed$fallback_reason,"forced Delta failure")
 })
