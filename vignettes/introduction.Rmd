@@ -138,7 +138,7 @@ plot(plan_beta, by = "mean")
 
 ## Beta Distribution, Unknown Theta
 
-Four methods are available when theta is estimated during inspection:
+Five methods are available when theta is estimated during inspection:
 
 * `"delta_mle"` uses analytical Fisher-information covariance and is the default;
 * `"delta_mom"` uses analytical covariance propagated from Beta raw moments;
@@ -269,3 +269,8 @@ methods used, please refer to the foundation sources such as:
 * J. A. Nelder and R. Mead. A simplex method for function minimization. The Computer Journal, 7(4): 308–313, 1965. DOI 10.1093/comjnl/7.4.308.
 
 * R. H. Byrd, P. Lu, J. Nocedal and C. Zhu. A limited memory algorithm for bound constrained optimization. SIAM Journal on Scientific Computing, 16(5): 1190–1208, 1995. DOI 10.1137/0916069.
+
+The fifth option, `"saddlepoint_mom"`, is experimental with incomplete
+validation. It preserves MOM and the inspection rule. A conservative
+log-concavity support check and strict integration checks can reject ordinary
+settings. No probability or plan is substituted when a calculation is unsupported.

@@ -3,14 +3,15 @@
 ## These helpers are package-native implementations of the analytical methods.
 ## They intentionally have no dependency on research scripts, reports, or data.
 
-.beta_theta_methods <- c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle")
+.beta_theta_methods <- c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle", "saddlepoint_mom")
 
 .beta_theta_method_label <- function(method) {
   labels <- c(
     delta_mle = "Delta-MLE",
     delta_mom = "Delta-MoM",
     gk_adjustment = "Govindaraju-Kissling adjustment",
-    saddlepoint_mle = "Saddlepoint MLE OC (experimental)"
+    saddlepoint_mle = "Saddlepoint MLE OC (experimental)",
+    saddlepoint_mom = "Saddlepoint MOM OC (experimental; validation incomplete)"
   )
   method <- match.arg(method, names(labels))
   unname(labels[[method]])

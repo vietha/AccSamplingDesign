@@ -67,7 +67,7 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
                        sigma_type = c("known", "unknown"),
                        theta_type = c("known", "unknown"),
                        sigma = NULL, theta = NULL,
-                       method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle")) {
+                       method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle", "saddlepoint_mom")) {
   method_missing <- missing(method)
   
   # Match arguments to ensure valid input
@@ -200,6 +200,9 @@ optVarPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10,
     r_beta <- accProb(objPlan, CRQ)
     #m <- NA  # Not applicable for normal
   } else {
+    if (identical(method, "saddlepoint_mom")) {
+      return(.beta_spm_plan(PRQ,CRQ,alpha,beta,USL,LSL,theta,sigma_type,sigma))
+    }
     
     if (identical(method, "saddlepoint_mle")) {
       return(.beta_saddlepoint_plan(PRQ, CRQ, alpha, beta, USL, LSL,
@@ -471,7 +474,8 @@ plot.VarPlan <- function(x, pd = NULL, by = c("pd", "mean"), ...) {
     }
     # estimate mu from PRQ/CRQ
     mean_from_p <- function(p) {
-      if (identical(x$method, "saddlepoint_mle")) {
+      if (isTRUE(x$method %in% c("saddlepoint_mle", "saddlepoint_mom"))) {
+        if (is.null(p)) return(numeric(0))
         type <- if (!is.null(x$USL)) "upper" else "lower"
         limit <- if (type == "upper") x$USL else x$LSL
         .beta_saddlepoint_mean(p, x$theta, limit, type)

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Ha Truong" />
 
-<meta name="date" content="2026-11-11" />
+<meta name="date" content="2026-11-12" />
 
 <title>AccSamplingDesign: Acceptance Sampling Plan Design - R Package</title>
 
@@ -341,7 +341,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">AccSamplingDesign: Acceptance Sampling Plan
 Design - R Package</h1>
 <h4 class="author">Ha Truong</h4>
-<h4 class="date">2026-11-11</h4>
+<h4 class="date">2026-11-12</h4>
 
 
 
@@ -486,7 +486,7 @@ Known Theta</h2>
 <div id="beta-distribution-unknown-theta" class="section level2" number="3.4">
 <h2><span class="header-section-number">3.4</span> Beta Distribution,
 Unknown Theta</h2>
-<p>Four methods are available when theta is estimated during
+<p>Five methods are available when theta is estimated during
 inspection:</p>
 <ul>
 <li><code>&quot;delta_mle&quot;</code> uses analytical Fisher-information
@@ -670,6 +670,11 @@ minimization. The Computer Journal, 7(4): 308–313, 1965. DOI
 algorithm for bound constrained optimization. SIAM Journal on Scientific
 Computing, 16(5): 1190–1208, 1995. DOI 10.1137/0916069.</p></li>
 </ul>
+<p>The fifth option, <code>&quot;saddlepoint_mom&quot;</code>, is experimental
+with incomplete validation. It preserves MOM and the inspection rule. A
+conservative log-concavity support check and strict integration checks
+can reject ordinary settings. No probability or plan is substituted when
+a calculation is unsupported.</p>
 </div>
 
 

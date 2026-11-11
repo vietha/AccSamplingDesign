@@ -8,7 +8,7 @@
 optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
            distribution = c("normal", "beta"), sigma_type = c("known", "unknown"),
            theta_type = c("known", "unknown"), sigma = NULL, theta = NULL,
-           method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle"))
+           method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle", "saddlepoint_mom"))
 }
 \arguments{
   \item{PRQ}{Producer Risk Quality (must be within valid range for the chosen distribution).}
@@ -35,11 +35,25 @@ optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
   If unknown, it can be estimated from historical data using functions such as \code{\link[VGAM]{betaff}}.}
 
   \item{method}{Unknown-theta Beta method: \code{"delta_mle"} (default),
-  \code{"delta_mom"}, \code{"gk_adjustment"}, or experimental \code{"saddlepoint_mle"}.
+  \code{"delta_mom"}, \code{"gk_adjustment"}, or experimental \code{"saddlepoint_mle"} and \code{"saddlepoint_mom"}.
   It is only applicable when
   \code{distribution = "beta"} and \code{theta_type = "unknown"}.}
 }
 \details{
+  The experimental \code{"saddlepoint_mom"} method uses the joint sample
+  moments, the finite-integer-sample moment support, and the unchanged MOM
+  inspection rule. Its numerical and finite-sample validation is incomplete:
+  ordinary settings can be unsupported. Unsupported integrations or searches
+  raise an error and do not return a substitute probability or plan. Population
+  quadrature orders 128 and 256 and integration refinements must agree within
+  0.00002. A conservative log-concavity check on the tilted logit-integration
+  kernel also rejects cases with unresolved remote tilted mass; rejected nodes
+  are not omitted and renormalized. This numerical discrepancy is not a statistical risk bound. Integer
+  plan searches check working risks and adjacent sizes; global minimality is
+  not established. The method is slower than the Delta methods and caches
+  successful and failed population calculations. The default remains
+  \code{"delta_mle"}.
+
   The function generates variable acceptance sampling plans based on specified producer and consumer risks and either a normal or beta distribution model.
 
   The specification limit must be defined via either \code{USL} (upper specification limit) or \code{LSL} (lower specification limit), depending on whether the one-sided quality criterion concerns the upper or lower tail. Only one limit should be provided.

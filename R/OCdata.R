@@ -35,7 +35,7 @@ OCdata.AttrPlan <- function(plan, pd = NULL) {
 #' @export
 OCdata.VarPlan <- function(plan, pd = NULL) {
   if (is.null(pd)) {
-    if (identical(plan$method, "saddlepoint_mle")) {
+    if (isTRUE(plan$method %in% c("saddlepoint_mle", "saddlepoint_mom"))) {
       if (is.null(plan$PRQ) || is.null(plan$CRQ)) {
         stop("Supply pd for a manual saddlepoint plan without quality points.", call. = FALSE)
       }
@@ -46,7 +46,7 @@ OCdata.VarPlan <- function(plan, pd = NULL) {
   
   mean_level <- NULL
   if (!is.null(plan$USL) || !is.null(plan$LSL)) {
-    if (identical(plan$method, "saddlepoint_mle")) {
+    if (isTRUE(plan$method %in% c("saddlepoint_mle", "saddlepoint_mom"))) {
       type <- if (!is.null(plan$USL)) "upper" else "lower"
       limit <- if (type == "upper") plan$USL else plan$LSL
       mean_level <- vapply(pd, .beta_saddlepoint_mean, 0,

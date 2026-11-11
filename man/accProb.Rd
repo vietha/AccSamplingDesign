@@ -15,6 +15,20 @@ accProb(plan, p)
   Numeric probability between 0 and 1.
 }
 \details{
+  The experimental \code{"saddlepoint_mom"} method uses the joint sample
+  moments, the finite-integer-sample moment support, and the unchanged MOM
+  inspection rule. Its numerical and finite-sample validation is incomplete:
+  ordinary settings can be unsupported. Unsupported integrations or searches
+  raise an error and do not return a substitute probability or plan. Population
+  quadrature orders 128 and 256 and integration refinements must agree within
+  0.00002. A conservative log-concavity check on the tilted logit-integration
+  kernel also rejects cases with unresolved remote tilted mass; rejected nodes
+  are not omitted and renormalized. This numerical discrepancy is not a statistical risk bound. Integer
+  plan searches check working risks and adjacent sizes; global minimality is
+  not established. The method is slower than the Delta methods and caches
+  successful and failed population calculations. The default remains
+  \code{"delta_mle"}.
+
 For Beta plans with unknown theta, the calculation follows the \code{method}
 stored in the plan: analytical Delta--MLE, analytical Delta--MoM, the
 Govindaraju--Kissling sample-size adjustment, or experimental Saddlepoint MLE OC.

@@ -218,3 +218,31 @@ Contributions, suggestions, and bug reports are welcome!
 Please use [GitHub
 Issues](https://github.com/vietha/AccSamplingDesign/issues) or submit a
 pull request.
+
+
+### Experimental saddlepoint MOM (0.1.2 development build)
+
+`method = "saddlepoint_mom"` evaluates the unchanged MOM inspection rule through
+its joint raw-moment distribution. It enforces the finite-sample moment support
+and uses deterministic, positive quadrature. The numerical and finite-sample
+validation is incomplete: some ordinary calculations fail convergence, and an
+unsupported plan or probability raises an error. This method is an experimental
+interface, not a validated replacement for either Delta MOM or saddlepoint MLE.
+`delta_mle` remains the default. There is no simulation-fitted correction.
+
+```r
+plan <- manualPlan(distribution = "beta", theta_type = "unknown",
+                   theta = 500, USL = 0.05, n = 121, k = 2.333335566,
+                   method = "saddlepoint_mom")
+# This development case is unsupported; retain the error as a diagnostic.
+tryCatch(accProb(plan, 0.03), error = function(e) conditionMessage(e))
+```
+
+An integer-only experimental plan search is available through `optPlan()`.
+Numerical support is required at every search point; a failed evaluation stops
+that search. Numerical convergence alone does not guarantee finite-sample risks.
+
+The integrated MOM interface also rejects tilts outside a sufficient
+log-concavity regime for its numerical integration kernel. This conservative
+support restriction can reject a mathematically valid Beta probability; it
+does not discard nodes and renormalize the remaining mass.

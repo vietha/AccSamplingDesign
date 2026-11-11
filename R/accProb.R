@@ -59,8 +59,8 @@ accProb.VarPlan <- function(plan, p) {
     
     theta <- plan$theta
     if (identical(plan$theta_type, "unknown") &&
-        identical(plan$method, "saddlepoint_mle")) {
-      .validate_beta_saddlepoint_plan(m, k)
+        isTRUE(plan$method %in% c("saddlepoint_mle", "saddlepoint_mom"))) {
+      if (plan$method == "saddlepoint_mom") .validate_beta_spm_plan(m,k) else .validate_beta_saddlepoint_plan(m,k)
       .validate_beta_parameters(.5, theta)
       if (length(limit) != 1L || !is.finite(limit) || limit <= 0 || limit >= 1) {
         stop("The Beta specification limit must be strictly between 0 and 1.", call. = FALSE)
@@ -68,6 +68,9 @@ accProb.VarPlan <- function(plan, p) {
       mu <- .beta_saddlepoint_mean(p, theta, limit, limtype)
       if (p == 0) return(1)
       if (p == 1) return(0)
+      if (plan$method == "saddlepoint_mom") {
+        return(.beta_spm_probability(mu,theta,m,k,limit,limtype))
+      }
       return(.beta_saddlepoint_probability(mu, theta, m, k, limit, limtype))
     }
     mu <- muEst(p, USL = plan$USL, LSL = plan$LSL,

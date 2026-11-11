@@ -19,7 +19,7 @@ manualPlan <- function(distribution = c("binomial", "poisson", "normal", "beta")
 #                       PRQ = NULL, CRQ = NULL, alpha = NULL, beta = NULL,
                        sigma_type = c("known", "unknown"),
                        theta_type = c("known", "unknown"),
-                       method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle")) {
+                       method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle", "saddlepoint_mom")) {
   method_missing <- missing(method)
   sigma_type <- match.arg(sigma_type)
   theta_type <- match.arg(theta_type)
@@ -62,8 +62,8 @@ manualPlan <- function(distribution = c("binomial", "poisson", "normal", "beta")
         identical(method, "delta_mle")) {
       .validate_beta_mle_plan(n, k)
     }
-    if (identical(method, "saddlepoint_mle")) {
-      .validate_beta_saddlepoint_plan(n, k)
+    if (isTRUE(method %in% c("saddlepoint_mle", "saddlepoint_mom"))) {
+      if (method == "saddlepoint_mom") .validate_beta_spm_plan(n,k) else .validate_beta_saddlepoint_plan(n,k)
     }
     
     plan <- structure(list(n = n, k = k, sample_size = ceiling(n),

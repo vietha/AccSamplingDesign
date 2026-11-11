@@ -17,7 +17,7 @@ optPlan <- function(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
                     sigma_type = c("known", "unknown"),
                     theta_type = c("known", "unknown"),
                     sigma = NULL, theta = NULL,
-                    method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle")) {
+                    method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle", "saddlepoint_mom")) {
   method_missing <- missing(method)
   
   # Match arguments to ensure valid input

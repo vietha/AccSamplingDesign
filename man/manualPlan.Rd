@@ -10,7 +10,7 @@ manualPlan(distribution = c("binomial", "poisson", "normal", "beta"),
            USL = NULL, LSL = NULL, sigma = NULL, theta = NULL,
            sigma_type = c("known", "unknown"),
            theta_type = c("known", "unknown"),
-           method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle"))
+           method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle", "saddlepoint_mom"))
 }
 \arguments{
   \item{distribution}{One of \code{"binomial"}, \code{"poisson"}, \code{"normal"}, or \code{"beta"}.}
@@ -35,9 +35,23 @@ manualPlan(distribution = c("binomial", "poisson", "normal", "beta"),
 
   \item{method}{Method used by an unknown-theta Beta plan. Delta--MLE is the
   default; alternatives are \code{"delta_mom"}, \code{"gk_adjustment"},
-  and experimental \code{"saddlepoint_mle"}.}
+  and experimental \code{"saddlepoint_mle"} or \code{"saddlepoint_mom"}.}
 }
 \details{
+  The experimental \code{"saddlepoint_mom"} method uses the joint sample
+  moments, the finite-integer-sample moment support, and the unchanged MOM
+  inspection rule. Its numerical and finite-sample validation is incomplete:
+  ordinary settings can be unsupported. Unsupported integrations or searches
+  raise an error and do not return a substitute probability or plan. Population
+  quadrature orders 128 and 256 and integration refinements must agree within
+  0.00002. A conservative log-concavity check on the tilted logit-integration
+  kernel also rejects cases with unresolved remote tilted mass; rejected nodes
+  are not omitted and renormalized. This numerical discrepancy is not a statistical risk bound. Integer
+  plan searches check working risks and adjacent sizes; global minimality is
+  not established. The method is slower than the Delta methods and caches
+  successful and failed population calculations. The default remains
+  \code{"delta_mle"}.
+
   This function provides a user-friendly wrapper to construct AS plan directly
   from parameters.
   Internally, it constructs the appropriate \code{AttrPlan} or \code{VarPlan},

@@ -1,3 +1,15 @@
+# AccSamplingDesign 0.1.2 (development build)
+
+- Added opt-in `saddlepoint_mom`, displayed as Saddlepoint MOM OC with an
+  experimental/incomplete-validation label. The estimator and rule are unchanged.
+- Connected integer plan search, manual plans, acceptance probabilities,
+  summaries, OC data, and plots. Successful calculations require both integration
+  refinement and population-CGF quadrature checks. Unsupported calculations
+  return explicit errors, including ordinary cases that failed development tests.
+- This integration does not certify MOM accuracy or risk control. No tolerance
+  was relaxed, and no MLE/Delta substitute was introduced. `delta_mle` remains
+  the default; existing method formulas and reporting conventions are preserved.
+
 # AccSamplingDesign 0.1.1
 
 ## Experimental method
