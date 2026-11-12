@@ -1,0 +1,7 @@
+"scenario","normal_median_seconds","delta_median_seconds","median_paired_speedup","equivalent_trials","trials"
+"ordinary",6.784,5.338,1.26879100281162,5,5
+"original_1",5.746,5.538,1.03539183820874,5,5
+"original_7",4.491,2.83,1.57712860705379,5,5
+"high_1e-04_1e+06",4.292,3.857,1.10348413936557,5,5
+"holdout_5_1",6.519,5.326,1.22399549380398,5,5
+"holdout_12_1",6.063,4.173,1.44690585119191,5,5

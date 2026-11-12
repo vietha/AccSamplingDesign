@@ -1,0 +1,6 @@
+^dev$
+^validation$
+^release-archives$
+^[.]git$
+^AccSamplingDesign[.]Rproj$
+^[.]Rproj[.]user$

@@ -1,3 +1,17 @@
+# AccSamplingDesign 0.1.3 (development build)
+
+- Saddlepoint-MLE plan search now starts from the delivered Delta-MLE sample
+  size and acceptance constant. If that initializer fails validation, the
+  previous Normal initializer is used automatically.
+- The initializer affects search efficiency only. All final probabilities,
+  feasibility decisions, adjacent-size checks, and reported risks continue to
+  use the saddlepoint MLE OC.
+- Search diagnostics now report the initializer, fallback reason, evaluated
+  sample sizes, and distribution constructions. The public method names and
+  defaults are unchanged; `delta_mle` remains the default.
+- Validation found equivalent delivered plans in all 43 commonly supported
+  configurations. Timing improved overall but remained configuration-dependent.
+
 # AccSamplingDesign 0.1.2 (development build)
 
 - Added opt-in `saddlepoint_mom`, displayed as Saddlepoint MOM OC with an
