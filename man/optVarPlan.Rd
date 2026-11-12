@@ -8,7 +8,8 @@
 optVarPlan(PRQ, CRQ, alpha = 0.05, beta = 0.10, USL = NULL, LSL = NULL,
            distribution = c("normal", "beta"), sigma_type = c("known", "unknown"),
            theta_type = c("known", "unknown"), sigma = NULL, theta = NULL,
-           method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle", "saddlepoint_mom"))
+           method = c("delta_mle", "delta_mom", "gk_adjustment",
+                      "saddlepoint_mle", "saddlepoint_mom"))
 }
 \arguments{
   \item{PRQ}{Producer Risk Quality (must be within valid range for the chosen distribution).}

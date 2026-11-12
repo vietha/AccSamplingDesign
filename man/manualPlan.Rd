@@ -10,7 +10,8 @@ manualPlan(distribution = c("binomial", "poisson", "normal", "beta"),
            USL = NULL, LSL = NULL, sigma = NULL, theta = NULL,
            sigma_type = c("known", "unknown"),
            theta_type = c("known", "unknown"),
-           method = c("delta_mle", "delta_mom", "gk_adjustment", "saddlepoint_mle", "saddlepoint_mom"))
+           method = c("delta_mle", "delta_mom", "gk_adjustment",
+                      "saddlepoint_mle", "saddlepoint_mom"))
 }
 \arguments{
   \item{distribution}{One of \code{"binomial"}, \code{"poisson"}, \code{"normal"}, or \code{"beta"}.}
